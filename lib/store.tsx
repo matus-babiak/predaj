@@ -31,6 +31,12 @@ interface StoreCtx {
 const CACHE_KEY = "cp_cache_v1";
 const QUEUE_KEY = "cp_queue_v1";
 
+// Presmerovanie na login len mimo login stránky — inak by sa /login
+// pri každom 401 donekonečna obnovovala.
+function redirectToLogin() {
+  if (window.location.pathname !== "/login") window.location.href = "/login";
+}
+
 function emptyDB(): DB {
   return Object.fromEntries(COLLECTION_NAMES.map((c) => [c, []])) as unknown as DB;
 }
@@ -89,7 +95,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ mutations: queue }),
       });
       if (res.status === 401) {
-        window.location.href = "/login";
+        flushing.current = false;
+        redirectToLogin();
         return;
       }
       if (!res.ok) throw new Error(String(res.status));
@@ -115,11 +122,18 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setDb(cached);
     setReady(true);
 
+    // Na /login sa dáta nesynchronizujú — stránka je pre neprihláseného
+    // a fetch by aj tak skončil 401.
+    if (window.location.pathname === "/login") {
+      setSync("synced");
+      return;
+    }
+
     (async () => {
       try {
         const res = await fetch("/api/data");
         if (res.status === 401) {
-          window.location.href = "/login";
+          redirectToLogin();
           return;
         }
         if (!res.ok) throw new Error(String(res.status));

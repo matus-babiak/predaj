@@ -34,6 +34,8 @@ export default function DennikPage() {
   const [trust, setTrust] = useState(0);
   const [objection, setObjection] = useState("");
   const [note, setNote] = useState("");
+  const [plus, setPlus] = useState("");
+  const [minus, setMinus] = useState("");
   const [saved, setSaved] = useState(false);
   const [showMore, setShowMore] = useState(false);
 
@@ -59,6 +61,8 @@ export default function DennikPage() {
       trust: trust || undefined,
       objection: objection.trim() || undefined,
       note: note.trim() || undefined,
+      plus: plus.trim() || undefined,
+      minus: minus.trim() || undefined,
       updatedAt: now,
     };
     put("entries", entry);
@@ -76,6 +80,8 @@ export default function DennikPage() {
     setTrust(0);
     setObjection("");
     setNote("");
+    setPlus("");
+    setMinus("");
     setShowMore(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
@@ -184,6 +190,17 @@ export default function DennikPage() {
                   {n}
                 </button>
               ))}
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <Label>➕ Moje plus — čo som urobil dobre?</Label>
+              <Input value={plus} onChange={(e) => setPlus(e.target.value)} placeholder="napr. pýtal som sa na potrebu skôr než na rozpočet" />
+            </div>
+            <div>
+              <Label>➖ Moje mínus — čo nabudúce inak?</Label>
+              <Input value={minus} onChange={(e) => setMinus(e.target.value)} placeholder="napr. skočil som mu do reči pri námietke" />
             </div>
           </div>
 
@@ -315,6 +332,8 @@ function EntryRow({ entry, onDelete }: { entry: Entry; onDelete: () => void }) {
         {entry.fear && <div>😟 bál sa: {entry.fear}</div>}
         {entry.why && <div>💡 prečo: {entry.why}</div>}
         {entry.objection && <div>🥊 námietka: {entry.objection}</div>}
+        {entry.plus && <div className="text-emerald-700 dark:text-emerald-400">➕ {entry.plus}</div>}
+        {entry.minus && <div className="text-red-700 dark:text-red-400">➖ {entry.minus}</div>}
         {entry.note && <div>📝 {entry.note}</div>}
       </div>
     </div>

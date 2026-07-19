@@ -11,6 +11,7 @@ import type {
   UserObjection,
   ProductCard,
   Settings,
+  SelfNote,
 } from "./types";
 import { dayKey } from "./gamify";
 
@@ -23,6 +24,7 @@ export function useData() {
   const objAttempts = db.objAttempts as ObjAttempt[];
   const userObjections = db.userObjections as UserObjection[];
   const products = db.products as ProductCard[];
+  const selfNotes = ((db.selfNotes ?? []) as SelfNote[]).slice().sort((a, b) => b.ts - a.ts);
 
   const progress: Progress =
     (db.progress[0] as Progress) ?? {
@@ -59,6 +61,7 @@ export function useData() {
     objAttempts,
     userObjections,
     products,
+    selfNotes,
     progress,
     settings,
     daysInCurrentWeek,

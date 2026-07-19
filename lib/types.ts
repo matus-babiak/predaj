@@ -12,6 +12,17 @@ export interface Entry {
   trust?: number; // 1–5: nakoľko vznikla dôvera
   objection?: string; // námietka, ktorá padla
   note?: string; // poznámka na večer
+  plus?: string; // sebahodnotenie: čo som urobil dobre
+  minus?: string; // sebahodnotenie: čo nabudúce inak
+  updatedAt: number;
+}
+
+// Samostatne pridané plus/mínus (mimo záznamu z predaja) — stránka Plusy a mínusy.
+export interface SelfNote {
+  id: string;
+  ts: number;
+  kind: "plus" | "minus";
+  text: string;
   updatedAt: number;
 }
 
@@ -80,6 +91,7 @@ export type Collections = {
   userObjections: UserObjection[];
   products: ProductCard[];
   settings: Settings[];
+  selfNotes: SelfNote[];
 };
 
 export const COLLECTION_NAMES = [
@@ -90,6 +102,7 @@ export const COLLECTION_NAMES = [
   "userObjections",
   "products",
   "settings",
+  "selfNotes",
 ] as const;
 
 export type CollectionName = (typeof COLLECTION_NAMES)[number];

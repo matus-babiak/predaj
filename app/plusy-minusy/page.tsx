@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useData } from "@/lib/useData";
 import { uid } from "@/lib/store";
 import type { SelfNote } from "@/lib/types";
-import { Btn, Card, Input, SectionTitle } from "@/components/ui";
+import { Btn, Card, Input } from "@/components/ui";
 
 interface SwItem {
   id: string;
@@ -24,6 +24,7 @@ function formatDay(ts: number): string {
 
 export default function PlusyMinusyPage() {
   const { entries, selfNotes, put, remove, ready } = useData();
+  const [tab, setTab] = useState<"plus" | "minus">("plus");
 
   if (!ready) return null;
 
@@ -64,23 +65,53 @@ export default function PlusyMinusyPage() {
         </p>
       </div>
 
+      {/* Mobilné taby — na desktope sú stĺpce vedľa seba, taby netreba */}
+      <div className="grid grid-cols-2 gap-2 md:hidden">
+        <button
+          type="button"
+          onClick={() => setTab("plus")}
+          className={`rounded-xl border px-3 py-2.5 text-sm font-semibold transition-colors ${
+            tab === "plus"
+              ? "border-emerald-600 bg-emerald-600 text-white"
+              : "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-400"
+          }`}
+        >
+          ➕ Plusy ({pluses.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("minus")}
+          className={`rounded-xl border px-3 py-2.5 text-sm font-semibold transition-colors ${
+            tab === "minus"
+              ? "border-red-600 bg-red-600 text-white"
+              : "border-red-300 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400"
+          }`}
+        >
+          ➖ Mínusy ({minuses.length})
+        </button>
+      </div>
+
       <div className="grid gap-6 md:grid-cols-2 md:items-start">
-        <SwColumn
-          title={`➕ Plusy — čo robím dobre (${pluses.length})`}
-          tone="plus"
-          items={pluses}
-          placeholder="napr. viem počúvať, čo zákazník naozaj potrebuje"
-          onAdd={(text) => addNote("plus", text)}
-          onDelete={(noteId) => remove("selfNotes", noteId)}
-        />
-        <SwColumn
-          title={`➖ Mínusy — čo mám zlepšiť (${minuses.length})`}
-          tone="minus"
-          items={minuses}
-          placeholder="napr. príliš rýchlo prechádzam k cene"
-          onAdd={(text) => addNote("minus", text)}
-          onDelete={(noteId) => remove("selfNotes", noteId)}
-        />
+        <div className={tab === "plus" ? "" : "hidden md:block"}>
+          <SwColumn
+            title={`➕ Plusy — čo robím dobre (${pluses.length})`}
+            tone="plus"
+            items={pluses}
+            placeholder="napr. viem počúvať, čo zákazník naozaj potrebuje"
+            onAdd={(text) => addNote("plus", text)}
+            onDelete={(noteId) => remove("selfNotes", noteId)}
+          />
+        </div>
+        <div className={tab === "minus" ? "" : "hidden md:block"}>
+          <SwColumn
+            title={`➖ Mínusy — čo mám zlepšiť (${minuses.length})`}
+            tone="minus"
+            items={minuses}
+            placeholder="napr. príliš rýchlo prechádzam k cene"
+            onAdd={(text) => addNote("minus", text)}
+            onDelete={(noteId) => remove("selfNotes", noteId)}
+          />
+        </div>
       </div>
 
       {pluses.length === 0 && minuses.length === 0 && (
@@ -119,12 +150,14 @@ function SwColumn({
 
   const accent =
     tone === "plus"
-      ? "border-emerald-200 dark:border-emerald-900"
-      : "border-red-200 dark:border-red-900";
+      ? "border-emerald-300 dark:border-emerald-900"
+      : "border-red-300 dark:border-red-900";
+  const titleColor =
+    tone === "plus" ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400";
 
   return (
     <Card className={accent}>
-      <SectionTitle>{title}</SectionTitle>
+      <h2 className={`mb-3 text-sm font-semibold uppercase tracking-wide ${titleColor}`}>{title}</h2>
       <form
         onSubmit={(e) => {
           e.preventDefault();

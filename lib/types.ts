@@ -26,6 +26,16 @@ export interface SelfNote {
   updatedAt: number;
 }
 
+// Banka otázok: otázka čaká na odpoveď; po zodpovedaní sa presunie medzi zodpovedané.
+export interface Question {
+  id: string;
+  ts: number;
+  text: string;
+  answer?: string;
+  answeredAt?: number;
+  updatedAt: number;
+}
+
 export interface Reflection {
   id: string; // dátum YYYY-MM-DD
   date: string;
@@ -92,6 +102,7 @@ export type Collections = {
   products: ProductCard[];
   settings: Settings[];
   selfNotes: SelfNote[];
+  questions: Question[];
 };
 
 export const COLLECTION_NAMES = [
@@ -103,6 +114,7 @@ export const COLLECTION_NAMES = [
   "products",
   "settings",
   "selfNotes",
+  "questions",
 ] as const;
 
 export type CollectionName = (typeof COLLECTION_NAMES)[number];

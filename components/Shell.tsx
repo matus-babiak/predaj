@@ -13,6 +13,7 @@ const NAV = [
   { href: "/program", label: "Program", icon: "🧭" },
   { href: "/namietky", label: "Námietky", icon: "🥊" },
   { href: "/plusy-minusy", label: "Plusy a mínusy", icon: "⚖️" },
+  { href: "/otazky", label: "Otázky", icon: "❓" },
   { href: "/produkty", label: "Produkty", icon: "🗂️" },
   { href: "/statistiky", label: "Štatistiky", icon: "📈" },
 ];

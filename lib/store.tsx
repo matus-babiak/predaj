@@ -31,13 +31,10 @@ interface StoreCtx {
 const CACHE_KEY = "cp_cache_v1";
 const QUEUE_KEY = "cp_queue_v1";
 
-function onLoginPage(): boolean {
-  return typeof window !== "undefined" && window.location.pathname === "/login";
-}
-
-function goToLogin(): void {
-  // nikdy nepresmerovať, keď už na /login sme — inak vznikne slučka reloadov
-  if (!onLoginPage()) window.location.href = "/login";
+// Presmerovanie na login len mimo login stránky — inak by sa /login
+// pri každom 401 donekonečna obnovovala.
+function redirectToLogin() {
+  if (window.location.pathname !== "/login") window.location.href = "/login";
 }
 
 function emptyDB(): DB {
@@ -98,7 +95,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ mutations: queue }),
       });
       if (res.status === 401) {
-        goToLogin();
+        flushing.current = false;
+        redirectToLogin();
         return;
       }
       if (!res.ok) throw new Error(String(res.status));
@@ -116,12 +114,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   // Štart: cache -> server -> merge -> flush fronty
   useEffect(() => {
-    // na prihlasovacej stránke sa dáta nenačítavajú
-    if (onLoginPage()) {
-      setReady(true);
-      return;
-    }
-
     let cached = emptyDB();
     try {
       const raw = localStorage.getItem(CACHE_KEY);
@@ -130,11 +122,18 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setDb(cached);
     setReady(true);
 
+    // Na /login sa dáta nesynchronizujú — stránka je pre neprihláseného
+    // a fetch by aj tak skončil 401.
+    if (window.location.pathname === "/login") {
+      setSync("synced");
+      return;
+    }
+
     (async () => {
       try {
         const res = await fetch("/api/data");
         if (res.status === 401) {
-          goToLogin();
+          redirectToLogin();
           return;
         }
         if (!res.ok) throw new Error(String(res.status));

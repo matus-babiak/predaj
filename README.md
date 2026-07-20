@@ -39,3 +39,4 @@ Bez nastaveného `APP_PASSWORD` beží appka lokálne bez prihlásenia.
 ## Nasadenie
 
 Pozri [NAVOD.md](NAVOD.md) — krok za krokom GitHub + Vercel + heslo.
+Každý push do repozitára spustí automatický deployment na Verceli.

@@ -74,7 +74,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     <div className="min-h-dvh md:flex">
       {/* Mobilná horná lišta */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-zinc-200 bg-white/90 px-4 py-3 backdrop-blur md:hidden dark:border-zinc-800 dark:bg-zinc-950/90">
-        <div className="font-semibold">🧗 Cesta predajcu</div>
+        <div className="font-semibold">🥋 Sales Dojo</div>
         <button
           onClick={() => setOpen(!open)}
           aria-label="Menu"
@@ -99,7 +99,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
       {/* Desktop sidebar */}
       <aside className="hidden md:flex md:w-60 md:shrink-0 md:flex-col md:gap-4 md:border-r md:border-zinc-200 md:p-4 md:dark:border-zinc-800 md:sticky md:top-0 md:h-dvh">
-        <div className="px-2 py-1 text-lg font-semibold">🧗 Cesta predajcu</div>
+        <div className="px-2 py-1 text-lg font-semibold">🥋 Sales Dojo</div>
         {nav}
         {footer}
       </aside>

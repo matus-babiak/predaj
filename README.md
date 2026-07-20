@@ -1,4 +1,4 @@
-# 🧗 Cesta predajcu
+# 🥋 Sales Dojo
 
 Osobný online nástroj na systematické zlepšovanie predajných zručností.
 Postavený na 12-týždňovom mentorskom pláne: psychológia predaja, dôvera

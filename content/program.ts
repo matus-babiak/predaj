@@ -1,4 +1,4 @@
-// 12-týždňový program „Cesta predajcu"
+// 12-týždňový program „Sales Dojo"
 // Postavené na mentorskom pláne: psychológia predaja, dôvera a rozhodovanie
 // zákazníkov — nie skripty naspamäť.
 

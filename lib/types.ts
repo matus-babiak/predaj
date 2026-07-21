@@ -80,15 +80,56 @@ export interface UserObjection {
   updatedAt: number;
 }
 
+// Kartička produktu podľa rozšíreného predajno-psychologického rozboru.
+// Pôvodných 5 polí (who/when/whenNot/alternatives/objections) ostáva povinných
+// kvôli spätnej kompatibilite so staršími kartičkami, zvyšok je voliteľný doplnok.
 export interface ProductCard {
   id: string;
   name: string;
   category?: string;
-  who: string; // komu pomáha
-  when: string; // kedy ho odporučím
-  whenNot: string; // kedy ho neodporučím
-  alternatives: string; // aké má alternatívy
-  objections: string; // najčastejšie námietky
+
+  // Pochopenie produktu
+  whatIs?: string; // čo produkt je
+  problem?: string; // aký problém rieši
+  need?: string; // akú potrebu/túžbu napĺňa
+  whyExists?: string; // prečo produkt existuje
+
+  // Ideálny zákazník
+  who: string; // komu pomáha najviac
+  when: string; // v akej situácii ho odporučím
+  whenNot: string; // komu ho nepredávať / kedy ho neodporučím
+
+  // Psychológia nákupu
+  wantBecause?: string; // "chcem tento produkt, pretože..."
+  beforeFeeling?: string; // ako sa cíti pred nákupom
+  afterFeeling?: string; // ako sa cíti po kúpe
+
+  // Hodnota produktu
+  benefit?: string; // najväčší benefit (výsledok, nie vlastnosť)
+  transformation?: string; // aká zmena nastane, pred/po
+  gains?: string; // čo zákazník získa (čas, peniaze, stres, výsledok, pohodlie)
+
+  // Konkurencia a alternatívy
+  alternatives: string; // aká je alternatíva / lacnejšie riešenie
+  whyBetter?: string; // prečo je tento produkt lepší
+  riskIfNot?: string; // čo riskuje, ak si ho nekúpi
+
+  // Predajná komunikácia
+  pitch?: string; // jednovetový predajný argument
+  mainReasons?: string; // 3 hlavné racionálne dôvody na kúpu
+  emotionalReasons?: string; // 3 najsilnejšie emocionálne dôvody
+
+  // Námietky
+  objections: string; // najčastejšie námietky a odpovede
+
+  // Predajný rozhovor
+  questions?: string; // otázky pred predajom (potreba, hodnota, uzavretie)
+
+  // Praktická príprava predajcu
+  mustUnderstand?: string; // čo musím pochopiť, aby som ho vedel sebavedomo predávať
+  commonMistake?: string; // akú chybu robia predajcovia
+  top1Percent?: string; // ako by ho predal top 1% predajca
+
   lastReviewed?: number;
   reviewCount?: number;
   updatedAt: number;

@@ -3,16 +3,10 @@
 import { useState } from "react";
 import { useData } from "@/lib/useData";
 import { uid } from "@/lib/store";
+import { parseProductText } from "@/lib/productParser";
+import { PRODUCT_SECTIONS, type ProductFieldDef } from "@/content/productFields";
 import type { ProductCard as Product } from "@/lib/types";
 import { Btn, Card, Input, Label, SectionTitle, TextArea } from "@/components/ui";
-
-const FIELDS: { key: keyof Product; label: string; hint: string }[] = [
-  { key: "who", label: "Komu pomáha?", hint: "napr. každému so starším notebookom, kto sa sťažuje na pomalosť" },
-  { key: "when", label: "Kedy ho odporučím?", hint: "napr. stroj je inak zdravý a má SATA/M.2 slot" },
-  { key: "whenNot", label: "Kedy ho NEodporučím?", hint: "napr. základná doska na odchode — investícia sa nevráti" },
-  { key: "alternatives", label: "Aké má alternatívy?", hint: "napr. viac RAM, repasovaný stroj, nový" },
-  { key: "objections", label: "Najčastejšie námietky?", hint: "napr. „veď mi to funguje“ — ukázať rozdiel naživo" },
-];
 
 const EMPTY: Omit<Product, "id" | "updatedAt"> = {
   name: "",
@@ -28,6 +22,7 @@ export default function ProduktyPage() {
   const { products, put, remove, ready } = useData();
   const [editing, setEditing] = useState<Product | null>(null);
   const [creating, setCreating] = useState(false);
+  const [pasting, setPasting] = useState(false);
   const [quiz, setQuiz] = useState<Product | null>(null);
   const [quizRevealed, setQuizRevealed] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -49,12 +44,14 @@ export default function ProduktyPage() {
     setQuiz(null);
   };
 
+  const formOpen = creating || pasting || !!editing;
+
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-semibold">Produkty</h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Ku každému produktu či službe 5 odpovedí. Keď ich vieš, vieš produkt predať poctivo.
+          Ku každému produktu kompletný predajno-psychologický rozbor. Keď ho vieš, vieš produkt predať poctivo.
         </p>
       </div>
 
@@ -70,7 +67,8 @@ export default function ProduktyPage() {
               {!quizRevealed ? (
                 <>
                   <p className="text-sm text-zinc-600 dark:text-zinc-300">
-                    Odpovedz si v duchu: komu pomáha, kedy áno, kedy nie, alternatívy, námietky. Potom odkry.
+                    Odpovedz si v duchu na kľúčové otázky: komu pomáha, aký problém rieši, aká je jeho hodnota, čo robiť pri
+                    námietkach. Potom odkry.
                   </p>
                   <Btn onClick={() => setQuizRevealed(true)}>Odkryť kartičku</Btn>
                 </>
@@ -96,6 +94,20 @@ export default function ProduktyPage() {
         </Card>
       )}
 
+      {/* Vloženie textu analýzy */}
+      {pasting && (
+        <Card>
+          <SectionTitle>Vložiť text analýzy</SectionTitle>
+          <PasteForm
+            onParsed={(product) => {
+              setEditing(product);
+              setPasting(false);
+            }}
+            onCancel={() => setPasting(false)}
+          />
+        </Card>
+      )}
+
       {/* Formulár */}
       {(creating || editing) && (
         <Card>
@@ -117,16 +129,24 @@ export default function ProduktyPage() {
 
       {/* Zoznam */}
       <div>
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <SectionTitle>Moje kartičky ({products.length})</SectionTitle>
-          {!creating && !editing && <Btn onClick={() => setCreating(true)}>+ Nová kartička</Btn>}
+          {!formOpen && (
+            <div className="flex gap-2">
+              <Btn variant="ghost" onClick={() => setPasting(true)}>
+                📋 Vložiť text
+              </Btn>
+              <Btn onClick={() => setCreating(true)}>+ Nová kartička</Btn>
+            </div>
+          )}
         </div>
 
-        {products.length === 0 && !creating && (
+        {products.length === 0 && !formOpen && (
           <Card>
             <p className="text-sm text-zinc-600 dark:text-zinc-300">
-              Zatiaľ žiadne kartičky. Začni tými, čo predávaš najčastejšie: výmena disku za SSD, čistenie notebooku,
-              inštalácia Windows, antivírus, repasovaný počítač, rozšírenie RAM…
+              Zatiaľ žiadne kartičky. Začni tými, čo predávaš najčastejšie, napríklad výmena disku za SSD, čistenie
+              notebooku, inštalácia Windows, antivírus, repasovaný počítač, rozšírenie RAM. Buď ich vypíš ručne, alebo
+              vlož hotovú textovú analýzu tlačidlom „Vložiť text“.
             </p>
           </Card>
         )}
@@ -144,7 +164,7 @@ export default function ProduktyPage() {
                   <div className="text-xs text-zinc-400">{p.reviewCount ? `${p.reviewCount}× skúšané` : ""}</div>
                 </button>
                 {open && (
-                  <div className="mt-3 space-y-2 border-t border-zinc-200 pt-3 dark:border-zinc-800">
+                  <div className="mt-3 space-y-3 border-t border-zinc-200 pt-3 dark:border-zinc-800">
                     <CardBody p={p} />
                     <div className="flex gap-3 text-xs">
                       <button type="button" onClick={() => setEditing(p)} className="font-medium text-indigo-600 hover:underline">
@@ -163,20 +183,31 @@ export default function ProduktyPage() {
   );
 }
 
+function fieldValue(p: Product, key: ProductFieldDef["key"]): string {
+  return String((p as unknown as Record<string, unknown>)[key] ?? "").trim();
+}
+
 function CardBody({ p }: { p: Product }) {
   return (
-    <div className="space-y-1.5 text-sm text-zinc-700 dark:text-zinc-300">
-      {FIELDS.map((f) =>
-        p[f.key] ? (
-          <p key={String(f.key)}>
-            <b>{f.label}</b> {String(p[f.key])}
-          </p>
-        ) : (
-          <p key={String(f.key)} className="text-zinc-400">
-            <b>{f.label}</b> — nevyplnené
-          </p>
-        )
-      )}
+    <div className="space-y-4 text-sm text-zinc-700 dark:text-zinc-300">
+      {PRODUCT_SECTIONS.map((section) => {
+        const filled = section.fields.filter((f) => fieldValue(p, f.key));
+        if (filled.length === 0) return null;
+        return (
+          <div key={section.id}>
+            <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+              {section.title}
+            </div>
+            <div className="space-y-1.5">
+              {filled.map((f) => (
+                <p key={String(f.key)} className="whitespace-pre-wrap">
+                  <b>{f.label}</b> {fieldValue(p, f.key)}
+                </p>
+              ))}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -208,23 +239,37 @@ function ProductForm({
   const set = (key: string, value: string) => setForm({ ...form, [key]: value });
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
           <Label>Produkt / služba</Label>
-          <Input value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="napr. Výmena HDD za SSD" />
+          <Input value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="napr. UV ochranná fólia" />
         </div>
         <div>
           <Label>Kategória (voliteľné)</Label>
           <Input value={form.category ?? ""} onChange={(e) => set("category", e.target.value)} placeholder="servis / notebooky / príslušenstvo…" />
         </div>
       </div>
-      {FIELDS.map((f) => (
-        <div key={String(f.key)}>
-          <Label>{f.label}</Label>
-          <TextArea rows={2} value={String(form[f.key as keyof typeof form] ?? "")} onChange={(e) => set(String(f.key), e.target.value)} placeholder={f.hint} />
+
+      {PRODUCT_SECTIONS.map((section) => (
+        <div key={section.id} className="space-y-3 border-t border-zinc-200 pt-3 dark:border-zinc-800">
+          <div className="text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+            {section.title}
+          </div>
+          {section.fields.map((f) => (
+            <div key={String(f.key)}>
+              <Label>{f.label}</Label>
+              <TextArea
+                rows={2}
+                value={String((form as Record<string, unknown>)[f.key] ?? "")}
+                onChange={(e) => set(String(f.key), e.target.value)}
+                placeholder={f.hint}
+              />
+            </div>
+          ))}
         </div>
       ))}
+
       <div className="flex gap-2">
         <Btn
           disabled={form.name.trim().length < 2}
@@ -238,6 +283,57 @@ function ProductForm({
           }
         >
           Uložiť kartičku
+        </Btn>
+        <Btn variant="ghost" onClick={onCancel}>
+          Zrušiť
+        </Btn>
+      </div>
+    </div>
+  );
+}
+
+function PasteForm({ onParsed, onCancel }: { onParsed: (p: Product) => void; onCancel: () => void }) {
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("");
+  const [text, setText] = useState("");
+
+  const process = () => {
+    const parsed = parseProductText(text);
+    const now = Date.now();
+    const product: Product = {
+      ...EMPTY,
+      ...parsed,
+      id: uid(),
+      name: name.trim(),
+      category: category.trim() || undefined,
+      updatedAt: now,
+    } as Product;
+    onParsed(product);
+  };
+
+  return (
+    <div className="space-y-3">
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        Vlož hotovú textovú analýzu produktu (napr. výstup z rozboru podľa otázok o produkte). Text sa pokúsi rozdeliť do
+        jednotlivých polí kartičky, výsledok si pred uložením skontroluješ a doplníš vo formulári.
+      </p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div>
+          <Label>Produkt / služba</Label>
+          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="napr. UV ochranná fólia" />
+        </div>
+        <div>
+          <Label>Kategória (voliteľné)</Label>
+          <Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="servis / notebooky / príslušenstvo…" />
+        </div>
+      </div>
+      <div>
+        <Label>Text analýzy</Label>
+        <TextArea rows={12} value={text} onChange={(e) => setText(e.target.value)} placeholder="Sem vlož celý text analýzy produktu…" />
+      </div>
+      <div className="flex gap-2">
+        <Btn disabled={name.trim().length < 2 || text.trim().length < 20} onClick={process}>
+          Spracovať a vyplniť kartičku
         </Btn>
         <Btn variant="ghost" onClick={onCancel}>
           Zrušiť

@@ -283,15 +283,15 @@ function ProductForm({
           <Label>Kategória (voliteľné)</Label>
           <Input value={form.category ?? ""} onChange={(e) => set("category", e.target.value)} placeholder="servis / notebooky / príslušenstvo…" />
         </div>
-      </div>
-      <div>
-        <Label>URL produktu (voliteľné)</Label>
-        <Input
-          value={form.url ?? ""}
-          onChange={(e) => set("url", e.target.value)}
-          placeholder="https://…"
-          type="url"
-        />
+        <div>
+          <Label>URL produktu (voliteľné)</Label>
+          <Input
+            value={form.url ?? ""}
+            onChange={(e) => set("url", e.target.value)}
+            placeholder="https://…"
+            type="url"
+          />
+        </div>
       </div>
 
       {PRODUCT_SECTIONS.map((section) => (
@@ -371,10 +371,10 @@ function PasteForm({ onParsed, onCancel }: { onParsed: (p: Product) => void; onC
           <Label>Kategória (voliteľné)</Label>
           <Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="servis / notebooky / príslušenstvo…" />
         </div>
-      </div>
-      <div>
-        <Label>URL produktu (voliteľné)</Label>
-        <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" type="url" />
+        <div>
+          <Label>URL produktu (voliteľné)</Label>
+          <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" type="url" />
+        </div>
       </div>
       <div>
         <Label>Text analýzy</Label>

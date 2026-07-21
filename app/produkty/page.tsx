@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useData } from "@/lib/useData";
 import { uid } from "@/lib/store";
-import { parseProductText } from "@/lib/productParser";
-import { PRODUCT_SECTIONS, type ProductFieldDef } from "@/content/productFields";
+import { parseProductText, stripMarkdown } from "@/lib/productParser";
+import { PRODUCT_SECTIONS, ALL_PRODUCT_FIELDS, type ProductFieldDef } from "@/content/productFields";
 import type { ProductCard as Product } from "@/lib/types";
 import { Btn, Card, Input, Label, SectionTitle, TextArea } from "@/components/ui";
 
@@ -166,10 +166,19 @@ export default function ProduktyPage() {
                 {open && (
                   <div className="mt-3 space-y-3 border-t border-zinc-200 pt-3 dark:border-zinc-800">
                     <CardBody p={p} />
-                    <div className="flex gap-3 text-xs">
+                    <div className="flex flex-wrap gap-3 text-xs">
                       <button type="button" onClick={() => setEditing(p)} className="font-medium text-indigo-600 hover:underline">
                         upraviť
                       </button>
+                      {hasMarkdownArtifacts(p) && (
+                        <button
+                          type="button"
+                          onClick={() => put("products", cleanProductMarkdown(p))}
+                          className="font-medium text-amber-600 hover:underline"
+                        >
+                          vyčistiť formátovanie
+                        </button>
+                      )}
                       <DeleteLink onDelete={() => remove("products", p.id)} />
                     </div>
                   </div>
@@ -185,6 +194,19 @@ export default function ProduktyPage() {
 
 function fieldValue(p: Product, key: ProductFieldDef["key"]): string {
   return String((p as unknown as Record<string, unknown>)[key] ?? "").trim();
+}
+
+function hasMarkdownArtifacts(p: Product): boolean {
+  return ALL_PRODUCT_FIELDS.some((f) => /\*\*|^#{1,6}\s/m.test(fieldValue(p, f.key)));
+}
+
+function cleanProductMarkdown(p: Product): Product {
+  const next = { ...p } as Record<string, unknown>;
+  for (const f of ALL_PRODUCT_FIELDS) {
+    const v = fieldValue(p, f.key);
+    if (v) next[f.key as string] = stripMarkdown(v);
+  }
+  return { ...next, updatedAt: Date.now() } as Product;
 }
 
 function CardBody({ p }: { p: Product }) {

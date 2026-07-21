@@ -62,9 +62,16 @@ function bestFieldMatch(headingText: string, fields: ProductFieldDef[]): string 
 
 const INLINE_LABEL = /^\*\*([^*]{1,80})\*\*:?\s*(.*)$/;
 
-// Odstráni markdown zvýraznenie (**tučné**), nech sa v uloženom texte nezobrazujú hviezdičky.
-function stripMarkdown(s: string): string {
-  return s.replace(/\*\*/g, "").trim();
+// Odstráni markdown zvýraznenie (**tučné**, ## nadpisy), nech sa v uloženom texte
+// nezobrazujú hviezdičky ani krížiky. Používa sa pri parsovaní aj na dodatočné
+// vyčistenie už uložených kartičiek (tlačidlo "vyčistiť formátovanie").
+export function stripMarkdown(s: string): string {
+  return s
+    .split("\n")
+    .map((line) => line.replace(/^#{1,6}\s*/, ""))
+    .join("\n")
+    .replace(/\*\*/g, "")
+    .trim();
 }
 
 export function parseProductText(raw: string): Record<string, string> {

@@ -15,6 +15,7 @@ interface TrainItem {
   uznaj?: string;
   zisti?: string;
   odpovedz?: string;
+  hlbka?: string;
   custom?: boolean;
 }
 
@@ -65,6 +66,7 @@ export default function NamietkyPage() {
   const [filter, setFilter] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
+  const [revealDeep, setRevealDeep] = useState(false);
 
   if (!ready) return null;
 
@@ -73,6 +75,7 @@ export default function NamietkyPage() {
     setAnswer("");
     setRevealed(false);
     setDoneMsg(false);
+    setRevealDeep(false);
   };
 
   const rate = (rating: 1 | 2 | 3) => {
@@ -150,7 +153,23 @@ export default function NamietkyPage() {
                     </p>
                   )}
                   {!current.meaning && !current.odpovedz && (
-                    <p className="text-zinc-500">K tejto vlastnej námietke zatiaľ nemáš rozbor — doplň si ho v zozname nižšie.</p>
+                    <p className="text-zinc-500">K tejto vlastnej námietke zatiaľ nemáš rozbor, doplň si ho v zozname nižšie.</p>
+                  )}
+                  {current.hlbka && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setRevealDeep(!revealDeep)}
+                        className="text-xs font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+                      >
+                        {revealDeep ? "skryť hĺbkový rozbor" : "chcem ísť viac do hĺbky"}
+                      </button>
+                      {revealDeep && (
+                        <p className="border-t border-zinc-200 pt-2 leading-relaxed text-zinc-600 dark:border-zinc-800 dark:text-zinc-300">
+                          {current.hlbka}
+                        </p>
+                      )}
+                    </>
                   )}
                 </div>
                 {!doneMsg ? (
@@ -163,7 +182,7 @@ export default function NamietkyPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-sm text-emerald-600">Uložené — ďalšia ide…</div>
+                  <div className="text-sm text-emerald-600">Uložené, ďalšia ide…</div>
                 )}
               </div>
             )}
@@ -210,6 +229,11 @@ export default function NamietkyPage() {
                     {i.uznaj && <p><b>1 · Uznaj:</b> {i.uznaj}</p>}
                     {i.zisti && <p><b>2 · Zisti:</b> {i.zisti}</p>}
                     {i.odpovedz && <p><b>3 · Odpovedz:</b> {i.odpovedz}</p>}
+                    {i.hlbka && (
+                      <p className="border-t border-zinc-200 pt-1.5 leading-relaxed dark:border-zinc-800">
+                        <b>Do hĺbky:</b> {i.hlbka}
+                      </p>
+                    )}
                     {i.custom && (
                       <button type="button" onClick={() => remove("userObjections", i.id)} className="text-xs text-red-500 hover:underline">
                         zmazať vlastnú námietku

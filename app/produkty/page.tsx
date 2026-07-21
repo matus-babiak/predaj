@@ -11,6 +11,7 @@ import { Btn, Card, Input, Label, SectionTitle, TextArea } from "@/components/ui
 const EMPTY: Omit<Product, "id" | "updatedAt"> = {
   name: "",
   category: "",
+  url: "",
   who: "",
   when: "",
   whenNot: "",
@@ -212,6 +213,16 @@ function cleanProductMarkdown(p: Product): Product {
 function CardBody({ p }: { p: Product }) {
   return (
     <div className="space-y-4 text-sm text-zinc-700 dark:text-zinc-300">
+      {p.url && (
+        <a
+          href={p.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-[15px] font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+        >
+          🔗 Otvoriť produkt
+        </a>
+      )}
       {PRODUCT_SECTIONS.map((section) => {
         const filled = section.fields.filter((f) => fieldValue(p, f.key));
         if (filled.length === 0) return null;
@@ -273,6 +284,15 @@ function ProductForm({
           <Input value={form.category ?? ""} onChange={(e) => set("category", e.target.value)} placeholder="servis / notebooky / príslušenstvo…" />
         </div>
       </div>
+      <div>
+        <Label>URL produktu (voliteľné)</Label>
+        <Input
+          value={form.url ?? ""}
+          onChange={(e) => set("url", e.target.value)}
+          placeholder="https://…"
+          type="url"
+        />
+      </div>
 
       {PRODUCT_SECTIONS.map((section) => (
         <div key={section.id} className="space-y-3 border-t border-zinc-200 pt-3 dark:border-zinc-800">
@@ -318,6 +338,7 @@ function ProductForm({
 function PasteForm({ onParsed, onCancel }: { onParsed: (p: Product) => void; onCancel: () => void }) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
+  const [url, setUrl] = useState("");
   const [text, setText] = useState("");
 
   const process = () => {
@@ -329,6 +350,7 @@ function PasteForm({ onParsed, onCancel }: { onParsed: (p: Product) => void; onC
       id: uid(),
       name: name.trim(),
       category: category.trim() || undefined,
+      url: url.trim() || undefined,
       updatedAt: now,
     } as Product;
     onParsed(product);
@@ -349,6 +371,10 @@ function PasteForm({ onParsed, onCancel }: { onParsed: (p: Product) => void; onC
           <Label>Kategória (voliteľné)</Label>
           <Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="servis / notebooky / príslušenstvo…" />
         </div>
+      </div>
+      <div>
+        <Label>URL produktu (voliteľné)</Label>
+        <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" type="url" />
       </div>
       <div>
         <Label>Text analýzy</Label>

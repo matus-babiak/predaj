@@ -87,6 +87,7 @@ export interface ProductCard {
   id: string;
   name: string;
   category?: string;
+  url?: string; // odkaz na produkt (e-shop, výrobca)
 
   // Pochopenie produktu
   whatIs?: string; // čo produkt je

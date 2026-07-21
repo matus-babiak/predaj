@@ -217,13 +217,13 @@ function CardBody({ p }: { p: Product }) {
         if (filled.length === 0) return null;
         return (
           <div key={section.id}>
-            <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+            <div className="mb-1 text-[15px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
               {section.title}
             </div>
             <div className="space-y-2.5">
               {filled.map((f) => (
                 <div key={String(f.key)}>
-                  <div className="font-semibold">{f.label}</div>
+                  <div className="text-[15px] font-semibold">{f.label}</div>
                   <div className="whitespace-pre-wrap">{fieldValue(p, f.key)}</div>
                 </div>
               ))}

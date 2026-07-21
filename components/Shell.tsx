@@ -9,6 +9,7 @@ import type { Entry, Reflection } from "@/lib/types";
 
 const NAV = [
   { href: "/", label: "Dnes", icon: "☀️" },
+  { href: "/mindset", label: "Mindset", icon: "🧠" },
   { href: "/dennik", label: "Denník", icon: "📒" },
   { href: "/program", label: "Program", icon: "🧭" },
   { href: "/namietky", label: "Námietky", icon: "🥊" },

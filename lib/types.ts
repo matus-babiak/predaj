@@ -36,6 +36,14 @@ export interface Question {
   updatedAt: number;
 }
 
+// Vlastná myšlienka pridaná v záložke Mindset (mimo vstavanej banky myšlienok).
+export interface MyThought {
+  id: string;
+  ts: number;
+  text: string;
+  updatedAt: number;
+}
+
 export interface Reflection {
   id: string; // dátum YYYY-MM-DD
   date: string;
@@ -90,6 +98,7 @@ export interface Settings {
   id: "settings";
   customWants: string[];
   customFears: string[];
+  favoriteThoughts?: string[]; // id-čka obľúbených myšlienok z banky (záložka Mindset)
   updatedAt: number;
 }
 
@@ -103,6 +112,7 @@ export type Collections = {
   settings: Settings[];
   selfNotes: SelfNote[];
   questions: Question[];
+  myThoughts: MyThought[];
 };
 
 export const COLLECTION_NAMES = [
@@ -115,6 +125,7 @@ export const COLLECTION_NAMES = [
   "settings",
   "selfNotes",
   "questions",
+  "myThoughts",
 ] as const;
 
 export type CollectionName = (typeof COLLECTION_NAMES)[number];

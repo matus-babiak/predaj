@@ -13,6 +13,7 @@ import type {
   Settings,
   SelfNote,
   Question,
+  MyThought,
 } from "./types";
 import { dayKey } from "./gamify";
 
@@ -27,6 +28,7 @@ export function useData() {
   const products = db.products as ProductCard[];
   const selfNotes = ((db.selfNotes ?? []) as SelfNote[]).slice().sort((a, b) => b.ts - a.ts);
   const questions = ((db.questions ?? []) as Question[]).slice().sort((a, b) => b.ts - a.ts);
+  const myThoughts = ((db.myThoughts ?? []) as MyThought[]).slice().sort((a, b) => b.ts - a.ts);
 
   const progress: Progress =
     (db.progress[0] as Progress) ?? {
@@ -44,6 +46,7 @@ export function useData() {
       id: "settings",
       customWants: [],
       customFears: [],
+      favoriteThoughts: [],
       updatedAt: 0,
     };
 
@@ -65,6 +68,7 @@ export function useData() {
     products,
     selfNotes,
     questions,
+    myThoughts,
     progress,
     settings,
     daysInCurrentWeek,

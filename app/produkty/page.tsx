@@ -331,8 +331,11 @@ function PasteForm({ onParsed, onCancel }: { onParsed: (p: Product) => void; onC
         <Label>Text analýzy</Label>
         <TextArea rows={12} value={text} onChange={(e) => setText(e.target.value)} placeholder="Sem vlož celý text analýzy produktu…" />
       </div>
+      {text.trim().length > 0 && text.trim().length < 20 && (
+        <p className="text-xs text-amber-600 dark:text-amber-400">Text je zatiaľ príliš krátky na spracovanie.</p>
+      )}
       <div className="flex gap-2">
-        <Btn disabled={name.trim().length < 2 || text.trim().length < 20} onClick={process}>
+        <Btn disabled={text.trim().length < 20} onClick={process}>
           Spracovať a vyplniť kartičku
         </Btn>
         <Btn variant="ghost" onClick={onCancel}>

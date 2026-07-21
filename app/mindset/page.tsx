@@ -1,6 +1,6 @@
 "use client";
 
-// Mindset — banka myšlienok o predaji na nakopnutie správneho nastavenia hlavy,
+// Mindset: banka myšlienok o predaji na nakopnutie správneho nastavenia hlavy,
 // plus vlastné myšlienky, ktoré si používateľ postupne pridáva.
 
 import { useMemo, useState } from "react";
@@ -62,7 +62,7 @@ export default function MindsetPage() {
       <div>
         <h1 className="text-2xl font-semibold">🧠 Mindset</h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Myšlienky, ktoré ti pomôžu naladiť hlavu na predaj — a miesto na tie vlastné.
+          Myšlienky, ktoré ti pomôžu naladiť hlavu na predaj, a miesto na tie vlastné.
         </p>
       </div>
 
@@ -72,6 +72,9 @@ export default function MindsetPage() {
         <p className="text-lg font-medium leading-relaxed text-zinc-800 dark:text-zinc-100">
           „{quoteOfDay.text}“
         </p>
+        {quoteOfDay.author && (
+          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">{quoteOfDay.author}</p>
+        )}
       </Card>
 
       {/* Vlastné myšlienky */}
@@ -148,7 +151,10 @@ function ThoughtCard({ t, fav, onToggleFav }: { t: Thought; fav: boolean; onTogg
   return (
     <Card className="!p-3">
       <div className="flex items-start justify-between gap-3">
-        <p className="text-sm text-zinc-800 dark:text-zinc-200">„{t.text}“</p>
+        <div>
+          <p className="text-sm text-zinc-800 dark:text-zinc-200">„{t.text}“</p>
+          {t.author && <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">{t.author}</p>}
+        </div>
         <button
           type="button"
           onClick={onToggleFav}

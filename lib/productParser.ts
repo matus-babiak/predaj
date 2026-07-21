@@ -62,14 +62,21 @@ function bestFieldMatch(headingText: string, fields: ProductFieldDef[]): string 
 
 const INLINE_LABEL = /^\*\*([^*]{1,80})\*\*:?\s*(.*)$/;
 
+// Odstráni markdown zvýraznenie (**tučné**), nech sa v uloženom texte nezobrazujú hviezdičky.
+function stripMarkdown(s: string): string {
+  return s.replace(/\*\*/g, "").trim();
+}
+
 export function parseProductText(raw: string): Record<string, string> {
   const lines = raw.split(/\r?\n/);
   const buckets: Record<string, string[]> = {};
   let currentKey: string | null = null;
 
   const push = (key: string, text: string) => {
+    const clean = stripMarkdown(text);
+    if (!clean) return;
     if (!buckets[key]) buckets[key] = [];
-    buckets[key].push(text);
+    buckets[key].push(clean);
   };
 
   for (const rawLine of lines) {

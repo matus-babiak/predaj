@@ -198,11 +198,12 @@ function CardBody({ p }: { p: Product }) {
             <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
               {section.title}
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-2.5">
               {filled.map((f) => (
-                <p key={String(f.key)} className="whitespace-pre-wrap">
-                  <b>{f.label}</b> {fieldValue(p, f.key)}
-                </p>
+                <div key={String(f.key)}>
+                  <div className="font-semibold">{f.label}</div>
+                  <div className="whitespace-pre-wrap">{fieldValue(p, f.key)}</div>
+                </div>
               ))}
             </div>
           </div>

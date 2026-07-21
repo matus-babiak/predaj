@@ -26,6 +26,8 @@ export default function MindsetPage() {
   const [filter, setFilter] = useState<string | null>(null);
   const [onlyFavorites, setOnlyFavorites] = useState(false);
   const [text, setText] = useState("");
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [dayOpen, setDayOpen] = useState(false);
 
   const quoteOfDay = useMemo(() => THOUGHTS[dayIndex() % THOUGHTS.length], []);
 
@@ -69,11 +71,27 @@ export default function MindsetPage() {
       {/* Myšlienka dňa */}
       <Card className="border-indigo-200 bg-indigo-50/60 dark:border-indigo-900 dark:bg-indigo-950/30">
         <SectionTitle>Myšlienka dňa</SectionTitle>
-        <p className="text-lg font-medium leading-relaxed text-zinc-800 dark:text-zinc-100">
-          „{quoteOfDay.text}“
-        </p>
-        {quoteOfDay.author && (
-          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">{quoteOfDay.author}</p>
+        <button type="button" className="w-full text-left" onClick={() => setDayOpen(!dayOpen)}>
+          <p className="text-lg font-medium leading-relaxed text-zinc-800 dark:text-zinc-100">
+            „{quoteOfDay.text}“
+          </p>
+          {quoteOfDay.author && (
+            <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">{quoteOfDay.author}</p>
+          )}
+        </button>
+        {dayOpen && quoteOfDay.detail && (
+          <p className="mt-3 border-t border-indigo-200 pt-3 text-sm leading-relaxed text-zinc-600 dark:border-indigo-900 dark:text-zinc-300">
+            {quoteOfDay.detail}
+          </p>
+        )}
+        {quoteOfDay.detail && (
+          <button
+            type="button"
+            onClick={() => setDayOpen(!dayOpen)}
+            className="mt-2 text-xs font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+          >
+            {dayOpen ? "menej" : "viac do hĺbky"}
+          </button>
         )}
       </Card>
 
@@ -139,7 +157,16 @@ export default function MindsetPage() {
           {list.length === 0 ? (
             <p className="text-sm text-zinc-400 dark:text-zinc-500">Žiadne myšlienky v tomto filtri.</p>
           ) : (
-            list.map((t) => <ThoughtCard key={t.id} t={t} fav={isFavorite(t.id)} onToggleFav={() => toggleFavorite(t.id)} />)
+            list.map((t) => (
+              <ThoughtCard
+                key={t.id}
+                t={t}
+                fav={isFavorite(t.id)}
+                onToggleFav={() => toggleFavorite(t.id)}
+                open={openId === t.id}
+                onToggleOpen={() => setOpenId(openId === t.id ? null : t.id)}
+              />
+            ))
           )}
         </div>
       </div>
@@ -147,23 +174,43 @@ export default function MindsetPage() {
   );
 }
 
-function ThoughtCard({ t, fav, onToggleFav }: { t: Thought; fav: boolean; onToggleFav: () => void }) {
+function ThoughtCard({
+  t,
+  fav,
+  onToggleFav,
+  open,
+  onToggleOpen,
+}: {
+  t: Thought;
+  fav: boolean;
+  onToggleFav: () => void;
+  open: boolean;
+  onToggleOpen: () => void;
+}) {
   return (
     <Card className="!p-3">
       <div className="flex items-start justify-between gap-3">
-        <div>
+        <button type="button" className="flex-1 text-left" onClick={onToggleOpen}>
           <p className="text-sm text-zinc-800 dark:text-zinc-200">„{t.text}“</p>
           {t.author && <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">{t.author}</p>}
-        </div>
+        </button>
         <button
           type="button"
-          onClick={onToggleFav}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFav();
+          }}
           aria-label={fav ? "Odobrať z obľúbených" : "Pridať medzi obľúbené"}
           className={`shrink-0 text-lg ${fav ? "text-amber-500" : "text-zinc-300 hover:text-amber-400 dark:text-zinc-600"}`}
         >
           {fav ? "★" : "☆"}
         </button>
       </div>
+      {open && t.detail && (
+        <p className="mt-3 border-t border-zinc-200 pt-3 text-sm leading-relaxed text-zinc-600 dark:border-zinc-800 dark:text-zinc-300">
+          {t.detail}
+        </p>
+      )}
     </Card>
   );
 }

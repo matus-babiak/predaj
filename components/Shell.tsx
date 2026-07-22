@@ -107,7 +107,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         {footer}
       </aside>
 
-      <main className="mx-auto w-full max-w-3xl flex-1 p-4 pb-24 md:p-8">{children}</main>
+      <main className="mx-auto w-full max-w-3xl flex-1 p-4 pb-24 md:max-w-none md:p-8">{children}</main>
     </div>
   );
 }

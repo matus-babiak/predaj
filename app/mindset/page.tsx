@@ -72,7 +72,7 @@ export default function MindsetPage() {
       <Card className="border-indigo-200 bg-indigo-50/60 dark:border-indigo-900 dark:bg-indigo-950/30">
         <SectionTitle>Myšlienka dňa</SectionTitle>
         <button type="button" className="w-full text-left" onClick={() => setDayOpen(!dayOpen)}>
-          <p className="text-lg font-medium leading-relaxed text-zinc-800 dark:text-zinc-100">
+          <p className="text-[17px] font-medium leading-relaxed text-zinc-800 md:text-[19px] dark:text-zinc-100">
             „{quoteOfDay.text}“
           </p>
           {quoteOfDay.author && (
@@ -191,7 +191,7 @@ function ThoughtCard({
     <Card className="!p-3">
       <div className="flex items-start justify-between gap-3">
         <button type="button" className="flex-1 text-left" onClick={onToggleOpen}>
-          <p className="text-sm text-zinc-800 dark:text-zinc-200">„{t.text}“</p>
+          <p className="text-[17px] leading-relaxed text-zinc-800 md:text-[19px] dark:text-zinc-200">„{t.text}“</p>
           {t.author && <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">{t.author}</p>}
         </button>
         <button

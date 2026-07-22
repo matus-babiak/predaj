@@ -33,7 +33,7 @@ export default function TodayPage() {
 
       {week && (
         <Card className="border-indigo-200 bg-indigo-50/60 dark:border-indigo-900 dark:bg-indigo-950/30">
-          <SectionTitle>Dnešná úloha — {week.title}</SectionTitle>
+          <SectionTitle>Dnešná úloha: {week.title}</SectionTitle>
           <p className="text-[15px] leading-relaxed">
             <RichText text={week.task} />
           </p>
@@ -53,7 +53,7 @@ export default function TodayPage() {
             <div className="mt-2 font-semibold">Rýchly záznam</div>
             <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
               {todayEntries.length === 0
-                ? "Zatiaľ žiadny zákazník — začni prvým."
+                ? "Zatiaľ žiadny zákazník, začni prvým."
                 : `Dnes: ${todayEntries.length} ${todayEntries.length === 1 ? "zákazník" : todayEntries.length < 5 ? "zákazníci" : "zákazníkov"}.`}
             </p>
           </Card>

@@ -1,6 +1,6 @@
 "use client";
 
-// Plusy a mínusy — prehľad sebahodnotení (SW analýza).
+// Plusy a mínusy, prehľad sebahodnotení (SW analýza).
 // Zbiera plusy/mínusy zo záznamov v denníku + samostatne pridané položky.
 
 import { useState } from "react";
@@ -15,7 +15,7 @@ interface SwItem {
   ts: number;
   text: string;
   fromDiary: boolean;
-  noteId?: string; // id v selfNotes — len samostatné položky (dajú sa zmazať)
+  noteId?: string; // id v selfNotes, len samostatné položky (dajú sa zmazať)
 }
 
 function formatDay(ts: number): string {
@@ -65,7 +65,7 @@ export default function PlusyMinusyPage() {
         </p>
       </div>
 
-      {/* Mobilné taby — na desktope sú stĺpce vedľa seba, taby netreba */}
+      {/* Mobilné taby, na desktope sú stĺpce vedľa seba, taby netreba */}
       <div className="grid grid-cols-2 gap-2 md:hidden">
         <button
           type="button"
@@ -94,7 +94,7 @@ export default function PlusyMinusyPage() {
       <div className="grid gap-6 md:grid-cols-2 md:items-start">
         <div className={tab === "plus" ? "" : "hidden md:block"}>
           <SwColumn
-            title={`➕ Plusy — čo robím dobre (${pluses.length})`}
+            title={`➕ Plusy, čo robím dobre (${pluses.length})`}
             tone="plus"
             items={pluses}
             placeholder="napr. viem počúvať, čo zákazník naozaj potrebuje"
@@ -104,7 +104,7 @@ export default function PlusyMinusyPage() {
         </div>
         <div className={tab === "minus" ? "" : "hidden md:block"}>
           <SwColumn
-            title={`➖ Mínusy — čo mám zlepšiť (${minuses.length})`}
+            title={`➖ Mínusy, čo mám zlepšiť (${minuses.length})`}
             tone="minus"
             items={minuses}
             placeholder="napr. príliš rýchlo prechádzam k cene"
@@ -116,7 +116,7 @@ export default function PlusyMinusyPage() {
 
       {pluses.length === 0 && minuses.length === 0 && (
         <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          Zatiaľ tu nič nie je. Pri každom zázname v denníku vyplň „Moje plus“ a „Moje mínus“ — alebo pridaj
+          Zatiaľ tu nič nie je. Pri každom zázname v denníku vyplň „Moje plus“ a „Moje mínus“, alebo pridaj
           položku rovno tu hore.
         </p>
       )}

@@ -195,11 +195,11 @@ export default function DennikPage() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <Label>➕ Moje plus — čo som urobil dobre?</Label>
+              <Label>➕ Moje plus, čo som urobil dobre?</Label>
               <Input value={plus} onChange={(e) => setPlus(e.target.value)} placeholder="napr. pýtal som sa na potrebu skôr než na rozpočet" />
             </div>
             <div>
-              <Label>➖ Moje mínus — čo nabudúce inak?</Label>
+              <Label>➖ Moje mínus, čo nabudúce inak?</Label>
               <Input value={minus} onChange={(e) => setMinus(e.target.value)} placeholder="napr. skočil som mu do reči pri námietke" />
             </div>
           </div>
@@ -244,9 +244,9 @@ export default function DennikPage() {
       <Card className="scroll-mt-20" >
         <div id="reflexia" className="scroll-mt-24" />
         <SectionTitle>
-          Večerná reflexia — {new Date().toLocaleDateString("sk-SK", { day: "numeric", month: "long" })}
+          Večerná reflexia, {new Date().toLocaleDateString("sk-SK", { day: "numeric", month: "long" })}
         </SectionTitle>
-        {existing && <p className="mb-3 text-sm text-emerald-600">Dnešná reflexia je uložená — môžeš ju doplniť.</p>}
+        {existing && <p className="mb-3 text-sm text-emerald-600">Dnešná reflexia je uložená, môžeš ju doplniť.</p>}
         <div className="space-y-4">
           {(week?.reflection ?? []).map((q) => (
             <div key={q}>

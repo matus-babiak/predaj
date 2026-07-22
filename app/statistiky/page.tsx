@@ -78,7 +78,7 @@ export default function StatistikyPage() {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Záznamov" value={String(entries.length)} />
         <Stat label="Dní so zápisom" value={String(days.size)} />
-        <Stat label="Séria" value={s > 0 ? `🔥 ${s}` : "—"} />
+        <Stat label="Séria" value={s > 0 ? `🔥 ${s}` : "-"} />
         <Stat label="Námietok natrénovaných" value={String(objAttempts.length)} />
       </div>
 
@@ -90,11 +90,11 @@ export default function StatistikyPage() {
           <div className="font-medium">Tento</div>
           <div className="font-medium text-zinc-500">Minulý</div>
           <CompareRow label="Zákazníci" a={String(thisWeek.total)} b={String(lastWeek.total)} />
-          <CompareRow label="Kúpili" a={thisWeek.boughtPct !== null ? `${thisWeek.boughtPct} %` : "—"} b={lastWeek.boughtPct !== null ? `${lastWeek.boughtPct} %` : "—"} />
-          <CompareRow label="Priem. dôvera" a={thisWeek.trust ?? "—"} b={lastWeek.trust ?? "—"} />
+          <CompareRow label="Kúpili" a={thisWeek.boughtPct !== null ? `${thisWeek.boughtPct} %` : "-"} b={lastWeek.boughtPct !== null ? `${lastWeek.boughtPct} %` : "-"} />
+          <CompareRow label="Priem. dôvera" a={thisWeek.trust ?? "-"} b={lastWeek.trust ?? "-"} />
         </div>
         <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
-          Nehodnoť sa známkou — hľadaj vzorec. Čo sa tento týždeň naučím?
+          Nehodnoť sa známkou, hľadaj vzorec. Čo sa tento týždeň naučím?
         </p>
       </Card>
 
@@ -103,7 +103,7 @@ export default function StatistikyPage() {
         <Card>
           <SectionTitle>Trend dôvery (denný priemer)</SectionTitle>
           <Sparkline data={trustSeries} min={1} max={5} />
-          <p className="mt-2 text-xs text-zinc-500">Posledných {trustSeries.length} dní so záznamom · škála 1–5</p>
+          <p className="mt-2 text-xs text-zinc-500">Posledných {trustSeries.length} dní so záznamom · škála 1-5</p>
         </Card>
       )}
 
@@ -151,7 +151,7 @@ export default function StatistikyPage() {
               </li>
             ))}
           </ul>
-          <p className="mt-2 text-xs text-zinc-500">Tréning ti ich bude ponúkať častejšie — presne ako slabšiu partiu v posilňovni.</p>
+          <p className="mt-2 text-xs text-zinc-500">Tréning ti ich bude ponúkať častejšie, presne ako slabšiu partiu v posilňovni.</p>
         </Card>
       )}
 

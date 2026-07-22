@@ -1,4 +1,4 @@
-// Predvolené čipy pre rýchly záznam — skutočné potreby a obavy zákazníkov.
+// Predvolené čipy pre rýchly záznam, skutočné potreby a obavy zákazníkov.
 // Vlastné čipy si používateľ pridáva v appke; často používané sa radia dopredu.
 
 export const DEFAULT_WANTS = [
@@ -8,7 +8,7 @@ export const DEFAULT_WANTS = [
   "najlacnejšiu možnosť",
   "kvalitu na dlhé roky",
   "byť vypočutý",
-  "pokoj — nech to len funguje",
+  "pokoj, nech to len funguje",
   "neprísť o dáta",
 ];
 

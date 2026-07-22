@@ -1,5 +1,5 @@
 // Serverové úložisko dát.
-// Produkcia (Vercel): Upstash Redis cez REST API — env premenné
+// Produkcia (Vercel): Upstash Redis cez REST API, env premenné
 //   UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN (alebo KV_REST_API_URL/KV_REST_API_TOKEN).
 // Lokálny vývoj bez Redisu: dáta sa ukladajú do súboru .data.json.
 
@@ -24,7 +24,7 @@ async function redisPipeline(commands: string[][]): Promise<unknown[]> {
   return data.map((d) => d.result);
 }
 
-// HGETALL vracia pole [field, value, field, value, ...]
+// HGETALL vracia pole [field, value, field, value...]
 function parseHash(flat: unknown): Item[] {
   if (!Array.isArray(flat)) return [];
   const items: Item[] = [];

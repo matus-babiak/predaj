@@ -1,6 +1,6 @@
 "use client";
 
-// Otázky — banka otázok, ktoré chcem zodpovedať.
+// Otázky, banka otázok, ktoré chcem zodpovedať.
 // Nová otázka čaká medzi otvorenými; po napísaní odpovede sa presunie
 // medzi zodpovedané, kde sa dá odpoveď kedykoľvek prečítať aj upraviť.
 
@@ -51,7 +51,7 @@ export default function OtazkyPage() {
         <h1 className="text-2xl font-semibold">Otázky</h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           Zoznam otázok, na ktoré si chceš nájsť odpoveď. Keď odpoveď máš, napíš ju a otázka sa presunie
-          medzi zodpovedané — kedykoľvek sa k nej vieš vrátiť.
+          medzi zodpovedané, kedykoľvek sa k nej vieš vrátiť.
         </p>
       </div>
 
@@ -74,7 +74,7 @@ export default function OtazkyPage() {
         </form>
       </Card>
 
-      {/* Mobilné taby — na desktope sú stĺpce vedľa seba, taby netreba */}
+      {/* Mobilné taby, na desktope sú stĺpce vedľa seba, taby netreba */}
       <div className="grid grid-cols-2 gap-2 md:hidden">
         <button
           type="button"
@@ -107,7 +107,7 @@ export default function OtazkyPage() {
               ❓ Otvorené ({open.length})
             </h2>
             {open.length === 0 ? (
-              <p className="text-sm text-zinc-400 dark:text-zinc-500">Žiadne otvorené otázky — pridaj si novú hore.</p>
+              <p className="text-sm text-zinc-400 dark:text-zinc-500">Žiadne otvorené otázky, pridaj si novú hore.</p>
             ) : (
               <ul className="space-y-2">
                 {open.map((q) => (

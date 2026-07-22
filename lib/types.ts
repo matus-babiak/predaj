@@ -9,7 +9,7 @@ export interface Entry {
   want?: string; // čo podľa mňa chcel (skutočná potreba)
   fear?: string; // čoho sa bál
   why?: string; // prečo kúpil / nekúpil
-  trust?: number; // 1–5: nakoľko vznikla dôvera
+  trust?: number; // 1-5: nakoľko vznikla dôvera
   objection?: string; // námietka, ktorá padla
   note?: string; // poznámka na večer
   plus?: string; // sebahodnotenie: čo som urobil dobre
@@ -17,7 +17,7 @@ export interface Entry {
   updatedAt: number;
 }
 
-// Samostatne pridané plus/mínus (mimo záznamu z predaja) — stránka Plusy a mínusy.
+// Samostatne pridané plus/mínus (mimo záznamu z predaja), stránka Plusy a mínusy.
 export interface SelfNote {
   id: string;
   ts: number;
@@ -56,7 +56,7 @@ export interface Reflection {
 export interface Progress {
   id: "progress";
   startedAt: number;
-  currentWeek: number; // 1–12
+  currentWeek: number; // 1-12
   completedWeeks: number[];
   readLessons: string[]; // id týždňov s prečítanou lekciou
   weekStarts: Record<string, number>; // číslo týždňa -> kedy bol odomknutý

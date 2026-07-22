@@ -23,7 +23,7 @@ const SYNC_LABEL = {
   loading: { dot: "bg-zinc-400", text: "Načítavam…" },
   synced: { dot: "bg-emerald-500", text: "Uložené" },
   pending: { dot: "bg-amber-500", text: "Ukladám…" },
-  offline: { dot: "bg-red-500", text: "Offline — uložené v zariadení" },
+  offline: { dot: "bg-red-500", text: "Offline, uložené v zariadení" },
 };
 
 export default function Shell({ children }: { children: React.ReactNode }) {

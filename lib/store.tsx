@@ -31,7 +31,7 @@ interface StoreCtx {
 const CACHE_KEY = "cp_cache_v1";
 const QUEUE_KEY = "cp_queue_v1";
 
-// Presmerovanie na login len mimo login stránky — inak by sa /login
+// Presmerovanie na login len mimo login stránky, inak by sa /login
 // pri každom 401 donekonečna obnovovala.
 function redirectToLogin() {
   if (window.location.pathname !== "/login") window.location.href = "/login";
@@ -122,7 +122,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setDb(cached);
     setReady(true);
 
-    // Na /login sa dáta nesynchronizujú — stránka je pre neprihláseného
+    // Na /login sa dáta nesynchronizujú, stránka je pre neprihláseného
     // a fetch by aj tak skončil 401.
     if (window.location.pathname === "/login") {
       setSync("synced");

@@ -41,7 +41,7 @@ export default function ProgramPage() {
       <div>
         <h1 className="text-2xl font-semibold">12-týždňový program</h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Ideš vlastným tempom — ďalší týždeň sa odomkne, keď dokončíš aktuálny.
+          Ideš vlastným tempom, ďalší týždeň sa odomkne, keď dokončíš aktuálny.
         </p>
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
           <div className="h-full rounded-full bg-indigo-600 transition-all" style={{ width: `${(doneCount / 12) * 100}%` }} />
@@ -52,7 +52,7 @@ export default function ProgramPage() {
       {PHASES.map((phase) => (
         <div key={phase.num}>
           <SectionTitle>
-            Fáza {phase.num} — {phase.title}
+            Fáza {phase.num}, {phase.title}
           </SectionTitle>
           <p className="mb-3 -mt-2 text-sm text-zinc-500 dark:text-zinc-400">{phase.goal}</p>
           <div className="space-y-3">

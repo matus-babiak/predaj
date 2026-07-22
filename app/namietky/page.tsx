@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useData } from "@/lib/useData";
 import { uid } from "@/lib/store";
 import { OBJECTIONS, OBJECTION_CATEGORIES, type Objection } from "@/content/objections";
 import type { ObjAttempt, UserObjection } from "@/lib/types";
 import { Btn, Card, Input, Label, SectionTitle, TextArea } from "@/components/ui";
+import DeepLinkParam from "@/components/DeepLinkParam";
 
 interface TrainItem {
   id: string;
@@ -68,6 +69,12 @@ export default function NamietkyPage() {
   const [showAdd, setShowAdd] = useState(false);
   const [revealDeep, setRevealDeep] = useState(false);
 
+  useEffect(() => {
+    if (!openId) return;
+    const el = document.getElementById(`obj-${openId}`);
+    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [openId]);
+
   if (!ready) return null;
 
   const start = () => {
@@ -99,6 +106,14 @@ export default function NamietkyPage() {
 
   return (
     <div className="space-y-8">
+      <Suspense fallback={null}>
+        <DeepLinkParam
+          onValue={(id) => {
+            setFilter(null);
+            setOpenId(id);
+          }}
+        />
+      </Suspense>
       <div>
         <h1 className="text-2xl font-semibold">Námietky</h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
@@ -209,7 +224,7 @@ export default function NamietkyPage() {
             const s = stats(objAttempts, i.id);
             const open = openId === i.id;
             return (
-              <Card key={i.id} className="!p-3">
+              <Card key={i.id} id={`obj-${i.id}`} className="!p-3">
                 <button type="button" className="flex w-full items-center justify-between gap-2 text-left" onClick={() => setOpenId(open ? null : i.id)}>
                   <div className="text-sm font-medium">„{i.text}“</div>
                   <div className="shrink-0 text-xs text-zinc-500">

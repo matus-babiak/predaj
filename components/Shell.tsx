@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
 import { activeDays, streak } from "@/lib/gamify";
 import type { Entry, Reflection } from "@/lib/types";
+import SearchModal from "@/components/SearchModal";
 
 const NAV = [
   { href: "/", label: "Dnes", icon: "☀️" },
@@ -29,7 +30,29 @@ const SYNC_LABEL = {
 export default function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { db, sync } = useStore();
+
+  useEffect(() => {
+    if (pathname === "/login") return;
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+        return;
+      }
+      if (e.key === "/") {
+        const tag = (document.activeElement?.tagName ?? "").toLowerCase();
+        const editable = tag === "input" || tag === "textarea" || (document.activeElement as HTMLElement)?.isContentEditable;
+        if (!editable) {
+          e.preventDefault();
+          setSearchOpen(true);
+        }
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [pathname]);
 
   if (pathname === "/login") return <>{children}</>;
 
@@ -78,13 +101,22 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       {/* Mobilná horná lišta */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-zinc-200 bg-white/90 px-4 py-3 backdrop-blur md:hidden dark:border-zinc-800 dark:bg-zinc-950/90">
         <div className="font-semibold">🥋 Sales Dojo</div>
-        <button
-          onClick={() => setOpen(!open)}
-          aria-label="Menu"
-          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm dark:border-zinc-700"
-        >
-          {open ? "✕" : "☰"}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSearchOpen(true)}
+            aria-label="Hľadať"
+            className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm dark:border-zinc-700"
+          >
+            🔍
+          </button>
+          <button
+            onClick={() => setOpen(!open)}
+            aria-label="Menu"
+            className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm dark:border-zinc-700"
+          >
+            {open ? "✕" : "☰"}
+          </button>
+        </div>
       </header>
 
       {/* Mobilné menu */}
@@ -103,11 +135,22 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       {/* Desktop sidebar */}
       <aside className="hidden md:flex md:w-60 md:shrink-0 md:flex-col md:gap-4 md:border-r md:border-zinc-200 md:p-4 md:dark:border-zinc-800 md:sticky md:top-0 md:h-dvh">
         <div className="px-2 py-1 text-lg font-semibold">🥋 Sales Dojo</div>
+        <button
+          type="button"
+          onClick={() => setSearchOpen(true)}
+          className="flex items-center gap-2 rounded-xl border border-zinc-300 px-3 py-2 text-left text-sm text-zinc-500 hover:border-zinc-400 dark:border-zinc-700 dark:text-zinc-400"
+        >
+          <span aria-hidden>🔍</span>
+          Hľadať…
+          <span className="ml-auto rounded border border-zinc-300 px-1.5 py-0.5 text-[11px] text-zinc-400 dark:border-zinc-700">Ctrl K</span>
+        </button>
         {nav}
         {footer}
       </aside>
 
       <main className="mx-auto w-full max-w-3xl flex-1 p-4 pb-24 md:max-w-none md:p-8">{children}</main>
+
+      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );
 }

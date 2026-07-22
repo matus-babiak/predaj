@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useData } from "@/lib/useData";
 import { uid } from "@/lib/store";
 import { parseProductText, stripMarkdown } from "@/lib/productParser";
 import { PRODUCT_SECTIONS, ALL_PRODUCT_FIELDS, type ProductFieldDef } from "@/content/productFields";
 import type { ProductCard as Product } from "@/lib/types";
 import { Btn, Card, Input, Label, SectionTitle, TextArea } from "@/components/ui";
+import DeepLinkParam from "@/components/DeepLinkParam";
 
 const EMPTY: Omit<Product, "id" | "updatedAt"> = {
   name: "",
@@ -27,6 +28,12 @@ export default function ProduktyPage() {
   const [quiz, setQuiz] = useState<Product | null>(null);
   const [quizRevealed, setQuizRevealed] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!openId) return;
+    const el = document.getElementById(`product-${openId}`);
+    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [openId]);
 
   if (!ready) return null;
 
@@ -49,6 +56,17 @@ export default function ProduktyPage() {
 
   return (
     <div className="space-y-8">
+      <Suspense fallback={null}>
+        <DeepLinkParam
+          onValue={(id) => {
+            setCreating(false);
+            setEditing(null);
+            setPasting(false);
+            setQuiz(null);
+            setOpenId(id);
+          }}
+        />
+      </Suspense>
       <div>
         <h1 className="text-2xl font-semibold">Produkty</h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
@@ -156,7 +174,7 @@ export default function ProduktyPage() {
           {sorted.map((p) => {
             const open = openId === p.id;
             return (
-              <Card key={p.id} className="!p-3">
+              <Card key={p.id} id={`product-${p.id}`} className="!p-3">
                 <button type="button" className="flex w-full items-center justify-between gap-2 text-left" onClick={() => setOpenId(open ? null : p.id)}>
                   <div>
                     <div className="text-sm font-semibold">{p.name}</div>

@@ -3,12 +3,13 @@
 // Mindset: banka myšlienok o predaji na nakopnutie správneho nastavenia hlavy,
 // plus vlastné myšlienky, ktoré si používateľ postupne pridáva.
 
-import { useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useData } from "@/lib/useData";
 import { uid } from "@/lib/store";
 import { THOUGHTS, THOUGHT_CATEGORIES, type Thought } from "@/content/mindset";
 import type { MyThought, Settings } from "@/lib/types";
 import { Btn, Card, Input, SectionTitle } from "@/components/ui";
+import DeepLinkParam from "@/components/DeepLinkParam";
 
 function dayIndex(): number {
   const now = new Date();
@@ -28,8 +29,15 @@ export default function MindsetPage() {
   const [text, setText] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
   const [dayOpen, setDayOpen] = useState(false);
+  const [linkedId, setLinkedId] = useState<string | null>(null);
 
   const quoteOfDay = useMemo(() => THOUGHTS[dayIndex() % THOUGHTS.length], []);
+
+  useEffect(() => {
+    if (!linkedId) return;
+    const el = document.getElementById(`thought-${linkedId}`) || document.getElementById(`mythought-${linkedId}`);
+    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [linkedId, openId]);
 
   if (!ready) return null;
 
@@ -61,6 +69,18 @@ export default function MindsetPage() {
 
   return (
     <div className="space-y-8">
+      <Suspense fallback={null}>
+        <DeepLinkParam
+          onValue={(id) => {
+            if (THOUGHTS.some((t) => t.id === id)) {
+              setFilter(null);
+              setOnlyFavorites(false);
+              setOpenId(id);
+            }
+            setLinkedId(id);
+          }}
+        />
+      </Suspense>
       <div>
         <h1 className="text-2xl font-semibold">🧠 Mindset</h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
@@ -121,6 +141,7 @@ export default function MindsetPage() {
             {myThoughts.map((t) => (
               <li
                 key={t.id}
+                id={`mythought-${t.id}`}
                 className="flex items-start justify-between gap-3 rounded-xl border border-zinc-200 bg-white p-3 text-sm dark:border-zinc-800 dark:bg-zinc-900"
               >
                 <div>
@@ -188,7 +209,7 @@ function ThoughtCard({
   onToggleOpen: () => void;
 }) {
   return (
-    <Card className="!p-3">
+    <Card id={`thought-${t.id}`} className="!p-3">
       <div className="flex items-start justify-between gap-3">
         <button type="button" className="flex-1 text-left" onClick={onToggleOpen}>
           <p className="text-[17px] leading-relaxed text-zinc-800 md:text-[19px] dark:text-zinc-200">„{t.text}“</p>

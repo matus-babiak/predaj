@@ -5,9 +5,11 @@ import { useData } from "@/lib/useData";
 import { getWeek } from "@/content/program";
 import { Card, SectionTitle, RichText } from "@/components/ui";
 import { activeDays, streak, dayKey, computeBadges } from "@/lib/gamify";
+import { THOUGHTS } from "@/content/mindset";
+import { OBJECTIONS } from "@/content/objections";
 
 export default function TodayPage() {
-  const { entries, reflections, objAttempts, products, progress, ready } = useData();
+  const { entries, reflections, objAttempts, products, userObjections, settings, progress, ready } = useData();
   if (!ready) return null;
 
   const week = getWeek(progress.currentWeek);
@@ -20,6 +22,35 @@ export default function TodayPage() {
 
   const hour = new Date().getHours();
   const greeting = hour < 10 ? "Dobré ráno" : hour < 18 ? "Pekný deň" : "Dobrý večer";
+
+  const favoriteThoughts = (settings.favoriteThoughts ?? [])
+    .map((id) => THOUGHTS.find((t) => t.id === id))
+    .filter((t): t is (typeof THOUGHTS)[number] => !!t)
+    .slice(0, 3);
+
+  const topProducts = products
+    .filter((p) => (p.reviewCount ?? 0) > 0)
+    .sort((a, b) => (b.reviewCount ?? 0) - (a.reviewCount ?? 0) || (b.lastReviewed ?? 0) - (a.lastReviewed ?? 0))
+    .slice(0, 3);
+
+  const allObjections = [
+    ...OBJECTIONS.map((o) => ({ id: o.id, text: o.text })),
+    ...userObjections.map((o) => ({ id: o.id, text: o.text })),
+  ];
+  const seenObjectionIds = new Set<string>();
+  const recentObjections = objAttempts
+    .slice()
+    .sort((a, b) => b.ts - a.ts)
+    .filter((a) => {
+      if (seenObjectionIds.has(a.objectionId)) return false;
+      seenObjectionIds.add(a.objectionId);
+      return true;
+    })
+    .slice(0, 3)
+    .map((a) => allObjections.find((o) => o.id === a.objectionId))
+    .filter((o): o is { id: string; text: string } => !!o);
+
+  const hasQuickAccess = favoriteThoughts.length > 0 || topProducts.length > 0 || recentObjections.length > 0;
 
   return (
     <div className="space-y-6">
@@ -88,6 +119,56 @@ export default function TodayPage() {
           </Card>
         </Link>
       </div>
+
+      {hasQuickAccess && (
+        <div>
+          <SectionTitle>Rýchly prístup</SectionTitle>
+          <div className="space-y-4">
+            {favoriteThoughts.length > 0 && (
+              <div>
+                <div className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">⭐ Obľúbené myšlienky</div>
+                <div className="space-y-1.5">
+                  {favoriteThoughts.map((t) => (
+                    <Link key={t.id} href={`/mindset?q=${t.id}`}>
+                      <Card className="!p-3 transition-colors hover:border-indigo-400">
+                        <p className="truncate text-sm text-zinc-700 dark:text-zinc-300">„{t.text}“</p>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+            {topProducts.length > 0 && (
+              <div>
+                <div className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">🗂️ Najpoužívanejšie produkty</div>
+                <div className="space-y-1.5">
+                  {topProducts.map((p) => (
+                    <Link key={p.id} href={`/produkty?q=${p.id}`}>
+                      <Card className="!p-3 transition-colors hover:border-indigo-400">
+                        <p className="truncate text-sm font-medium text-zinc-700 dark:text-zinc-300">{p.name}</p>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+            {recentObjections.length > 0 && (
+              <div>
+                <div className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">🥊 Naposledy trénované námietky</div>
+                <div className="space-y-1.5">
+                  {recentObjections.map((o) => (
+                    <Link key={o.id} href={`/namietky?q=${o.id}`}>
+                      <Card className="!p-3 transition-colors hover:border-indigo-400">
+                        <p className="truncate text-sm text-zinc-700 dark:text-zinc-300">„{o.text}“</p>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {earned.length > 0 && (
         <div>

@@ -141,6 +141,9 @@ export interface Settings {
   customWants: string[];
   customFears: string[];
   favoriteThoughts?: string[]; // id-čka obľúbených myšlienok z banky (záložka Mindset)
+  swAiNote?: string; // AI komentár k plusom a mínusom (cache, negeneruje sa pri každom zobrazení)
+  swAiNoteAt?: number;
+  swAiNoteFingerprint?: string; // odtlačok vstupných dát, podľa ktorého sa pozná, či je komentár ešte platný
   updatedAt: number;
 }
 

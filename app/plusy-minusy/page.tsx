@@ -7,7 +7,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useData } from "@/lib/useData";
 import { uid } from "@/lib/store";
-import type { SelfNote } from "@/lib/types";
+import type { SelfNote, Settings } from "@/lib/types";
 import { Btn, Card, Input } from "@/components/ui";
 
 interface SwItem {
@@ -23,8 +23,10 @@ function formatDay(ts: number): string {
 }
 
 export default function PlusyMinusyPage() {
-  const { entries, selfNotes, put, remove, ready } = useData();
+  const { entries, selfNotes, settings, put, remove, ready } = useData();
   const [tab, setTab] = useState<"plus" | "minus">("plus");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(false);
 
   if (!ready) return null;
 
@@ -52,6 +54,38 @@ export default function PlusyMinusyPage() {
     put("selfNotes", note);
   };
 
+  const fingerprint = `${pluses.map((p) => p.text).join("|")}::${minuses.map((m) => m.text).join("|")}`;
+  const isStale = !!settings.swAiNote && settings.swAiNoteFingerprint !== fingerprint;
+
+  const fetchAiNote = async () => {
+    setAiLoading(true);
+    setAiError(false);
+    try {
+      const res = await fetch("/api/mentor/sw", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pluses: pluses.map((p) => p.text), minuses: minuses.map((m) => m.text) }),
+      });
+      const data = (await res.json()) as { text: string | null };
+      if (data.text) {
+        const next: Settings = {
+          ...settings,
+          swAiNote: data.text,
+          swAiNoteAt: Date.now(),
+          swAiNoteFingerprint: fingerprint,
+          updatedAt: Date.now(),
+        };
+        put("settings", next);
+      } else {
+        setAiError(true);
+      }
+    } catch {
+      setAiError(true);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -64,6 +98,16 @@ export default function PlusyMinusyPage() {
           a môžeš ich pridávať aj priamo tu.
         </p>
       </div>
+
+      <AiMentorCard
+        note={settings.swAiNote}
+        noteAt={settings.swAiNoteAt}
+        stale={isStale}
+        loading={aiLoading}
+        error={aiError}
+        hasData={pluses.length > 0 || minuses.length > 0}
+        onFetch={fetchAiNote}
+      />
 
       {/* Mobilné taby, na desktope sú stĺpce vedľa seba, taby netreba */}
       <div className="grid grid-cols-2 gap-2 md:hidden">
@@ -121,6 +165,57 @@ export default function PlusyMinusyPage() {
         </p>
       )}
     </div>
+  );
+}
+
+function AiMentorCard({
+  note,
+  noteAt,
+  stale,
+  loading,
+  error,
+  hasData,
+  onFetch,
+}: {
+  note?: string;
+  noteAt?: number;
+  stale: boolean;
+  loading: boolean;
+  error: boolean;
+  hasData: boolean;
+  onFetch: () => void;
+}) {
+  return (
+    <Card className="border-indigo-200 bg-indigo-50/60 dark:border-indigo-900 dark:bg-indigo-950/30">
+      <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-indigo-700 dark:text-indigo-400">
+        🧠 AI mentor
+      </h2>
+      {note && (
+        <p className="text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">{note}</p>
+      )}
+      {note && noteAt && (
+        <p className="mt-2 text-xs text-zinc-400 dark:text-zinc-500">
+          Naposledy {formatDay(noteAt)}
+          {stale && ", medzitým pribudli nové plusy/mínusy"}
+        </p>
+      )}
+      {!note && !loading && (
+        <p className="mb-3 text-sm text-zinc-500 dark:text-zinc-400">
+          Necháš si od AI mentora krátko okomentovať vzorce vo svojich plusoch a mínusoch.
+        </p>
+      )}
+      {error && (
+        <p className="mb-2 text-xs text-red-500">AI mentor momentálne nie je dostupný, skús to neskôr.</p>
+      )}
+      <Btn
+        variant={note ? "ghost" : "primary"}
+        onClick={onFetch}
+        disabled={loading || !hasData}
+        className={note ? "mt-3" : ""}
+      >
+        {loading ? "Analyzujem…" : note ? "Obnoviť komentár" : "Získať AI komentár"}
+      </Btn>
+    </Card>
   );
 }
 

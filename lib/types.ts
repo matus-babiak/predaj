@@ -151,6 +151,13 @@ export interface EntryDraft {
   minus?: string;
 }
 
+// Jedna kategória z AI hybrid štatistík (potreby / obavy zákazníkov).
+export interface StatsAiCategory {
+  label: string;
+  count: number;
+  examples?: string[];
+}
+
 export interface Settings {
   id: "settings";
   customWants: string[];
@@ -162,6 +169,12 @@ export interface Settings {
   mentorBriefing?: string; // týždenný AI briefing (plusy, mínusy, denník, záznamy)
   mentorBriefingAt?: number;
   mentorBriefingFingerprint?: string;
+  // AI hybrid prehľad potrieb a obáv na stránke Štatistiky
+  statsAiWants?: StatsAiCategory[];
+  statsAiFears?: StatsAiCategory[];
+  statsAiInsight?: string;
+  statsAiAt?: number;
+  statsAiFingerprint?: string;
   entryDraft?: EntryDraft;
   updatedAt: number;
 }

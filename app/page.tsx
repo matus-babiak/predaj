@@ -53,7 +53,7 @@ export default function TodayPage() {
   const hasQuickAccess = favoriteThoughts.length > 0 || topProducts.length > 0 || recentObjections.length > 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-semibold">{greeting}, Matúš 👋</h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
@@ -139,7 +139,7 @@ export default function TodayPage() {
               </div>
             )}
             {topProducts.length > 0 && (
-              <div>
+              <div className="pb-4">
                 <div className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">🗂️ Najpoužívanejšie produkty</div>
                 <div className="space-y-1.5">
                   {topProducts.map((p) => (

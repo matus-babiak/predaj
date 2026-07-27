@@ -116,9 +116,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="min-h-dvh md:flex">
+    <div className="min-h-dvh sm:flex">
       {/* Mobilná horná lišta */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-zinc-200 bg-white/90 px-4 py-3 backdrop-blur md:hidden dark:border-zinc-800 dark:bg-zinc-950/90">
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-zinc-200 bg-white/90 px-4 py-3 backdrop-blur sm:hidden dark:border-zinc-800 dark:bg-zinc-950/90">
         <div className="font-semibold">🥋 Sales Dojo</div>
         <div className="flex items-center gap-2">
           <button
@@ -140,7 +140,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
       {/* Mobilné menu */}
       {open && (
-        <div className="fixed inset-0 z-20 bg-black/30 md:hidden" onClick={() => setOpen(false)}>
+        <div className="fixed inset-0 z-20 bg-black/30 sm:hidden" onClick={() => setOpen(false)}>
           <div
             className="absolute top-[53px] left-0 right-0 flex flex-col gap-1 border-b border-zinc-200 bg-white p-4 shadow-lg dark:border-zinc-800 dark:bg-zinc-950"
             onClick={(e) => e.stopPropagation()}
@@ -152,7 +152,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex md:w-60 md:shrink-0 md:flex-col md:gap-4 md:border-r md:border-zinc-200 md:p-4 md:dark:border-zinc-800 md:sticky md:top-0 md:h-dvh">
+      <aside className="hidden sm:flex sm:w-60 sm:shrink-0 sm:flex-col sm:gap-4 sm:border-r sm:border-zinc-200 sm:p-4 sm:dark:border-zinc-800 sm:sticky sm:top-0 sm:h-dvh">
         <div className="px-2 py-1 text-lg font-semibold">🥋 Sales Dojo</div>
         <button
           type="button"
@@ -167,7 +167,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         {footer}
       </aside>
 
-      <main className="mx-auto w-full max-w-3xl flex-1 p-4 pb-24 md:max-w-none md:p-8">{children}</main>
+      <main className="mx-auto w-full max-w-3xl flex-1 p-4 pb-24 sm:max-w-none sm:p-8">{children}</main>
 
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
       <DesktopAutoLogout />

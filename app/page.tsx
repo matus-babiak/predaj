@@ -127,7 +127,7 @@ export default function TodayPage() {
             {favoriteThoughts.length > 0 && (
               <div className="pb-4">
                 <div className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">⭐ Obľúbené myšlienky</div>
-                <div className="space-y-1.5">
+                <div className="space-y-3">
                   {favoriteThoughts.map((t) => (
                     <Link key={t.id} href={`/mindset?q=${t.id}`}>
                       <Card className="!p-3 transition-colors hover:border-indigo-400">

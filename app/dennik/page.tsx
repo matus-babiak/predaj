@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useData } from "@/lib/useData";
 import { uid } from "@/lib/store";
 import { dayKey } from "@/lib/gamify";
@@ -17,14 +17,8 @@ const OUTCOMES: { id: Outcome; label: string; emoji: string }[] = [
   { id: "rada", label: "Len rada", emoji: "💬" },
 ];
 
-/** Predvolené čipy vždy prvé v pevnom poradí, vlastné čipy za nimi v poradí pridania. */
-function mergeChips(defaults: string[], custom: string[]): string[] {
-  const extra = custom.filter((c) => !defaults.includes(c));
-  return [...defaults, ...extra];
-}
-
 export default function DennikPage() {
-  const { entries, reflections, settings, progress, put, remove, ready } = useData();
+  const { entries, reflections, progress, put, remove, ready } = useData();
 
   // --- Rýchly záznam ---
   const [outcome, setOutcome] = useState<Outcome | null>(null);
@@ -38,9 +32,6 @@ export default function DennikPage() {
   const [minus, setMinus] = useState("");
   const [saved, setSaved] = useState(false);
   const [showMore, setShowMore] = useState(false);
-
-  const wantChips = useMemo(() => mergeChips(DEFAULT_WANTS, settings.customWants), [settings.customWants]);
-  const fearChips = useMemo(() => mergeChips(DEFAULT_FEARS, settings.customFears), [settings.customFears]);
 
   const saveEntry = () => {
     if (!outcome) return;
@@ -60,13 +51,6 @@ export default function DennikPage() {
       updatedAt: now,
     };
     put("entries", entry);
-    // vlastné čipy si zapamätáme
-    if (want.trim() && !wantChips.includes(want.trim())) {
-      put("settings", { ...settings, customWants: [...settings.customWants, want.trim()], updatedAt: now });
-    }
-    if (fear.trim() && !fearChips.includes(fear.trim())) {
-      put("settings", { ...settings, customFears: [...settings.customFears, fear.trim()], updatedAt: now });
-    }
     setOutcome(null);
     setWant("");
     setFear("");
@@ -145,7 +129,7 @@ export default function DennikPage() {
           <div>
             <Label>Čo podľa mňa naozaj chcel?</Label>
             <div className="mb-2 flex flex-wrap gap-1.5">
-              {wantChips.map((c) => (
+              {DEFAULT_WANTS.map((c) => (
                 <Chip key={c} label={c} active={want === c} onClick={() => setWant(want === c ? "" : c)} />
               ))}
             </div>
@@ -155,7 +139,7 @@ export default function DennikPage() {
           <div>
             <Label>Čoho sa bál?</Label>
             <div className="mb-2 flex flex-wrap gap-1.5">
-              {fearChips.map((c) => (
+              {DEFAULT_FEARS.map((c) => (
                 <Chip key={c} label={c} active={fear === c} onClick={() => setFear(fear === c ? "" : c)} />
               ))}
             </div>

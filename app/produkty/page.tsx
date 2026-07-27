@@ -163,9 +163,9 @@ export default function ProduktyPage() {
         {products.length === 0 && !formOpen && (
           <Card>
             <p className="text-sm text-zinc-600 dark:text-zinc-300">
-              Zatiaľ žiadne kartičky. Začni tými, čo predávaš najčastejšie, napríklad výmena disku za SSD, čistenie
-              notebooku, inštalácia Windows, antivírus, repasovaný počítač, rozšírenie RAM. Buď ich vypíš ručne, alebo
-              vlož hotovú textovú analýzu tlačidlom „Vložiť text“.
+              Zatiaľ žiadne kartičky. Začni tými, čo predávaš najčastejšie, napríklad výmena displeja, výmena
+              batérie, ochranné sklo, UV fólia, servis nabíjacieho konektora, nastavenie nového telefónu. Buď ich
+              vypíš ručne, alebo vlož hotovú textovú analýzu tlačidlom „Vložiť text“.
             </p>
           </Card>
         )}
@@ -299,7 +299,7 @@ function ProductForm({
         </div>
         <div>
           <Label>Kategória (voliteľné)</Label>
-          <Input value={form.category ?? ""} onChange={(e) => set("category", e.target.value)} placeholder="servis / notebooky / príslušenstvo…" />
+          <Input value={form.category ?? ""} onChange={(e) => set("category", e.target.value)} placeholder="servis / príslušenstvo / obaly a sklá…" />
         </div>
         <div>
           <Label>URL produktu (voliteľné)</Label>
@@ -387,7 +387,7 @@ function PasteForm({ onParsed, onCancel }: { onParsed: (p: Product) => void; onC
         </div>
         <div>
           <Label>Kategória (voliteľné)</Label>
-          <Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="servis / notebooky / príslušenstvo…" />
+          <Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="servis / príslušenstvo / obaly a sklá…" />
         </div>
         <div>
           <Label>URL produktu (voliteľné)</Label>

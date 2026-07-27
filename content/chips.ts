@@ -19,7 +19,7 @@ export const DEFAULT_FEARS = [
   "že kupuje zlú vec",
   "zlej skúsenosti z minulosti",
   "že to nebude fungovať",
-  "že sa bez počítača zasekne",
+  "že zostane bez telefónu",
   "nátlaku predajcu",
 ];
 

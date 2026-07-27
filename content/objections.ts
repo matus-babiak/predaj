@@ -1,4 +1,4 @@
-// Banka námietok: prostredie PC servisu, mobilného servisu a predajne elektroniky.
+// Banka námietok: prostredie mobilného servisu a predajne elektroniky.
 // Každá námietka má rozbor podľa princípu: uznaj, zisti, odpovedz, a navyše hĺbkový
 // rozbor (pole hlbka), ktorý sa zobrazí po rozkliknutí a ide viac do podstaty.
 // Vzorové odpovede sú princíp a inšpirácia, nie skript naspamäť.
@@ -50,9 +50,9 @@ export const OBJECTIONS: Objection[] = [
     uznaj: "„Dobrá úvaha, presne toto sa oplatí prepočítať.“",
     zisti: "„Ako dlho by ste chceli, aby vám ešte slúžil? A ako ste s ním inak spokojný?“",
     odpovedz:
-      "Poctivá kalkulácia: ak je stroj inak zdravý, oprava = zlomok ceny nového za ďalšie roky služby. Ak je na hrane životnosti, povedz to na rovinu a ponúkni alternatívy (repas, nový). Poctivosť tu buduje zákazníka na roky.",
+      "Poctivá kalkulácia: ak je telefón inak zdravý, oprava = zlomok ceny nového za ďalšie roky služby. Ak je na hrane životnosti, povedz to na rovinu a ponúkni alternatívy (repasovaný kus, nový). Poctivosť tu buduje zákazníka na roky.",
     hlbka:
-      "Tu ide o rozhodovanie medzi dvomi neistotami, koľko ešte vydrží opravené zariadenie a koľko stojí nový kus so všetkým, čo k nemu patrí, prenos dát, nastavenie, adaptácia. Pomôž zákazníkovi rátať s reálnymi číslami, nie len s cenovkou opravy verzus cenovkou nového kusu. Ak je stroj skutočne na hrane životnosti, čestné odporúčanie nového rieši dôveru na roky dopredu, aj keď v tú chvíľu prídeš o menší obchod.",
+      "Tu ide o rozhodovanie medzi dvomi neistotami, koľko ešte vydrží opravený telefón a koľko stojí nový kus so všetkým, čo k nemu patrí, prenos fotiek a kontaktov, nastavenie, adaptácia. Pomôž zákazníkovi rátať s reálnymi číslami, nie len s cenovkou opravy verzus cenovkou nového kusu. Ak je telefón skutočne na hrane životnosti, čestné odporúčanie nového rieši dôveru na roky dopredu, aj keď v tú chvíľu prídeš o menší obchod.",
   },
   {
     id: "o4",
@@ -115,9 +115,9 @@ export const OBJECTIONS: Objection[] = [
     uznaj: "„Rozumiem, nikto nechce kupovať mačku vo vreci.“",
     zisti: "„Čo si pod repasovaným predstavujete?“",
     odpovedz:
-      "Vysvetli rozdiel bazár vs. repas: firemné stroje, kontrola, vyčistenie, záruka. Hodnota: „Za polovičnú cenu máte strednú manažérsku triedu, kvalitnejšiu konštrukciu než nový lacný kus.“ A poctivo: komu sa repas nehodí, tomu ho neodporúčaj.",
+      "Vysvetli rozdiel bazár vs. repas: overený pôvod, testovaná batéria a displej, vymenené opotrebované časti, záruka. Hodnota: „Za polovičnú cenu máte model, ktorý by ste si na nový nedovolili, a prešiel kontrolou, nie je to len niekoho vyradený kus.“ A poctivo: komu sa repasovaný telefón nehodí, tomu ho neodporúčaj.",
     hlbka:
-      "V hlave zákazníka sa slovo repasovaný často spája s bazárom, nie s kontrolovaným procesom obnovy. Rozlož rozdiel na konkrétne kroky, kontrola, vyčistenie, výmena opotrebovaných častí, záruka, a porovnaj hodnotu za peniaze s novým lacným kusom v rovnakej cenovej hladine. Buď však úprimný aj o limitoch, nie každému sa repas hodí a poctivé odporučenie iného riešenia buduje dôveru viac než predaj za každú cenu.",
+      "V hlave zákazníka sa slovo repasovaný často spája s bazárom, nie s kontrolovaným procesom obnovy. Rozlož rozdiel na konkrétne kroky, kontrola batérie a displeja, vyčistenie, výmena opotrebovaných častí, záruka, a porovnaj hodnotu za peniaze s novým lacným modelom v rovnakej cenovej hladine. Buď však úprimný aj o limitoch, nie každému sa repasovaný telefón hodí a poctivé odporučenie iného riešenia buduje dôveru viac než predaj za každú cenu.",
   },
   {
     id: "o9",
@@ -134,42 +134,42 @@ export const OBJECTIONS: Objection[] = [
   },
   {
     id: "o10",
-    text: "Windows mi nainštaluje známy zadarmo.",
+    text: "Nový telefón mi nastaví a dáta prenesie kamarát zadarmo.",
     category: "konkurencia",
     meaning:
-      "Inštalácia mu príde ako triviálna služba bez pridanej hodnoty. Nevie, čo všetko je v tvojej službe navyše (ovládače, aktualizácie, prenos dát, legálna licencia).",
-    uznaj: "„Jasné, samotná inštalácia nie je veda.“",
-    zisti: "„A dáta, programy a nastavenia, tie vám prenesie tiež?“",
+      "Nastavenie mu príde ako triviálna služba bez pridanej hodnoty. Nevie, čo všetko je v tvojej službe navyše (kompletný prenos aplikácií a nastavení, kontrola, že nič nechýba, poradenstvo priamo na mieste).",
+    uznaj: "„Jasné, samotné zapnutie telefónu nie je veda.“",
+    zisti: "„A fotky, kontakty, aplikácie aj s prihláseniami, to vám prenesie tiež?“",
     odpovedz:
-      "Rozbaľ, čo služba naozaj obsahuje: legálna licencia, ovládače, aktualizácie, prenos dát a fotiek, funkčné všetko na počkanie. „Platíte za to, že si počítač zapnete doma a všetko je tam, kde bolo.“",
+      "Rozbaľ, čo služba naozaj obsahuje: kompletný prenos fotiek, kontaktov a aplikácií, overenie, že nič nechýba, nastavenie zálohy do budúcna, funkčný telefón na počkanie. „Platíte za to, že si telefón zapnete doma a všetko je tam, kde bolo.“",
     hlbka:
-      "Inštalácia sama osebe zákazníkovi príde ako triviálna vec bez pridanej hodnoty, lebo nevidí všetko, čo sa za ňou skrýva. Rozbaľ konkrétne, čo služba naozaj obsahuje, legálnu licenciu, ovládače, aktualizácie, prenos dát a fotiek, funkčný stroj na počkanie. Porovnanie so známym potom prestane byť porovnaním rovnakých vecí.",
+      "Nastavenie samo osebe zákazníkovi príde ako triviálna vec bez pridanej hodnoty, lebo nevidí všetko, čo sa za ňou skrýva. Rozbaľ konkrétne, čo služba naozaj obsahuje, kompletný prenos dát a aplikácií, kontrolu, že sa nič nestratilo, nastavenie zálohy, funkčný telefón na počkanie. Porovnanie so známym potom prestane byť porovnaním rovnakých vecí.",
   },
   {
     id: "o11",
-    text: "Antivírus netreba, ja si dávam pozor.",
+    text: "Prečo by som menil batériu, veď mi telefón vydrží do večera.",
     category: "technika",
     meaning:
-      "Verí, že hrozba = hlúpe klikanie, a on nekliká. Nevie, že útoky dnes nevyžadujú chybu používateľa (falošné maily bánk, napadnuté weby).",
-    uznaj: "„To je dobrý základ, opatrnosť je najlepší prvý filter.“",
-    zisti: "„Používate internetbanking alebo platíte kartou online?“",
+      "Nevidí rozdiel medzi „ešte to nejako funguje“ a skutočným stavom batérie. Nevie, že opotrebovaná batéria zaťažuje aj iné súčiastky a jej kapacita ďalej klesá.",
+    uznaj: "„Ak vám do večera vydrží, chápem, že to zatiaľ neriešite.“",
+    zisti: "„Nabíjate cez deň priebežne, alebo vám naozaj vydrží na jedno nabitie?“",
     odpovedz:
-      "Prepoj na jeho svet: „Práve pri bankovníctve už nejde o pozor, falošná stránka banky vyzerá na nerozoznanie. Ochrana je poistka pre peniaze, nie pre počítač.“ Ak naozaj nemá rizikové použitie, netlač, poctivosť nadovšetko.",
+      "Over reálny stav batérie (kapacita v nastaveniach alebo diagnostikou) a ukáž číslo, nie pocit. „Pri takejto kapacite už batéria nielen rýchlejšie klesá, ale zbytočne zaťažuje aj ostatné súčiastky.“ Ak je stav naozaj v poriadku, povedz to na rovinu a netlač.",
     hlbka:
-      "Zákazník si hrozbu predstavuje ako vlastnú chybu, napríklad kliknutie na podozrivý odkaz, nevie však, že dnešné útoky často nevyžadujú žiadnu chybu z jeho strany. Príliš netlač, ak naozaj nerobí nič rizikové, ale ak áno, internetbanking, online platby, prepoj ochranu priamo na jeho peniaze, nie na počítač ako taký. Poctivosť tu funguje lepšie než strašenie.",
+      "Pocit, že telefón „nejako vydrží“, sa opiera o zvyk, nie o reálne dáta, batéria pritom degraduje postupne a zákazník si na pomalý úbytok kapacity zvykne skôr, než si to uvedomí. Ukáž mu konkrétne číslo namiesto všeobecného varovania, percento zdravia batérie hovorí viac než akékoľvek presviedčanie. Ak je batéria naozaj v poriadku, poctivo to povedz, dôvera z tejto chvíle sa vráti pri ďalšej návšteve.",
   },
   {
     id: "o12",
-    text: "Načo SSD, veď mi to funguje.",
+    text: "Prečo by som čistil nabíjací konektor, veď sa to nejako nabíja.",
     category: "technika",
     meaning:
-      "Zvykol si na pomalý počítač a nevie, že existuje výrazne lepší stav. Chýba mu predstava rozdielu, vlastnosť „SSD“ mu nič nehovorí.",
-    uznaj: "„Funguje, to je pravda, nič nehorí.“",
-    zisti: "„Koľko čakáte, kým naštartuje? A prekáža vám to?“",
+      "Zvykol si, že nabíjačka musí chvíľu držať v správnej polohe, a nevie, že existuje výrazne lepší stav. Chýba mu predstava rozdielu, „vyčistenie konektora“ mu nič nehovorí.",
+    uznaj: "„Nabíja sa, to je pravda, nič nehorí.“",
+    zisti: "„Musíte s káblom občas pohnúť alebo pridržať, kým sa začne nabíjať?“",
     odpovedz:
-      "Hodnota namiesto parametra: „Toto je najlacnejšia vec, ktorá zmení starý počítač na svižný, štart za pár sekúnd namiesto minút.“ Ideálne ukáž rozdiel naživo na stroji v predajni. Zážitok predá viac než argument.",
+      "Hodnota namiesto parametra: „Toto je najlacnejšia vec, ktorá zmení nespoľahlivé nabíjanie na okamžité pripojenie bez hľadania správnej polohy.“ Ideálne ukáž rozdiel naživo na jeho telefóne v predajni. Zážitok predá viac než argument.",
     hlbka:
-      "Zákazník si zvykol na pomalý stav a nemá porovnanie, ako veľmi iný počítač môže byť. Namiesto technického parametra ukáž konkrétny zážitok, ideálne naživo v predajni, rozdiel v štarte a otváraní programov predá viac než akékoľvek číslo v gigabajtoch za sekundu.",
+      "Zákazník si zvykol na nespoľahlivé nabíjanie a nemá porovnanie, ako inak môže konektor fungovať, keď je čistý. Namiesto technického vysvetľovania ukáž konkrétny zážitok, ideálne naživo v predajni, okamžité pripojenie kábla bez zaseknutia predá viac než akékoľvek vysvetlenie o prachu a vláknach v konektore.",
   },
   {
     id: "o13",
@@ -189,13 +189,13 @@ export const OBJECTIONS: Objection[] = [
     text: "Prečo to trvá tak dlho? Potrebujem to hneď.",
     category: "čas",
     meaning:
-      "Počítač je jeho pracovný nástroj alebo spojenie so svetom, každý deň bez neho ho niečo stojí. Časová tieseň, možno aj panika.",
-    uznaj: "„Rozumiem, bez počítača sa dnes nedá fungovať.“",
+      "Telefón je jeho spojenie so svetom, prácou aj rodinou, každý deň bez neho ho niečo stojí. Časová tieseň, možno aj panika.",
+    uznaj: "„Rozumiem, bez telefónu sa dnes ťažko funguje.“",
     zisti: "„Na čo ho súrne potrebujete? Dá sa niečo z toho vyriešiť hneď?“",
     odpovedz:
-      "Rieš jeho skutočný problém, nie len termín: expresný príplatok, zapožičanie náhradného stroja, záchrana najdôležitejších dát na USB hneď na počkanie. A daj realistický termín, ktorý dodržíš, sľúbiť nemožné je horšie než povedať pravdu.",
+      "Rieš jeho skutočný problém, nie len termín: expresný príplatok, zapožičanie náhradného telefónu, záchrana najdôležitejších fotiek a kontaktov hneď na počkanie. A daj realistický termín, ktorý dodržíš, sľúbiť nemožné je horšie než povedať pravdu.",
     hlbka:
-      "Za urgenciou často nie je len netrpezlivosť, ale reálna závislosť na zariadení, práca, kontakt s rodinou, podnikanie. Rieš skutočný problém za urgenciou, nie len termín, expresný príplatok, náhradný stroj, záchranu najdôležitejších dát hneď na počkanie. Daj termín, ktorý naozaj dodržíš, sľúbiť nemožné je horšie než povedať nepríjemnú pravdu.",
+      "Za urgenciou často nie je len netrpezlivosť, ale reálna závislosť na zariadení, práca, kontakt s rodinou, podnikanie. Rieš skutočný problém za urgenciou, nie len termín, expresný príplatok, náhradný telefón, záchranu najdôležitejších fotiek a kontaktov hneď na počkanie. Daj termín, ktorý naozaj dodržíš, sľúbiť nemožné je horšie než povedať nepríjemnú pravdu.",
   },
   {
     id: "o15",
@@ -203,12 +203,12 @@ export const OBJECTIONS: Objection[] = [
     category: "dôvera",
     meaning:
       "Toto nie je technická otázka, ale emočná, fotky detí sa nedajú kúpiť znova. Potrebuje istotu a pocit, že to berieš rovnako vážne ako on.",
-    uznaj: "„Úplne oprávnená obava, dáta sú to najcennejšie v celom počítači.“",
+    uznaj: "„Úplne oprávnená obava, dáta sú to najcennejšie v celom telefóne.“",
     zisti: "„Máte nejakú zálohu? Čo z toho je nenahraditeľné?“",
     odpovedz:
-      "Konkrétny postup namiesto chlácholenia: „Prvý krok u nás je záloha, kým nie sú dáta v bezpečí, do stroja nesiahame.“ Ponúkni aj trvalé riešenie (externý disk, cloud), práve vyriešil svoj skutočný problém, nie len dnešnú opravu.",
+      "Konkrétny postup namiesto chlácholenia: „Prvý krok u nás je záloha, kým nie sú dáta v bezpečí, do telefónu nesiahame.“ Ponúkni aj trvalé riešenie (cloud, záloha do počítača), práve vyriešil svoj skutočný problém, nie len dnešnú opravu.",
     hlbka:
-      "Toto nie je technická otázka, je to emočná obava, fotky detí alebo spomienky sa nedajú kúpiť znova. Pomenuj postup konkrétne, najprv záloha, až potom zásah do stroja, a ponúkni aj trvalé riešenie do budúcna, externý disk, cloud. Zákazník, ktorému takto vyriešiš skutočný problém, sa stáva stálym zákazníkom, nielen jednorazovou opravou.",
+      "Toto nie je technická otázka, je to emočná obava, fotky detí alebo spomienky sa nedajú kúpiť znova. Pomenuj postup konkrétne, najprv záloha, až potom zásah do telefónu, a ponúkni aj trvalé riešenie do budúcna, cloud, automatická záloha fotiek. Zákazník, ktorému takto vyriešiš skutočný problém, sa stáva stálym zákazníkom, nielen jednorazovou opravou.",
   },
   {
     id: "o16",
@@ -232,9 +232,9 @@ export const OBJECTIONS: Objection[] = [
     uznaj: "„Rozumiem, nikto nechce kúpiť deň pred zľavou.“",
     zisti: "„Ako veľmi vás súčasný stav obmedzuje? Vydržíte s ním do akcií?“",
     odpovedz:
-      "Poctivá matematika: ak vydrží a vie, že akcia bude, nech počká, tá férovosť sa ti vráti. Ale pomenuj aj druhú stranu: akciové ceny bývajú na vybraných kusoch, a mesiac trápenia s pokazeným strojom má tiež svoju cenu.",
+      "Poctivá matematika: ak vydrží a vie, že akcia bude, nech počká, tá férovosť sa ti vráti. Ale pomenuj aj druhú stranu: akciové ceny bývajú na vybraných modeloch, a mesiac trápenia s pokazeným telefónom má tiež svoju cenu.",
     hlbka:
-      "Zákazník kalkuluje s tým, že o mesiac kúpi to isté výrazne lacnejšie, čo nemusí byť pravda, akciové ceny bývajú na vybraných kusoch, nie na všetkom. Poctivo mu pomôž zvážiť aj druhú stranu rovnice, koľko ho stojí mesiac trápenia s pokazeným strojom oproti prípadnej úspore. Ak vydrží čakať a akcia naozaj príde, nechaj ho počkať, tá férovosť sa vracia v odporúčaniach.",
+      "Zákazník kalkuluje s tým, že o mesiac kúpi to isté výrazne lacnejšie, čo nemusí byť pravda, akciové ceny bývajú na vybraných modeloch, nie na všetkom. Poctivo mu pomôž zvážiť aj druhú stranu rovnice, koľko ho stojí mesiac trápenia s pokazeným telefónom oproti prípadnej úspore. Ak vydrží čakať a akcia naozaj príde, nechaj ho počkať, tá férovosť sa vracia v odporúčaniach.",
   },
   {
     id: "o18",
@@ -254,13 +254,13 @@ export const OBJECTIONS: Objection[] = [
     text: "Objednám si to z Nemecka / z zahraničia.",
     category: "konkurencia",
     meaning:
-      "Vidí nižšiu cenu v zahraničnom e-shope. Nemyslí na reklamáciu, dopravu, klávesnicu, či podporu v slovenčine.",
+      "Vidí nižšiu cenu v zahraničnom e-shope. Nemyslí na reklamáciu, dopravu, iné príslušenstvo v balení, či podporu v slovenčine.",
     uznaj: "„Áno, v zahraničí sa dá občas nájsť lepšia cena.“",
     zisti: "„Rátali ste aj s dopravou? A riešili ste už niekedy reklamáciu do zahraničia?“",
     odpovedz:
-      "Bez strašenia vymenuj rozdiely: reklamácia posielaním do zahraničia a v cudzom jazyku, iná klávesnica, doprava, dostupnosť. „Tu prídete s problémom ku mne k pultu.“ Ak mu to aj tak vyjde lepšie, dopraj mu to, a ponúkni, že mu stroj aspoň nastavíš.",
+      "Bez strašenia vymenuj rozdiely: reklamácia posielaním do zahraničia a v cudzom jazyku, iná záruka, iné SK/CZ príslušenstvo v balení, doprava. „Tu prídete s problémom ku mne k pultu.“ Ak mu to aj tak vyjde lepšie, dopraj mu to, a ponúkni, že mu telefón aspoň nastavíš.",
     hlbka:
-      "Zákazník vidí nižšiu cenu v zahraničnom e-shope, ale nepočíta s dopravou, jazykovou bariérou pri reklamácii a časom, ktorý to zaberie, keď sa niečo pokazí. Vymenuj rozdiely bez strašenia, reklamáciu do zahraničia, inú klávesnicu, dostupnosť podpory v slovenčine. Ak sa mu to napriek tomu vyplatí, dopraj mu to a ponúkni aspoň nastavenie stroja pri prevzatí.",
+      "Zákazník vidí nižšiu cenu v zahraničnom e-shope, ale nepočíta s dopravou, jazykovou bariérou pri reklamácii a časom, ktorý to zaberie, keď sa niečo pokazí. Vymenuj rozdiely bez strašenia, reklamáciu do zahraničia, inú záruku, dostupnosť podpory v slovenčine. Ak sa mu to napriek tomu vyplatí, dopraj mu to a ponúkni aspoň nastavenie telefónu pri prevzatí.",
   },
   {
     id: "o20",
@@ -271,7 +271,7 @@ export const OBJECTIONS: Objection[] = [
     uznaj: "„Chápem, netreba sa naťahovať nad možnosti.“",
     zisti: "„Je to o tomto mesiaci, alebo celkovo o sume? Akú sumu by ste vedeli dať?“",
     odpovedz:
-      "Ponúkni cesty podľa odpovede: lacnejšia alternatíva alebo repas, splátky ak ich máte, rezervácia do výplaty, prípadne dočasné riešenie („zatiaľ vymeníme len disk, zvyšok vydrží“). Ak je to zdvorilé nie, spoznáš to, a netlač.",
+      "Ponúkni cesty podľa odpovede: lacnejšia alternatíva alebo repasovaný kus, splátky ak ich máte, rezervácia do výplaty, prípadne dočasné riešenie („zatiaľ vymeníme len batériu, displej ešte vydrží“). Ak je to zdvorilé nie, spoznáš to, a netlač.",
     hlbka:
       "Toto môže byť reálny stav rozpočtu, alebo zdvorilé odmietnutie, rozdiel spoznáš podľa toho, či zákazník aktívne hľadá cestu, keď mu ju ponúkneš. Ponúkni konkrétne možnosti podľa jeho odpovede, lacnejšiu alternatívu, repas, splátky, rezerváciu do výplaty, alebo len čiastočné riešenie. Ak ide o skutočné zdvorilé nie, nechaj to tak bez ďalšieho tlaku.",
   },
@@ -297,7 +297,7 @@ export const OBJECTIONS: Objection[] = [
     uznaj: "„Jasné, zbytočnosti nemá zmysel platiť.“",
     zisti: "„Na čo to bude slúžiť? Nech vám to najlacnejšie o pol roka nie je najdrahšie.“",
     odpovedz:
-      "Ak jeho potrebám najlacnejšie stačí, predaj mu ho s čistým svedomím a povedz mu to, práve si získal jeho dôveru. Ak nestačí, ukáž konkrétny rozdiel v jeho použití („pri desiatich kartách v prehliadači sa tento zadýcha“) a nechaj voľbu na ňom.",
+      "Ak jeho potrebám najlacnejšie stačí, predaj mu ho s čistým svedomím a povedz mu to, práve si získal jeho dôveru. Ak nestačí, ukáž konkrétny rozdiel v jeho použití („pri náročnejších hrách sa tento telefón bude sekať“) a nechaj voľbu na ňom.",
     hlbka:
       "Toto je buď skutočne minimálna potreba, alebo obranná reakcia proti obave, že mu predajca natlačí drahé zbytočnosti, čo je aj test tvojej poctivosti. Ak jeho potrebám najlacnejšie naozaj stačí, predaj mu ho s čistým svedomím a otvorene mu to povedz, práve si získal jeho dôveru na dlho. Ak nestačí, ukáž konkrétny rozdiel v jeho reálnom použití, nie v abstraktných parametroch, a rozhodnutie nechaj na ňom.",
   },
@@ -306,13 +306,13 @@ export const OBJECTIONS: Objection[] = [
     text: "Starý ešte doslúži, načo nový.",
     category: "rozhodovanie",
     meaning:
-      "Šetrnosť a vzťah k veciam, nechce vyhadzovať funkčné. Nevidí skryté náklady starého stroja (čas, riziko zlyhania, dáta bez zálohy).",
+      "Šetrnosť a vzťah k veciam, nechce vyhadzovať funkčné. Nevidí skryté náklady starého telefónu (čas, riziko zlyhania, dáta bez zálohy).",
     uznaj: "„To je rozumný prístup, vyhadzovať funkčné veci netreba.“",
     zisti: "„Čo by sa stalo, keby vám zajtra doobeda vypovedal? Máte dáta zálohované?“",
     odpovedz:
-      "Netlač na výmenu, ponúkni plán: dnes záloha dát a kontrola stavu, výmena až keď to bude treba. Ak stroj reálne dosluhuje, povedz čo presne odchádza a prečo je lepšie vymeniť ho plánovane než v paniku, keď zlyhá.",
+      "Netlač na výmenu, ponúkni plán: dnes záloha dát a kontrola stavu batérie, výmena až keď to bude treba. Ak telefón reálne dosluhuje, povedz čo presne odchádza a prečo je lepšie vymeniť ho plánovane než v paniku, keď zlyhá.",
     hlbka:
-      "Zákazník si cení šetrnosť a nechce vyhadzovať funkčnú vec, čo je v poriadku, len nevidí skryté náklady starého stroja, čas, riziko náhleho zlyhania, dáta bez zálohy. Netlač na výmenu, ponúkni plán, dnes záloha a kontrola stavu, výmena až keď to bude naozaj treba. Ak stroj reálne dosluhuje, povedz otvorene čo presne odchádza a prečo je lepšie vymeniť plánovane než v panike, keď zlyhá bez varovania.",
+      "Zákazník si cení šetrnosť a nechce vyhadzovať funkčnú vec, čo je v poriadku, len nevidí skryté náklady starého telefónu, čas, riziko náhleho zlyhania, dáta bez zálohy. Netlač na výmenu, ponúkni plán, dnes záloha a kontrola stavu, výmena až keď to bude naozaj treba. Ak telefón reálne dosluhuje, povedz otvorene čo presne odchádza a prečo je lepšie vymeniť plánovane než v panike, keď zlyhá bez varovania.",
   },
   {
     id: "o24",

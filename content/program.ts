@@ -31,10 +31,10 @@ export const WEEKS: Week[] = [
     phaseTitle: "Základy",
     title: "Prečo ľudia kupujú",
     lesson: [
-      "Nikto nekupuje produkt. Každý kupuje **zmenu svojho stavu**: z neistoty do istoty, z pomalého počítača do plynulej práce, zo strachu o dáta do pokoja. Produkt je len nástroj, ktorým sa tá zmena dosiahne.",
-      "Preto prvá otázka profesionálneho predajcu nikdy nie je „čo vám mám predať?“, ale „**čo sa tento človek snaží vyriešiť?**“ Zákazník, ktorý pýta nový notebook, možno v skutočnosti rieši to, že sa hanbí na porade, keď mu počítač 5 minút štartuje.",
+      "Nikto nekupuje produkt. Každý kupuje **zmenu svojho stavu**: z neistoty do istoty, z pomalého telefónu do plynulého fungovania, zo strachu o fotky a dáta do pokoja. Produkt je len nástroj, ktorým sa tá zmena dosiahne.",
+      "Preto prvá otázka profesionálneho predajcu nikdy nie je „čo vám mám predať?“, ale „**čo sa tento človek snaží vyriešiť?**“ Zákazník, ktorý pýta nový telefón, možno v skutočnosti rieši to, že sa hanbí, keď mu pred kamarátmi padá batéria na desať percent.",
       "Rozhodovanie funguje takto: rozhodnutie vzniká **emočne** (chcem sa cítiť bezpečne, chcem mať pokoj, nechcem vyzerať hlúpo) a až potom si ho človek **racionálne zdôvodní** (parametre, cena, recenzie). Kto predáva len parametrami, rozpráva sa s tou druhou, neskoršou časťou rozhodnutia.",
-      "Kľúčový rozdiel tohto týždňa: **vlastnosť vs. hodnota.** Vlastnosť: „má 512 GB SSD.“ Hodnota: „zapne sa za pár sekúnd a už nikdy nebudete čakať.“ Vlastnosť je fakt o produkte. Hodnota je zmena v živote zákazníka. Ľudia platia za hodnotu.",
+      "Kľúčový rozdiel tohto týždňa: **vlastnosť vs. hodnota.** Vlastnosť: „má 256 GB úložiska.“ Hodnota: „nikdy vám nenapíše, že pamäť je plná, práve keď chcete odfotiť dôležitý moment.“ Vlastnosť je fakt o produkte. Hodnota je zmena v živote zákazníka. Ľudia platia za hodnotu.",
       "Tento týždeň nič nepredávaš inak. Len **pozoruješ**. Tvojou úlohou je začať vidieť za produktmi potreby a za otázkami obavy.",
     ],
     task:
@@ -76,7 +76,7 @@ export const WEEKS: Week[] = [
     title: "Otvorené otázky",
     lesson: [
       "Lekár, ktorý predpíše liek bez vyšetrenia, je šarlatán. Predajca, ktorý odporučí produkt bez otázok, je ten istý prípad. **Najdôležitejšia zručnosť predajcu nie je hovoriť, je pýtať sa.**",
-      "Zatvorená otázka sa dá odbiť jedným slovom: „Chcete radšej SSD?“, „Neviem.“ Otvorená otázka otvára príbeh: „**Na čo počítač najviac používate?**“, a zákazník ti sám povie, čo mu máš predať.",
+      "Zatvorená otázka sa dá odbiť jedným slovom: „Chcete radšej 128, alebo 256 gigabajtov?“, „Neviem.“ Otvorená otázka otvára príbeh: „**Na čo telefón najviac používate?**“, a zákazník ti sám povie, čo mu máš predať.",
       "Zlaté otvorené otázky do predajne a servisu: „Na čo to najviac používate?“ • „Čo vám na tom súčasnom najviac prekáža?“ • „Ako si predstavujete, že to bude fungovať?“ • „Čo sa stalo, keď to prestalo ísť?“ • „Čo je pre vás dôležitejšie, cena, alebo aby vydržal?“",
       "Prečo to funguje: kto kladie otázky, **vedie rozhovor**. A zákazník, ktorý rozpráva, cíti, že mu rozumieš, dôvera z 2. týždňa rastie sama, bez jediného argumentu.",
       "Pozor na pascu: nepýtaj sa ako vypočúvač. Otázka má znieť ako záujem o človeka, nie ako formulár. Jedna dobrá otázka a **ticho**, kým dopovie, je viac než päť otázok za sebou.",
@@ -99,7 +99,7 @@ export const WEEKS: Week[] = [
     lesson: [
       "Počúvať neznamená čakať, kým na teba príde rad hovoriť. **Aktívne počúvanie** znamená, že zákazník z tvojej reakcie spozná, že si ho naozaj počul.",
       "Tri nástroje: **Parafráza**, zopakuj vlastnými slovami: „Takže ak dobre rozumiem, potrebujete, aby zvládol účtovníctvo a občas film, a hlavne nech vydrží.“ **Doplňujúca otázka**, „vydrží, myslíte batériu, alebo celkovú životnosť?“ **Ticho**, po otázke vydrž 2-3 sekundy. Najdôležitejšie veci ľudia povedia až po pauze.",
-      "Skutočný problém býva **o vrstvu hlbšie**, než prvá veta zákazníka. „Chcem antivírus“ môže znamenať „minule mi prišiel podozrivý mail a odvtedy sa bojím internetbankingu.“ Kto rieši prvú vetu, predá krabicu. Kto nájde skutočný problém, vyrieši človeka, a získa zákazníka na roky.",
+      "Skutočný problém býva **o vrstvu hlbšie**, než prvá veta zákazníka. „Chcem ochranné sklo“ môže znamenať „minule mi spadol telefón a displej sa rozbil, bojím sa, že sa to zopakuje.“ Kto rieši prvú vetu, predá kúsok skla. Kto nájde skutočný problém, vyrieši človeka, a získa zákazníka na roky.",
       "Overovacia otázka na skutočný problém: **„Čo sa stalo, že ste sa rozhodli to riešiť práve teraz?“** Odpoveď na ňu je takmer vždy dôležitejšia než všetko, čo zaznelo predtým.",
       "Tento týždeň spájaš minulý a tento: otázky otvárajú, počúvanie prehlbuje. Cieľ: aby zákazník aspoň raz povedal „presne tak!“",
     ],
@@ -120,9 +120,9 @@ export const WEEKS: Week[] = [
     title: "Produkt ako riešenie",
     lesson: [
       "Teraz, keď vieš počúvať, potrebuješ mať čo ponúknuť. Znalosť produktu pre predajcu neznamená vedieť parametre naspamäť, znamená vedieť **komu a kedy produkt pomôže**.",
-      "Pri každom produkte a službe v PCexpres by si mal vedieť odpovedať na 5 otázok: **Komu pomáha? Kedy ho odporučím? Kedy ho neodporučím? Aké má alternatívy? Aké sú najčastejšie námietky?** Ak niektorú nevieš, práve si našiel svoju medzeru vo vedomostiach.",
-      "Na toto slúži modul **Produkty** v tejto appke: každý deň vyplň kartičku jedného-dvoch produktov či služieb (výmena disku za SSD, čistenie notebooku, inštalácia Windows, repasovaný počítač, rozšírenie RAM…). O dva týždne budeš mať vlastnú znalostnú mapu predajne.",
-      "Trik na hodnotu z 1. týždňa: ku každej vlastnosti si dopíš „**…a to znamená, že…**“. „SSD má rýchle čítanie dát… a to znamená, že počítač naštartuje skôr, než si zoberiete kávu.“ Ak vetu nevieš dokončiť, vlastnosť pre zákazníka nič neznamená, tak ju ani nespomínaj.",
+      "Pri každom produkte a službe vo svojej predajni by si mal vedieť odpovedať na 5 otázok: **Komu pomáha? Kedy ho odporučím? Kedy ho neodporučím? Aké má alternatívy? Aké sú najčastejšie námietky?** Ak niektorú nevieš, práve si našiel svoju medzeru vo vedomostiach.",
+      "Na toto slúži modul **Produkty** v tejto appke: každý deň vyplň kartičku jedného-dvoch produktov či služieb (výmena displeja, výmena batérie, ochranné sklo, servis nabíjacieho konektora, nastavenie nového telefónu…). O dva týždne budeš mať vlastnú znalostnú mapu predajne.",
+      "Trik na hodnotu z 1. týždňa: ku každej vlastnosti si dopíš „**…a to znamená, že…**“. „Nová batéria má vyššiu kapacitu… a to znamená, že telefón vám vydrží celý deň bez hľadania zásuvky.“ Ak vetu nevieš dokončiť, vlastnosť pre zákazníka nič neznamená, tak ju ani nespomínaj.",
       "Odpoveď „neviem, zistím vám to“ nie je hanba, je to budovanie dôvery, ak po nej naozaj príde odpoveď. Hanba je vymýšľať si.",
     ],
     task:
@@ -143,7 +143,7 @@ export const WEEKS: Week[] = [
     lesson: [
       "Profesionál nepozná len produkt, pozná **mapu alternatív**: čo je o stupeň lacnejšie, čo o stupeň lepšie, kedy sa oprava neoplatí, kedy je repas rozumnejší než nový kus.",
       "Sila alternatív: keď vieš ponúknuť tri cesty („opravíme za X, repasovaný za Y, nový za Z, a pre vaše použitie by som šiel do…“), zákazník sa nerozhoduje **či** kúpi, ale **ktorú cestu** si vyberie. A hlavne cíti, že mu dávaš na výber, nie že ho tlačíš.",
-      "**Kedy neodporučiť** je najcennejšia kolónka kartičky. „Túto hru vaša grafika neutiahne, neberte to“ ťa krátkodobo stojí predaj a dlhodobo ti vyrába verného zákazníka. Predajňa žije z ľudí, ktorí sa vracajú.",
+      "**Kedy neodporučiť** je najcennejšia kolónka kartičky. „Tento telefón vám na náročné hry stačiť nebude, neberte ho“ ťa krátkodobo stojí predaj a dlhodobo ti vyrába verného zákazníka. Predajňa žije z ľudí, ktorí sa vracajú.",
       "Poctivé odporúčanie má vzorec: **„Pre vás by som vybral X, pretože [jeho situácia]. Y by som nebral, pretože [jeho situácia].“** Vždy zdôvodnené jeho svetom, nie parametrami.",
       "Tento týždeň dokončuješ produktové kartičky, zameraj sa na kolónky „kedy neodporučím“ a „alternatívy“. To je rozdiel medzi predavačom a poradcom.",
     ],
@@ -230,7 +230,7 @@ export const WEEKS: Week[] = [
     title: "Vysvetľuj jednoducho",
     lesson: [
       "Zákazník, ktorý nerozumie, nekúpi, alebo kúpi a bude sa cítiť oklamaný. **Jednoduchosť nie je zjednodušovanie, je to rešpekt.** Einstein: ak to nevieš vysvetliť jednoducho, sám tomu dosť nerozumieš.",
-      "Nástroj č. 1: **prirovnanie zo sveta zákazníka.** SSD vs. HDD? „Predstavte si sklad: HDD je skladník, ktorý beží pre každú vec do zadnej haly. SSD má všetko na pulte.“ RAM? „Pracovný stôl, čím väčší, tým viac vecí naraz bez upratovania.“",
+      "Nástroj č. 1: **prirovnanie zo sveta zákazníka.** Úložisko vs. pamäť RAM? „Úložisko je skriňa, kam si ukladáte veci na dlho, fotky, aplikácie. RAM je pracovný stôl, čím väčší, tým viac vecí naraz otvorených bez toho, aby sa telefón zasekol.“",
       "Nástroj č. 2: **test babičky.** Vysvetlil by som to tak svojej babičke? Ak nie, hľadaj iné slová. Odborné slovo smieš použiť, len ak ho hneď preložíš.",
       "Nástroj č. 3: **maximálne tri veci.** Zákazník si z rozhovoru odnesie tri body, viac nie. Vyber tri, na ktorých mu záleží (podľa toho, čo si zistil otázkami!), a zvyšok vypusti. Kto povie desať výhod, akoby nepovedal žiadnu.",
       "Skús aj obrátenú kontrolu: „Dáva to zmysel? Mám ukázať, ako to funguje?“, otázkou zistíš, či ťa človek stíha, bez toho, aby si ho urazil.",

@@ -125,7 +125,7 @@ export default function TodayPage() {
           <SectionTitle>Rýchly prístup</SectionTitle>
           <div className="space-y-4">
             {favoriteThoughts.length > 0 && (
-              <div>
+              <div className="pb-4">
                 <div className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">⭐ Obľúbené myšlienky</div>
                 <div className="space-y-1.5">
                   {favoriteThoughts.map((t) => (

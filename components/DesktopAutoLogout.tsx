@@ -15,19 +15,26 @@ async function performLogout() {
   }
 }
 
+function secondsLabel(n: number): string {
+  if (n === 1) return "sekundu";
+  if (n >= 2 && n <= 4) return "sekundy";
+  return "sekúnd";
+}
+
 export default function DesktopAutoLogout() {
   const onTimeout = useCallback(() => {
     void performLogout();
   }, []);
 
-  const { warning, staySignedIn } = useAutoLogout(onTimeout);
+  const { warning, secondsLeft, staySignedIn } = useAutoLogout(onTimeout);
 
   if (!warning) return null;
 
   return (
     <Modal>
       <p className="text-sm text-zinc-700 dark:text-zinc-300">
-        Pre vašu bezpečnosť budete o 5 sekúnd automaticky odhlásený z dôvodu nečinnosti.
+        Pre vašu bezpečnosť budete o {secondsLeft} {secondsLabel(secondsLeft)} automaticky odhlásený z dôvodu
+        nečinnosti.
       </p>
       <Btn onClick={staySignedIn} className="mt-4 w-full">
         Som tu

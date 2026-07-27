@@ -6,8 +6,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const WARNING_AFTER_MS = 25_000;
-const LOGOUT_AFTER_MS = 30_000;
+const LOGOUT_AFTER_MS = 15_000;
+const COUNTDOWN_SECONDS = 5;
+const WARNING_AFTER_MS = LOGOUT_AFTER_MS - COUNTDOWN_SECONDS * 1000;
 const ACTIVITY_EVENTS = ["mousemove", "mousedown", "click", "scroll", "keydown", "touchstart"] as const;
 
 function isDesktopPointer(): boolean {
@@ -16,16 +17,32 @@ function isDesktopPointer(): boolean {
 
 export function useAutoLogout(onTimeout: () => void) {
   const [warning, setWarning] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(COUNTDOWN_SECONDS);
   const warnTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const logoutTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const countdownTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const onTimeoutRef = useRef(onTimeout);
   onTimeoutRef.current = onTimeout;
 
-  const reset = useCallback(() => {
+  const clearAllTimers = () => {
     if (warnTimer.current) clearTimeout(warnTimer.current);
     if (logoutTimer.current) clearTimeout(logoutTimer.current);
+    if (countdownTimer.current) clearInterval(countdownTimer.current);
+  };
+
+  const reset = useCallback(() => {
+    clearAllTimers();
     setWarning(false);
-    warnTimer.current = setTimeout(() => setWarning(true), WARNING_AFTER_MS);
+    setSecondsLeft(COUNTDOWN_SECONDS);
+
+    warnTimer.current = setTimeout(() => {
+      setWarning(true);
+      setSecondsLeft(COUNTDOWN_SECONDS);
+      countdownTimer.current = setInterval(() => {
+        setSecondsLeft((s) => Math.max(0, s - 1));
+      }, 1000);
+    }, WARNING_AFTER_MS);
+
     logoutTimer.current = setTimeout(() => onTimeoutRef.current(), LOGOUT_AFTER_MS);
   }, []);
 
@@ -36,11 +53,10 @@ export function useAutoLogout(onTimeout: () => void) {
     for (const ev of ACTIVITY_EVENTS) window.addEventListener(ev, reset, { passive: true });
 
     return () => {
-      if (warnTimer.current) clearTimeout(warnTimer.current);
-      if (logoutTimer.current) clearTimeout(logoutTimer.current);
+      clearAllTimers();
       for (const ev of ACTIVITY_EVENTS) window.removeEventListener(ev, reset);
     };
   }, [reset]);
 
-  return { warning, staySignedIn: reset };
+  return { warning, secondsLeft, staySignedIn: reset };
 }

@@ -7,6 +7,8 @@ import { useStore } from "@/lib/store";
 import { activeDays, streak } from "@/lib/gamify";
 import type { Entry, Reflection } from "@/lib/types";
 import SearchModal from "@/components/SearchModal";
+import DesktopAutoLogout from "@/components/DesktopAutoLogout";
+import { Btn, Modal } from "@/components/ui";
 
 const NAV = [
   { href: "/", label: "Dnes", icon: "☀️" },
@@ -27,10 +29,20 @@ const SYNC_LABEL = {
   offline: { dot: "bg-red-500", text: "Offline, uložené v zariadení" },
 };
 
+async function performLogout() {
+  try {
+    await fetch("/api/logout", { method: "POST" });
+  } finally {
+    window.location.href = "/login";
+  }
+}
+
 export default function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [logoutConfirm, setLogoutConfirm] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const { db, sync } = useStore();
 
   useEffect(() => {
@@ -93,6 +105,13 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         <span className={`inline-block h-2 w-2 rounded-full ${syncInfo.dot}`} />
         {syncInfo.text}
       </div>
+      <button
+        type="button"
+        onClick={() => setLogoutConfirm(true)}
+        className="flex w-full items-center gap-1.5 border-t border-zinc-200 pt-2 text-left text-zinc-400 transition-colors hover:text-red-600 dark:border-zinc-800 dark:text-zinc-500 dark:hover:text-red-400"
+      >
+        <span aria-hidden>🚪</span> Odhlásiť sa
+      </button>
     </div>
   );
 
@@ -151,6 +170,29 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       <main className="mx-auto w-full max-w-3xl flex-1 p-4 pb-24 md:max-w-none md:p-8">{children}</main>
 
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <DesktopAutoLogout />
+
+      {logoutConfirm && (
+        <Modal onClose={() => (loggingOut ? undefined : setLogoutConfirm(false))}>
+          <p className="text-sm text-zinc-700 dark:text-zinc-300">Naozaj sa chcete odhlásiť?</p>
+          <div className="mt-4 flex gap-2">
+            <Btn variant="ghost" onClick={() => setLogoutConfirm(false)} disabled={loggingOut} className="flex-1">
+              Zrušiť
+            </Btn>
+            <Btn
+              variant="danger"
+              onClick={() => {
+                setLoggingOut(true);
+                void performLogout();
+              }}
+              disabled={loggingOut}
+              className="flex-1"
+            >
+              {loggingOut ? "Odhlasujem…" : "Odhlásiť sa"}
+            </Btn>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

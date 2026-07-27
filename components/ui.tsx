@@ -105,6 +105,25 @@ export function Label({ children }: { children: React.ReactNode }) {
   return <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">{children}</label>;
 }
 
+export function Modal({
+  children,
+  onClose,
+}: {
+  children: React.ReactNode;
+  onClose?: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+      <div
+        className="w-full max-w-xs rounded-2xl border border-zinc-200 bg-white p-4 shadow-xl dark:border-zinc-800 dark:bg-zinc-900"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
 /** Zvýrazní **tučné** úseky v texte lekcie. */
 export function RichText({ text }: { text: string }) {
   const parts = text.split(/\*\*(.+?)\*\*/g);

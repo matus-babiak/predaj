@@ -129,7 +129,7 @@ export default function TodayPage() {
                 <div className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">⭐ Obľúbené myšlienky</div>
                 <div className="space-y-3">
                   {favoriteThoughts.map((t) => (
-                    <Link key={t.id} href={`/mindset?q=${t.id}`}>
+                    <Link key={t.id} href={`/mindset?q=${t.id}`} className="block">
                       <Card className="!p-3 transition-colors hover:border-indigo-400">
                         <p className="truncate text-sm text-zinc-700 dark:text-zinc-300">„{t.text}“</p>
                       </Card>
@@ -143,7 +143,7 @@ export default function TodayPage() {
                 <div className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">🗂️ Najpoužívanejšie produkty</div>
                 <div className="space-y-1.5">
                   {topProducts.map((p) => (
-                    <Link key={p.id} href={`/produkty?q=${p.id}`}>
+                    <Link key={p.id} href={`/produkty?q=${p.id}`} className="block">
                       <Card className="!p-3 transition-colors hover:border-indigo-400">
                         <p className="truncate text-sm font-medium text-zinc-700 dark:text-zinc-300">{p.name}</p>
                       </Card>
@@ -157,7 +157,7 @@ export default function TodayPage() {
                 <div className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">🥊 Naposledy trénované námietky</div>
                 <div className="space-y-1.5">
                   {recentObjections.map((o) => (
-                    <Link key={o.id} href={`/namietky?q=${o.id}`}>
+                    <Link key={o.id} href={`/namietky?q=${o.id}`} className="block">
                       <Card className="!p-3 transition-colors hover:border-indigo-400">
                         <p className="truncate text-sm text-zinc-700 dark:text-zinc-300">„{o.text}“</p>
                       </Card>

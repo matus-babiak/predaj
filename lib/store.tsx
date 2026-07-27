@@ -32,9 +32,14 @@ const CACHE_KEY = "cp_cache_v1";
 const QUEUE_KEY = "cp_queue_v1";
 
 // Presmerovanie na login len mimo login stránky, inak by sa /login
-// pri každom 401 donekonečna obnovovala.
+// pri každom 401 donekonečna obnovovala. Zachová aktuálnu cestu pre návrat.
 function redirectToLogin() {
-  if (window.location.pathname !== "/login") window.location.href = "/login";
+  if (window.location.pathname === "/login") return;
+  const next = window.location.pathname + window.location.search;
+  window.location.href =
+    next && next !== "/"
+      ? `/login?next=${encodeURIComponent(next)}`
+      : "/login";
 }
 
 function emptyDB(): DB {

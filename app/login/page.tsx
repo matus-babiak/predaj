@@ -1,9 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Btn, Input } from "@/components/ui";
 
-export default function LoginPage() {
+/** Len relatívne cesty v rámci appky — zabráni open redirectu. */
+function safeReturnPath(next: string | null): string {
+  if (!next || !next.startsWith("/") || next.startsWith("//") || next.startsWith("/login")) {
+    return "/";
+  }
+  return next;
+}
+
+function LoginForm() {
+  const searchParams = useSearchParams();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -19,7 +29,7 @@ export default function LoginPage() {
         body: JSON.stringify({ password }),
       });
       if (res.ok) {
-        window.location.href = "/";
+        window.location.href = safeReturnPath(searchParams.get("next"));
       } else {
         setError("Nesprávne heslo. Skús znova.");
       }
@@ -53,5 +63,13 @@ export default function LoginPage() {
         </Btn>
       </form>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

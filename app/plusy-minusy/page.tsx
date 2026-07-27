@@ -92,8 +92,8 @@ export default function PlusyMinusyPage() {
         <h1 className="text-2xl font-semibold">Plusy a mínusy</h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           Tvoja analýza silných a slabých stránok. Plusy a mínusy sa sem zbierajú zo{" "}
-          <Link href="/dennik" className="text-indigo-600 hover:underline dark:text-indigo-400">
-            záznamov v denníku
+          <Link href="/zaznamy" className="text-indigo-600 hover:underline dark:text-indigo-400">
+            záznamov
           </Link>{" "}
           a môžeš ich pridávať aj priamo tu.
         </p>
@@ -160,7 +160,7 @@ export default function PlusyMinusyPage() {
 
       {pluses.length === 0 && minuses.length === 0 && (
         <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          Zatiaľ tu nič nie je. Pri každom zázname v denníku vyplň „Moje plus“ a „Moje mínus“, alebo pridaj
+          Zatiaľ tu nič nie je. Pri každom zázname vo Záznamoch vyplň „Moje plus“ a „Moje mínus“, alebo pridaj
           položku rovno tu hore.
         </p>
       )}

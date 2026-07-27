@@ -7,11 +7,17 @@ import { useCallback } from "react";
 import { useAutoLogout } from "@/lib/useAutoLogout";
 import { Btn, Modal } from "@/components/ui";
 
+function loginUrlWithReturn(): string {
+  const next = window.location.pathname + window.location.search;
+  if (!next || next === "/login") return "/login";
+  return `/login?next=${encodeURIComponent(next)}`;
+}
+
 async function performLogout() {
   try {
     await fetch("/api/logout", { method: "POST" });
   } finally {
-    window.location.href = "/login";
+    window.location.href = loginUrlWithReturn();
   }
 }
 
@@ -31,7 +37,7 @@ export default function DesktopAutoLogout() {
   if (!warning) return null;
 
   return (
-    <Modal>
+    <Modal backdropClassName="bg-black/95">
       <p className="text-sm text-zinc-700 dark:text-zinc-300">
         Pre vašu bezpečnosť budete o {secondsLeft} {secondsLabel(secondsLeft)} automaticky odhlásený z dôvodu
         nečinnosti.

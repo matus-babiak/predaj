@@ -6,8 +6,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const WARNING_AFTER_MS = 15_000;
-const COUNTDOWN_SECONDS = 60;
+const WARNING_AFTER_MS = 30_000;
+const COUNTDOWN_SECONDS = 30;
 const LOGOUT_AFTER_MS = WARNING_AFTER_MS + COUNTDOWN_SECONDS * 1000;
 const ACTIVITY_EVENTS = ["mousemove", "mousedown", "click", "scroll", "keydown", "touchstart"] as const;
 

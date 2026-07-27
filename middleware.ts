@@ -14,6 +14,11 @@ export async function middleware(req: NextRequest) {
   }
   const login = req.nextUrl.clone();
   login.pathname = "/login";
+  login.search = "";
+  const next = req.nextUrl.pathname + req.nextUrl.search;
+  if (next && next !== "/") {
+    login.searchParams.set("next", next);
+  }
   return NextResponse.redirect(login);
 }
 

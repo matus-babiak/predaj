@@ -1,123 +1,41 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useData } from "@/lib/useData";
-import { uid } from "@/lib/store";
 import { dayKey } from "@/lib/gamify";
 import { getWeek } from "@/content/program";
-import { DEFAULT_WANTS, DEFAULT_FEARS, OUTCOME_LABELS } from "@/content/chips";
-import { OBJECTIONS } from "@/content/objections";
-import type { Entry, EntryDraft, Outcome, Reflection } from "@/lib/types";
-import { Btn, Card, Chip, Input, Label, SectionTitle, TextArea } from "@/components/ui";
-
-const OUTCOMES: { id: Outcome; label: string; emoji: string }[] = [
-  { id: "kupil", label: "Kúpil", emoji: "✅" },
-  { id: "nekupil", label: "Nekúpil", emoji: "❌" },
-  { id: "vrati_sa", label: "Vráti sa", emoji: "🔁" },
-  { id: "rada", label: "Len rada", emoji: "💬" },
-];
+import type { Reflection } from "@/lib/types";
+import { Btn, Card, Label, SectionTitle, TextArea } from "@/components/ui";
 
 export default function DennikPage() {
-  const { entries, reflections, settings, progress, put, remove, ready } = useData();
+  const { reflections, progress, put, ready } = useData();
+  const listRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
-  // --- Rýchly záznam ---
-  const [outcome, setOutcome] = useState<Outcome | null>(null);
-  const [want, setWant] = useState("");
-  const [fear, setFear] = useState("");
-  const [why, setWhy] = useState("");
-  const [trust, setTrust] = useState(0);
-  const [objection, setObjection] = useState("");
-  const [note, setNote] = useState("");
-  const [plus, setPlus] = useState("");
-  const [minus, setMinus] = useState("");
-  const [saved, setSaved] = useState(false);
-  const [showMore, setShowMore] = useState(false);
-
-  // Rozpísaný záznam sa priebežne ukladá do settings.entryDraft, aby sa
-  // nestratil pri odhlásení z nečinnosti alebo zatvorení appky. draftAppliedRef
-  // zabezpečí, že sa obnoví najviac raz (buď hneď z lokálnej cache, alebo
-  // neskôr, keď dorazí zo servera z iného zariadenia), a nikdy neprepíše
-  // rozpísaný text tým, čo si sám pred chvíľou uložil.
-  const draftAppliedRef = useRef(false);
-  const autosaveArmedRef = useRef(false);
-
-  useEffect(() => {
-    if (draftAppliedRef.current) return;
-    const d = settings.entryDraft;
-    if (!d) return;
-    draftAppliedRef.current = true;
-    setOutcome(d.outcome ?? null);
-    setWant(d.want ?? "");
-    setFear(d.fear ?? "");
-    setWhy(d.why ?? "");
-    setTrust(d.trust ?? 0);
-    setObjection(d.objection ?? "");
-    setNote(d.note ?? "");
-    setPlus(d.plus ?? "");
-    setMinus(d.minus ?? "");
-    if (d.objection || d.note) setShowMore(true);
-  }, [settings.entryDraft]);
-
-  useEffect(() => {
-    if (ready) autosaveArmedRef.current = true;
-  }, [ready]);
-
-  useEffect(() => {
-    if (!autosaveArmedRef.current) return;
-    const draft: EntryDraft = {
-      outcome: outcome ?? undefined,
-      want: want.trim() || undefined,
-      fear: fear.trim() || undefined,
-      why: why.trim() || undefined,
-      trust: trust || undefined,
-      objection: objection.trim() || undefined,
-      note: note.trim() || undefined,
-      plus: plus.trim() || undefined,
-      minus: minus.trim() || undefined,
-    };
-    put("settings", { ...settings, entryDraft: draft, updatedAt: Date.now() });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [outcome, want, fear, why, trust, objection, note, plus, minus]);
-
-  const saveEntry = () => {
-    if (!outcome) return;
-    const now = Date.now();
-    const entry: Entry = {
-      id: uid(),
-      ts: now,
-      outcome,
-      want: want.trim() || undefined,
-      fear: fear.trim() || undefined,
-      why: why.trim() || undefined,
-      trust: trust || undefined,
-      objection: objection.trim() || undefined,
-      note: note.trim() || undefined,
-      plus: plus.trim() || undefined,
-      minus: minus.trim() || undefined,
-      updatedAt: now,
-    };
-    put("entries", entry);
-    setOutcome(null);
-    setWant("");
-    setFear("");
-    setWhy("");
-    setTrust(0);
-    setObjection("");
-    setNote("");
-    setPlus("");
-    setMinus("");
-    setShowMore(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
-  };
-
-  // --- Večerná reflexia ---
   const today = dayKey(Date.now());
   const week = getWeek(progress.currentWeek);
   const existing = reflections.find((r) => r.date === today);
+
   const [answers, setAnswers] = useState<Record<string, string>>(existing?.answers ?? {});
   const [focus, setFocus] = useState(existing?.focus ?? "");
+  const [editing, setEditing] = useState(false);
   const [reflSaved, setReflSaved] = useState(false);
+
+  const startEdit = (r?: Reflection) => {
+    const src = r ?? existing;
+    setAnswers(src?.answers ?? {});
+    setFocus(src?.focus ?? "");
+    setEditing(true);
+    requestAnimationFrame(() => {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  };
+
+  const cancelEdit = () => {
+    setAnswers(existing?.answers ?? {});
+    setFocus(existing?.focus ?? "");
+    setEditing(false);
+  };
 
   const saveReflection = () => {
     const now = Date.now();
@@ -130,197 +48,90 @@ export default function DennikPage() {
       updatedAt: now,
     };
     put("reflections", r);
+    setEditing(false);
     setReflSaved(true);
     setTimeout(() => setReflSaved(false), 2500);
+    requestAnimationFrame(() => {
+      listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   };
 
   if (!ready) return null;
 
-  const todayEntries = entries.filter((e) => dayKey(e.ts) === today);
-  const olderByDay = new Map<string, Entry[]>();
-  for (const e of entries) {
-    const k = dayKey(e.ts);
-    if (k === today) continue;
-    olderByDay.set(k, [...(olderByDay.get(k) ?? []), e]);
-  }
+  const savedList = reflections.slice().sort((a, b) => (a.date < b.date ? 1 : -1));
+  const showForm = editing || !existing;
 
   return (
     <div className="space-y-8">
       <h1 className="text-2xl font-semibold">Denník</h1>
 
-      {/* Rýchly záznam */}
-      <Card>
-        <SectionTitle>Rýchly záznam zákazníka</SectionTitle>
-        <div className="space-y-4">
-          <div>
-            <Label>Ako to dopadlo?</Label>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {OUTCOMES.map((o) => (
-                <button
-                  key={o.id}
-                  type="button"
-                  onClick={() => setOutcome(o.id)}
-                  className={`rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors ${
-                    outcome === o.id
-                      ? "border-indigo-600 bg-indigo-600 text-white"
-                      : "border-zinc-300 bg-white text-zinc-700 hover:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
-                  }`}
-                >
-                  {o.emoji} {o.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <Label>Čo podľa mňa naozaj chcel?</Label>
-            <div className="mb-2 flex flex-wrap gap-1.5">
-              {DEFAULT_WANTS.map((c) => (
-                <Chip key={c} label={c} active={want === c} onClick={() => setWant(want === c ? "" : c)} />
-              ))}
-            </div>
-            <Input placeholder="…alebo napíš vlastné" value={want} onChange={(e) => setWant(e.target.value)} />
-          </div>
-
-          <div>
-            <Label>Čoho sa bál?</Label>
-            <div className="mb-2 flex flex-wrap gap-1.5">
-              {DEFAULT_FEARS.map((c) => (
-                <Chip key={c} label={c} active={fear === c} onClick={() => setFear(fear === c ? "" : c)} />
-              ))}
-            </div>
-            <Input placeholder="…alebo napíš vlastné" value={fear} onChange={(e) => setFear(e.target.value)} />
-          </div>
-
-          <div>
-            <Label>Prečo kúpil / nekúpil? (jedna veta)</Label>
-            <Input value={why} onChange={(e) => setWhy(e.target.value)} placeholder="napr. uveril, že nová batéria mu vydrží celý deň" />
-          </div>
-
-          <div>
-            <Label>Vznikla dôvera? (1 = vôbec, 5 = úplne)</Label>
-            <div className="flex gap-2">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  onClick={() => setTrust(trust === n ? 0 : n)}
-                  className={`h-10 w-10 rounded-xl border text-sm font-semibold transition-colors ${
-                    trust >= n && trust > 0
-                      ? "border-indigo-600 bg-indigo-600 text-white"
-                      : "border-zinc-300 bg-white text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
-                  }`}
-                >
-                  {n}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <Label>➕ Moje plus, čo som urobil dobre?</Label>
-              <Input value={plus} onChange={(e) => setPlus(e.target.value)} placeholder="napr. pýtal som sa na potrebu skôr než na rozpočet" />
-            </div>
-            <div>
-              <Label>➖ Moje mínus, čo nabudúce inak?</Label>
-              <Input value={minus} onChange={(e) => setMinus(e.target.value)} placeholder="napr. skočil som mu do reči pri námietke" />
-            </div>
-          </div>
-
-          {!showMore ? (
-            <button type="button" onClick={() => setShowMore(true)} className="text-sm text-indigo-600 hover:underline dark:text-indigo-400">
-              + námietka / poznámka
-            </button>
-          ) : (
+      <div ref={formRef} className="scroll-mt-24">
+        {showForm ? (
+          <Card>
+            <div id="reflexia" className="scroll-mt-24" />
+            <SectionTitle>
+              Večerná reflexia, {new Date().toLocaleDateString("sk-SK", { day: "numeric", month: "long" })}
+              {existing ? " · úprava" : ""}
+            </SectionTitle>
             <div className="space-y-4">
+              {(week?.reflection ?? []).map((q) => (
+                <div key={q}>
+                  <Label>{q}</Label>
+                  <TextArea
+                    rows={2}
+                    value={answers[q] ?? ""}
+                    onChange={(e) => setAnswers({ ...answers, [q]: e.target.value })}
+                  />
+                </div>
+              ))}
               <div>
-                <Label>Padla námietka?</Label>
-                <Input
-                  list="objection-list"
-                  value={objection}
-                  onChange={(e) => setObjection(e.target.value)}
-                  placeholder="vyber alebo napíš vlastnú"
-                />
-                <datalist id="objection-list">
-                  {OBJECTIONS.map((o) => (
-                    <option key={o.id} value={o.text} />
-                  ))}
-                </datalist>
+                <Label>Čo chcem zajtra zlepšiť?</Label>
+                <TextArea rows={2} value={focus} onChange={(e) => setFocus(e.target.value)} />
               </div>
-              <div>
-                <Label>Poznámka na večer</Label>
-                <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="k čomu sa chcem večer vrátiť" />
+              <div className="flex flex-wrap items-center gap-3">
+                <Btn onClick={saveReflection}>{existing ? "Uložiť zmeny" : "Uložiť reflexiu"}</Btn>
+                {existing && (
+                  <Btn variant="ghost" onClick={cancelEdit}>
+                    Zrušiť
+                  </Btn>
+                )}
+                {reflSaved && <span className="text-sm text-emerald-600">Uložené ✔</span>}
               </div>
             </div>
-          )}
+          </Card>
+        ) : (
+          <Card>
+            <div id="reflexia" className="scroll-mt-24" />
+            <SectionTitle>
+              Večerná reflexia, {new Date().toLocaleDateString("sk-SK", { day: "numeric", month: "long" })}
+            </SectionTitle>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+              Dnešná reflexia je uložená. Na zmenu použi{" "}
+              <button
+                type="button"
+                onClick={() => startEdit()}
+                className="font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+              >
+                Upraviť
+              </button>
+              .
+            </p>
+            {reflSaved && <p className="mt-2 text-sm text-emerald-600">Uložené ✔</p>}
+          </Card>
+        )}
+      </div>
 
-          <div className="flex items-center gap-3">
-            <Btn onClick={saveEntry} disabled={!outcome}>
-              Uložiť záznam
-            </Btn>
-            {saved && <span className="text-sm text-emerald-600">Uložené ✔</span>}
-          </div>
-        </div>
-      </Card>
-
-      {/* Večerná reflexia */}
-      <Card className="scroll-mt-20" >
-        <div id="reflexia" className="scroll-mt-24" />
-        <SectionTitle>
-          Večerná reflexia, {new Date().toLocaleDateString("sk-SK", { day: "numeric", month: "long" })}
-        </SectionTitle>
-        {existing && <p className="mb-3 text-sm text-emerald-600">Dnešná reflexia je uložená, môžeš ju doplniť.</p>}
-        <div className="space-y-4">
-          {(week?.reflection ?? []).map((q) => (
-            <div key={q}>
-              <Label>{q}</Label>
-              <TextArea
-                rows={2}
-                value={answers[q] ?? ""}
-                onChange={(e) => setAnswers({ ...answers, [q]: e.target.value })}
+      {savedList.length > 0 && (
+        <div ref={listRef} className="scroll-mt-24">
+          <SectionTitle>Uložené reflexie</SectionTitle>
+          <div className="space-y-3">
+            {savedList.map((r) => (
+              <ReflectionCard
+                key={r.id}
+                reflection={r}
+                isToday={r.date === today}
+                onEdit={r.date === today ? () => startEdit(r) : undefined}
               />
-            </div>
-          ))}
-          <div>
-            <Label>Čo chcem zajtra zlepšiť?</Label>
-            <TextArea rows={2} value={focus} onChange={(e) => setFocus(e.target.value)} />
-          </div>
-          <div className="flex items-center gap-3">
-            <Btn onClick={saveReflection}>Uložiť reflexiu</Btn>
-            {reflSaved && <span className="text-sm text-emerald-600">Uložené ✔</span>}
-          </div>
-        </div>
-      </Card>
-
-      {/* Dnešné záznamy */}
-      {todayEntries.length > 0 && (
-        <div>
-          <SectionTitle>Dnes ({todayEntries.length})</SectionTitle>
-          <div className="space-y-2">
-            {todayEntries.map((e) => (
-              <EntryRow key={e.id} entry={e} onDelete={() => remove("entries", e.id)} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* História */}
-      {olderByDay.size > 0 && (
-        <div>
-          <SectionTitle>História</SectionTitle>
-          <div className="space-y-5">
-            {[...olderByDay.entries()].slice(0, 14).map(([day, list]) => (
-              <div key={day}>
-                <div className="mb-2 text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                  {new Date(day).toLocaleDateString("sk-SK", { weekday: "long", day: "numeric", month: "long" })} · {list.length}
-                </div>
-                <div className="space-y-2">
-                  {list.map((e) => (
-                    <EntryRow key={e.id} entry={e} onDelete={() => remove("entries", e.id)} />
-                  ))}
-                </div>
-              </div>
             ))}
           </div>
         </div>
@@ -329,37 +140,60 @@ export default function DennikPage() {
   );
 }
 
-function EntryRow({ entry, onDelete }: { entry: Entry; onDelete: () => void }) {
-  const [confirm, setConfirm] = useState(false);
-  const time = new Date(entry.ts).toLocaleTimeString("sk-SK", { hour: "2-digit", minute: "2-digit" });
+function ReflectionCard({
+  reflection,
+  isToday,
+  onEdit,
+}: {
+  reflection: Reflection;
+  isToday?: boolean;
+  onEdit?: () => void;
+}) {
+  const dateLabel = new Date(reflection.date).toLocaleDateString("sk-SK", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+  const answers = Object.entries(reflection.answers ?? {}).filter(([, v]) => String(v ?? "").trim());
+
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-3 text-sm dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="font-medium">{OUTCOME_LABELS[entry.outcome]}</span>
-          {entry.trust ? <span className="text-zinc-500">dôvera {entry.trust}/5</span> : null}
-          <span className="text-zinc-400">{time}</span>
+    <Card className={isToday ? "border-indigo-300 dark:border-indigo-800" : undefined}>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2 text-sm font-medium capitalize text-zinc-500 dark:text-zinc-400">
+          <span>{dateLabel}</span>
+          {isToday && (
+            <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-semibold normal-case text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+              dnes
+            </span>
+          )}
         </div>
-        {!confirm ? (
-          <button onClick={() => setConfirm(true)} className="text-xs text-zinc-400 hover:text-red-600">
-            zmazať
+        {onEdit && (
+          <button
+            type="button"
+            onClick={onEdit}
+            className="text-xs font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+          >
+            Upraviť
           </button>
-        ) : (
-          <span className="flex gap-2 text-xs">
-            <button onClick={onDelete} className="font-medium text-red-600">naozaj zmazať</button>
-            <button onClick={() => setConfirm(false)} className="text-zinc-500">nie</button>
-          </span>
         )}
       </div>
-      <div className="mt-1 space-y-0.5 text-zinc-600 dark:text-zinc-300">
-        {entry.want && <div>🎯 chcel: {entry.want}</div>}
-        {entry.fear && <div>😟 bál sa: {entry.fear}</div>}
-        {entry.why && <div>💡 prečo: {entry.why}</div>}
-        {entry.objection && <div>🥊 námietka: {entry.objection}</div>}
-        {entry.plus && <div className="text-emerald-700 dark:text-emerald-400">➕ {entry.plus}</div>}
-        {entry.minus && <div className="text-red-700 dark:text-red-400">➖ {entry.minus}</div>}
-        {entry.note && <div>📝 {entry.note}</div>}
+      <div className="space-y-3 text-sm">
+        {answers.map(([q, a]) => (
+          <div key={q}>
+            <div className="font-medium text-zinc-700 dark:text-zinc-300">{q}</div>
+            <p className="mt-0.5 whitespace-pre-wrap text-zinc-600 dark:text-zinc-400">{a}</p>
+          </div>
+        ))}
+        {reflection.focus?.trim() && (
+          <div>
+            <div className="font-medium text-zinc-700 dark:text-zinc-300">Čo chcem zajtra zlepšiť?</div>
+            <p className="mt-0.5 whitespace-pre-wrap text-zinc-600 dark:text-zinc-400">{reflection.focus}</p>
+          </div>
+        )}
+        {answers.length === 0 && !reflection.focus?.trim() && (
+          <p className="text-zinc-400">Bez vyplneného textu.</p>
+        )}
       </div>
-    </div>
+    </Card>
   );
 }

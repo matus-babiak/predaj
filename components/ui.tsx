@@ -108,12 +108,18 @@ export function Label({ children }: { children: React.ReactNode }) {
 export function Modal({
   children,
   onClose,
+  backdropClassName = "bg-black/85",
 }: {
   children: React.ReactNode;
   onClose?: () => void;
+  /** Overlay behind the dialog; default is semi-transparent black. */
+  backdropClassName?: string;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4" onClick={onClose}>
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${backdropClassName}`}
+      onClick={onClose}
+    >
       <div
         className="w-full max-w-xs rounded-2xl border border-zinc-200 bg-white p-4 shadow-xl dark:border-zinc-800 dark:bg-zinc-900"
         onClick={(e) => e.stopPropagation()}

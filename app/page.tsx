@@ -78,7 +78,7 @@ export default function TodayPage() {
       )}
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Link href="/dennik">
+        <Link href="/zaznamy">
           <Card className="h-full transition-colors hover:border-indigo-400">
             <div className="text-3xl">✍️</div>
             <div className="mt-2 font-semibold">Rýchly záznam</div>

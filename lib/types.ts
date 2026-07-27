@@ -159,6 +159,9 @@ export interface Settings {
   swAiNote?: string; // AI komentár k plusom a mínusom (cache, negeneruje sa pri každom zobrazení)
   swAiNoteAt?: number;
   swAiNoteFingerprint?: string; // odtlačok vstupných dát, podľa ktorého sa pozná, či je komentár ešte platný
+  mentorBriefing?: string; // týždenný AI briefing (plusy, mínusy, denník, záznamy)
+  mentorBriefingAt?: number;
+  mentorBriefingFingerprint?: string;
   entryDraft?: EntryDraft;
   updatedAt: number;
 }

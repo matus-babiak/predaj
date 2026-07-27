@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useData } from "@/lib/useData";
 import { uid } from "@/lib/store";
 import { dayKey } from "@/lib/gamify";
 import { getWeek } from "@/content/program";
 import { DEFAULT_WANTS, DEFAULT_FEARS, OUTCOME_LABELS } from "@/content/chips";
 import { OBJECTIONS } from "@/content/objections";
-import type { Entry, Outcome, Reflection } from "@/lib/types";
+import type { Entry, EntryDraft, Outcome, Reflection } from "@/lib/types";
 import { Btn, Card, Chip, Input, Label, SectionTitle, TextArea } from "@/components/ui";
 
 const OUTCOMES: { id: Outcome; label: string; emoji: string }[] = [
@@ -18,7 +18,7 @@ const OUTCOMES: { id: Outcome; label: string; emoji: string }[] = [
 ];
 
 export default function DennikPage() {
-  const { entries, reflections, progress, put, remove, ready } = useData();
+  const { entries, reflections, settings, progress, put, remove, ready } = useData();
 
   // --- Rýchly záznam ---
   const [outcome, setOutcome] = useState<Outcome | null>(null);
@@ -32,6 +32,52 @@ export default function DennikPage() {
   const [minus, setMinus] = useState("");
   const [saved, setSaved] = useState(false);
   const [showMore, setShowMore] = useState(false);
+
+  // Rozpísaný záznam sa priebežne ukladá do settings.entryDraft, aby sa
+  // nestratil pri odhlásení z nečinnosti alebo zatvorení appky. draftAppliedRef
+  // zabezpečí, že sa obnoví najviac raz (buď hneď z lokálnej cache, alebo
+  // neskôr, keď dorazí zo servera z iného zariadenia), a nikdy neprepíše
+  // rozpísaný text tým, čo si sám pred chvíľou uložil.
+  const draftAppliedRef = useRef(false);
+  const autosaveArmedRef = useRef(false);
+
+  useEffect(() => {
+    if (draftAppliedRef.current) return;
+    const d = settings.entryDraft;
+    if (!d) return;
+    draftAppliedRef.current = true;
+    setOutcome(d.outcome ?? null);
+    setWant(d.want ?? "");
+    setFear(d.fear ?? "");
+    setWhy(d.why ?? "");
+    setTrust(d.trust ?? 0);
+    setObjection(d.objection ?? "");
+    setNote(d.note ?? "");
+    setPlus(d.plus ?? "");
+    setMinus(d.minus ?? "");
+    if (d.objection || d.note) setShowMore(true);
+  }, [settings.entryDraft]);
+
+  useEffect(() => {
+    if (ready) autosaveArmedRef.current = true;
+  }, [ready]);
+
+  useEffect(() => {
+    if (!autosaveArmedRef.current) return;
+    const draft: EntryDraft = {
+      outcome: outcome ?? undefined,
+      want: want.trim() || undefined,
+      fear: fear.trim() || undefined,
+      why: why.trim() || undefined,
+      trust: trust || undefined,
+      objection: objection.trim() || undefined,
+      note: note.trim() || undefined,
+      plus: plus.trim() || undefined,
+      minus: minus.trim() || undefined,
+    };
+    put("settings", { ...settings, entryDraft: draft, updatedAt: Date.now() });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [outcome, want, fear, why, trust, objection, note, plus, minus]);
 
   const saveEntry = () => {
     if (!outcome) return;

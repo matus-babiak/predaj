@@ -136,6 +136,21 @@ export interface ProductCard {
   updatedAt: number;
 }
 
+// Rozpísaný, ešte neuložený rýchly záznam. Ukladá sa priebežne počas písania,
+// aby sa nestratil pri odhlásení z nečinnosti alebo zatvorení appky pred
+// kliknutím na "Uložiť záznam", synchronizuje sa rovnako ako ostatné dáta.
+export interface EntryDraft {
+  outcome?: Outcome;
+  want?: string;
+  fear?: string;
+  why?: string;
+  trust?: number;
+  objection?: string;
+  note?: string;
+  plus?: string;
+  minus?: string;
+}
+
 export interface Settings {
   id: "settings";
   customWants: string[];
@@ -144,6 +159,7 @@ export interface Settings {
   swAiNote?: string; // AI komentár k plusom a mínusom (cache, negeneruje sa pri každom zobrazení)
   swAiNoteAt?: number;
   swAiNoteFingerprint?: string; // odtlačok vstupných dát, podľa ktorého sa pozná, či je komentár ešte platný
+  entryDraft?: EntryDraft;
   updatedAt: number;
 }
 

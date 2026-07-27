@@ -39,7 +39,6 @@ export default function LoginPage() {
         <div className="text-center">
           <div className="text-3xl">🥋</div>
           <h1 className="mt-2 text-xl font-semibold">Sales Dojo</h1>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Tvoj osobný tréning predaja</p>
         </div>
         <Input
           type="password"

@@ -111,3 +111,23 @@ Pravidlá formátovania:
 - Bez úvodu a bez záveru navyše
 - Žiadne HTML, len markdown (##, **, - )`;
 }
+
+/** AI štruktúra hardvérového / technického štúdia z voľného textu predajcu. */
+export function buildStudyPrompt(rawText: string): string {
+  return `Si mentor predaja v PC/telefón servise. Predajca napísal vlastnými slovami situáciu, ktorú riešil a v ktorej mu chýbali produktové alebo hardvérové znalosti.
+
+Jeho text:
+"""
+${rawText}
+"""
+
+Vráť VÝHRADNE jeden JSON objekt (bez markdown fence, bez úvodu) s kľúčmi:
+{
+  "title": "krátky výstižný názov témy po slovensky",
+  "situation": "1–2 vety: čo riešil / čo nevedel",
+  "learnPoints": ["3 až 7 konkrétnych bodov čo sa naučiť alebo pozrieť"],
+  "whatsGo": "2–4 vety: čo má ísť študovať a prečo mu to pomôže pri predaji (What's Go)"
+}
+
+Buď konkrétny podľa jeho textu, nie všeobecný. Po slovensky.`;
+}

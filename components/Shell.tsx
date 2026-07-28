@@ -20,6 +20,9 @@ const NAV = [
   { href: "/plusy-minusy", label: "Plusy a mínusy", icon: "⚖️" },
   { href: "/ai-mentor", label: "AI Mentor", icon: "🎓" },
   { href: "/otazky", label: "Otázky", icon: "❓" },
+  { href: "/poznamky", label: "Poznámky", icon: "📌" },
+  { href: "/hardver", label: "Hardvér", icon: "🔧" },
+  { href: "/manualy", label: "Manuály", icon: "📘" },
   { href: "/produkty", label: "Produkty", icon: "🗂️" },
   { href: "/statistiky", label: "Štatistiky", icon: "📈" },
 ];

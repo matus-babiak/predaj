@@ -44,6 +44,37 @@ export interface MyThought {
   updatedAt: number;
 }
 
+// Rýchle poznámky (TODO): pridať, vybaviť, zmazať.
+export interface Note {
+  id: string;
+  ts: number;
+  text: string;
+  doneAt?: number;
+  updatedAt: number;
+}
+
+// Hardvérové / technické štúdium: voľný text + AI štruktúra čo sa naučiť.
+export interface StudyTopic {
+  id: string;
+  ts: number;
+  rawText: string;
+  title?: string;
+  situation?: string; // čo si riešil
+  learnPoints?: string[]; // checklist čo sa naučiť / pozrieť
+  whatsGo?: string; // krátke vysvetlenie „čo ísť študovať“
+  doneAt?: number;
+  updatedAt: number;
+}
+
+// Manuál (napr. Zisťovanie): tab na stránke Manuály + dlhý obsah.
+export interface Manual {
+  id: string;
+  title: string;
+  body: string;
+  order: number;
+  updatedAt: number;
+}
+
 export interface Reflection {
   id: string; // dátum YYYY-MM-DD
   date: string;
@@ -190,6 +221,9 @@ export type Collections = {
   selfNotes: SelfNote[];
   questions: Question[];
   myThoughts: MyThought[];
+  notes: Note[];
+  studyTopics: StudyTopic[];
+  manuals: Manual[];
 };
 
 export const COLLECTION_NAMES = [
@@ -203,6 +237,9 @@ export const COLLECTION_NAMES = [
   "selfNotes",
   "questions",
   "myThoughts",
+  "notes",
+  "studyTopics",
+  "manuals",
 ] as const;
 
 export type CollectionName = (typeof COLLECTION_NAMES)[number];

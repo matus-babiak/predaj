@@ -14,6 +14,9 @@ import type {
   SelfNote,
   Question,
   MyThought,
+  Note,
+  StudyTopic,
+  Manual,
 } from "./types";
 import { dayKey } from "./gamify";
 
@@ -29,6 +32,9 @@ export function useData() {
   const selfNotes = ((db.selfNotes ?? []) as SelfNote[]).slice().sort((a, b) => b.ts - a.ts);
   const questions = ((db.questions ?? []) as Question[]).slice().sort((a, b) => b.ts - a.ts);
   const myThoughts = ((db.myThoughts ?? []) as MyThought[]).slice().sort((a, b) => b.ts - a.ts);
+  const notes = ((db.notes ?? []) as Note[]).slice().sort((a, b) => b.ts - a.ts);
+  const studyTopics = ((db.studyTopics ?? []) as StudyTopic[]).slice().sort((a, b) => b.ts - a.ts);
+  const manuals = ((db.manuals ?? []) as Manual[]).slice().sort((a, b) => a.order - b.order || a.title.localeCompare(b.title, "sk"));
 
   const progress: Progress =
     (db.progress[0] as Progress) ?? {
@@ -69,6 +75,9 @@ export function useData() {
     selfNotes,
     questions,
     myThoughts,
+    notes,
+    studyTopics,
+    manuals,
     progress,
     settings,
     daysInCurrentWeek,

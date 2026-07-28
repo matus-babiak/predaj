@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { useData } from "@/lib/useData";
 import { uid } from "@/lib/store";
 import type { StudyTopic } from "@/lib/types";
@@ -132,6 +132,22 @@ export default function HardverPage() {
   );
 }
 
+function topicCopyText(topic: StudyTopic): string {
+  const lines: string[] = [topic.title ?? "Bez názvu", ""];
+  if (topic.situation) {
+    lines.push("Čo si riešil", topic.situation, "");
+  }
+  if (topic.learnPoints && topic.learnPoints.length > 0) {
+    lines.push("Čo sa naučiť / pozrieť");
+    for (const p of topic.learnPoints) lines.push(`- ${p}`);
+    lines.push("");
+  }
+  if (topic.whatsGo) {
+    lines.push("What's Go", topic.whatsGo);
+  }
+  return lines.join("\n").trim();
+}
+
 function StudyCard({
   topic,
   onDone,
@@ -145,80 +161,114 @@ function StudyCard({
 }) {
   const [confirm, setConfirm] = useState(false);
   const [showRaw, setShowRaw] = useState(false);
+  const [copied, setCopied] = useState(false);
   const done = !!topic.doneAt;
 
+  const copyTopic = async (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(topicCopyText(topic));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // clipboard nedostupný
+    }
+  };
+
   return (
-    <Card className={done ? "opacity-80" : undefined}>
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">{topic.title ?? "Bez názvu"}</h2>
-        <span className="text-xs text-zinc-400">{formatDay(topic.ts)}</span>
-      </div>
+    <details
+      className={`rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 ${
+        done ? "opacity-80" : ""
+      }`}
+    >
+      <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-3 marker:content-none [&::-webkit-details-marker]:hidden">
+        <span className="min-w-0 flex-1 text-left text-base font-semibold text-zinc-900 dark:text-zinc-50">
+          {topic.title ?? "Bez názvu"}
+        </span>
+        <span className="shrink-0 text-xs text-zinc-400">{formatDay(topic.ts)}</span>
+        <button
+          type="button"
+          onClick={copyTopic}
+          title={copied ? "Skopírované" : "Kopírovať obsah"}
+          aria-label={copied ? "Skopírované" : "Kopírovať obsah"}
+          className="shrink-0 rounded-lg border border-zinc-200 px-2 py-1 text-sm text-zinc-500 hover:border-indigo-400 hover:text-indigo-600 dark:border-zinc-700 dark:hover:text-indigo-400"
+        >
+          {copied ? "✓" : "📋"}
+        </button>
+      </summary>
 
-      {topic.situation && (
-        <div className="mt-3">
-          <div className="text-xs font-semibold uppercase tracking-wide text-zinc-400">Čo si riešil</div>
-          <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">{topic.situation}</p>
-        </div>
-      )}
-
-      {topic.learnPoints && topic.learnPoints.length > 0 && (
-        <div className="mt-3">
-          <div className="text-xs font-semibold uppercase tracking-wide text-zinc-400">Čo sa naučiť / pozrieť</div>
-          <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-zinc-700 dark:text-zinc-300">
-            {topic.learnPoints.map((p, i) => (
-              <li key={i}>{p}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {topic.whatsGo && (
-        <div className="mt-3 rounded-xl border border-indigo-200 bg-indigo-50/60 p-3 dark:border-indigo-900 dark:bg-indigo-950/30">
-          <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700 dark:text-indigo-400">
-            What&apos;s Go
+      <div className="space-y-3 border-t border-zinc-200 px-4 py-3 dark:border-zinc-800">
+        {topic.situation && (
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-zinc-400">Čo si riešil</div>
+            <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">{topic.situation}</p>
           </div>
-          <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">{topic.whatsGo}</p>
+        )}
+
+        {topic.learnPoints && topic.learnPoints.length > 0 && (
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-zinc-400">Čo sa naučiť / pozrieť</div>
+            <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-zinc-700 dark:text-zinc-300">
+              {topic.learnPoints.map((p, i) => (
+                <li key={i}>{p}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {topic.whatsGo && (
+          <div className="rounded-xl border border-indigo-200 bg-indigo-50/60 p-3 dark:border-indigo-900 dark:bg-indigo-950/30">
+            <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700 dark:text-indigo-400">
+              What&apos;s Go
+            </div>
+            <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">{topic.whatsGo}</p>
+          </div>
+        )}
+
+        <button
+          type="button"
+          onClick={() => setShowRaw(!showRaw)}
+          className="text-xs text-indigo-600 hover:underline dark:text-indigo-400"
+        >
+          {showRaw ? "Skryť pôvodný text" : "Pôvodný text"}
+        </button>
+        {showRaw && (
+          <p className="whitespace-pre-wrap rounded-lg bg-zinc-100 p-2 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+            {topic.rawText}
+          </p>
+        )}
+
+        <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400">
+          {!done ? (
+            <button
+              type="button"
+              onClick={onDone}
+              className="font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+            >
+              naštudované
+            </button>
+          ) : (
+            <button type="button" onClick={onReopen} className="hover:text-amber-600">
+              vrátiť na štúdium
+            </button>
+          )}
+          {!confirm ? (
+            <button type="button" onClick={() => setConfirm(true)} className="hover:text-red-600">
+              zmazať
+            </button>
+          ) : (
+            <span className="flex gap-2">
+              <button type="button" onClick={onDelete} className="font-medium text-red-600">
+                naozaj zmazať
+              </button>
+              <button type="button" onClick={() => setConfirm(false)} className="text-zinc-500">
+                nie
+              </button>
+            </span>
+          )}
         </div>
-      )}
-
-      <button
-        type="button"
-        onClick={() => setShowRaw(!showRaw)}
-        className="mt-3 text-xs text-indigo-600 hover:underline dark:text-indigo-400"
-      >
-        {showRaw ? "Skryť pôvodný text" : "Pôvodný text"}
-      </button>
-      {showRaw && (
-        <p className="mt-1 whitespace-pre-wrap rounded-lg bg-zinc-100 p-2 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
-          {topic.rawText}
-        </p>
-      )}
-
-      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-zinc-400">
-        {!done ? (
-          <button type="button" onClick={onDone} className="font-medium text-emerald-600 hover:underline dark:text-emerald-400">
-            naštudované
-          </button>
-        ) : (
-          <button type="button" onClick={onReopen} className="hover:text-amber-600">
-            vrátiť na štúdium
-          </button>
-        )}
-        {!confirm ? (
-          <button type="button" onClick={() => setConfirm(true)} className="hover:text-red-600">
-            zmazať
-          </button>
-        ) : (
-          <span className="flex gap-2">
-            <button type="button" onClick={onDelete} className="font-medium text-red-600">
-              naozaj zmazať
-            </button>
-            <button type="button" onClick={() => setConfirm(false)} className="text-zinc-500">
-              nie
-            </button>
-          </span>
-        )}
       </div>
-    </Card>
+    </details>
   );
 }

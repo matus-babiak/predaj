@@ -53,6 +53,17 @@ export interface Note {
   updatedAt: number;
 }
 
+// Čistá požiadavka zákazníka (s čím prišiel), oddelená od predajných záznamov.
+// Slúži ako zoznam dopytov, s ktorými sa dá neskôr pracovať (sortiment, príprava).
+export interface CustomerRequest {
+  id: string;
+  ts: number;
+  text: string;
+  count: number; // koľkokrát som to počul (začne na 1)
+  doneAt?: number;
+  updatedAt: number;
+}
+
 // Hardvérové / technické štúdium: voľný text + AI štruktúra čo sa naučiť.
 export interface StudyTopic {
   id: string;
@@ -222,6 +233,7 @@ export type Collections = {
   questions: Question[];
   myThoughts: MyThought[];
   notes: Note[];
+  requests: CustomerRequest[];
   studyTopics: StudyTopic[];
   manuals: Manual[];
 };
@@ -238,6 +250,7 @@ export const COLLECTION_NAMES = [
   "questions",
   "myThoughts",
   "notes",
+  "requests",
   "studyTopics",
   "manuals",
 ] as const;

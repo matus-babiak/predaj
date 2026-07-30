@@ -15,6 +15,7 @@ const NAV = [
   { href: "/mindset", label: "Mindset", icon: "🧠" },
   { href: "/dennik", label: "Denník", icon: "📒" },
   { href: "/zaznamy", label: "Záznamy", icon: "📝" },
+  { href: "/poziadavky", label: "Požiadavky", icon: "📋" },
   { href: "/program", label: "Program", icon: "🧭" },
   { href: "/namietky", label: "Námietky", icon: "🥊" },
   { href: "/plusy-minusy", label: "Plusy a mínusy", icon: "⚖️" },

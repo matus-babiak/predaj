@@ -15,6 +15,7 @@ import type {
   Question,
   MyThought,
   Note,
+  CustomerRequest,
   StudyTopic,
   Manual,
 } from "./types";
@@ -33,6 +34,9 @@ export function useData() {
   const questions = ((db.questions ?? []) as Question[]).slice().sort((a, b) => b.ts - a.ts);
   const myThoughts = ((db.myThoughts ?? []) as MyThought[]).slice().sort((a, b) => b.ts - a.ts);
   const notes = ((db.notes ?? []) as Note[]).slice().sort((a, b) => b.ts - a.ts);
+  const requests = ((db.requests ?? []) as CustomerRequest[])
+    .slice()
+    .sort((a, b) => b.count - a.count || b.ts - a.ts);
   const studyTopics = ((db.studyTopics ?? []) as StudyTopic[]).slice().sort((a, b) => b.ts - a.ts);
   const manuals = ((db.manuals ?? []) as Manual[]).slice().sort((a, b) => a.order - b.order || a.title.localeCompare(b.title, "sk"));
 
@@ -76,6 +80,7 @@ export function useData() {
     questions,
     myThoughts,
     notes,
+    requests,
     studyTopics,
     manuals,
     progress,

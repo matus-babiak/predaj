@@ -19,3 +19,9 @@ Namiesto pomlčky použi podľa kontextu:
 Pri zástupných/prázdnych hodnotách v UI (napr. keď sa nemá čo zobraziť) nikdy
 nenahrádzaj pôvodnú pomlčku čiarkou, použi `-` alebo iný vhodný zástupný
 znak.
+
+## AI development
+
+Zdroj pravdy pre AI workflow, produkt a architektúru: `docs/ai/`.
+Cursor príkazy: `/dojo-plan` (plánovanie), `/dojo-implement` (implementácia).
+Pravidlá: `.cursor/rules/`.

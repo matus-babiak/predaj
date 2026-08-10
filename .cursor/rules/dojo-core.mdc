@@ -1,0 +1,38 @@
+---
+description: Základné pravidlá AI vývoja Sales Dojo (Knowledge Base, pravda kódu, najmenšia zmena)
+alwaysApply: true
+---
+
+# Sales Dojo: jadrové AI pravidlá
+
+## Zdroj pravdy
+
+1. **Aktuálny kód** je technická pravda.
+2. **`docs/ai/`** je Knowledge Base pre produkt, architektúru, rules a workflow.
+3. Pri konflikte dokumentácie a kódu: riad sa kódom a konflikt zaznač (neprepisuj docs potichu).
+4. Typografia: dodrž `CLAUDE.md` (žiadne em dash ani en dash).
+
+## Pred každou zmenou aplikácie
+
+- Ak ide o novú funkciu / správanie / UX / model: používateľ mal najprv ísť cez `/dojo-plan`, alebo musíš explicitne plánovať rovnakým spôsobom a **počkať na schválenie**.
+- Skontroluj relevantné: `docs/ai/product.md`, `architecture.md`, `data-model.md`, `business-rules.md`, `ui-ux.md`, `harness.md`.
+- Over reálny kód (otvor súbory). Netvrď nič neoverené.
+- Identifikuj dotknuté časti a existujúce patterns.
+- Preferuj **najmenšiu správnu zmenu**. Nerefaktoruj architektúru, ak pattern stačí.
+
+## Čo AI nesmie
+
+- Vymýšľať existujúci stav aplikácie.
+- Pridávať funkcionalitu mimo scope.
+- Automaticky prepisovať README/NAVOD pri feature práci, pokiaľ to nie je v schválenom pláne.
+- Porušovať kritické business rules (auth, sync `updatedAt`, singleton progress/settings, Gemini kľúč na serveri).
+- Commitovať secrety (`.env`, `.data.json` s produkčnými dátami).
+
+## Kedy sa opýtať
+
+Nejasný zámer, viac výkladov, zásah do červenej/žltej zóny harnessu, chýbajúce produktové rozhodnutie, alebo by zmena nebola „najmenšia správna“.
+
+## Po významnej zmene
+
+- Definuj / dodrž spôsob overenia z plánu.
+- Aktualizuj `docs/ai/*`, ak sa zmenil systémový fakt.

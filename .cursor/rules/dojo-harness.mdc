@@ -1,0 +1,30 @@
+---
+description: Harness ochrany Sales Dojo (dáta, auth, sync, scope)
+alwaysApply: true
+---
+
+# Sales Dojo: harness
+
+Pred nebezpečnými operáciami si prečítaj `docs/ai/harness.md`.
+
+## Zakázané bez explicitného schválenia v pláne
+
+- Flush / wipe Redis alebo `.data.json`
+- Bulk delete celej kolekcie
+- Commit secretov (`APP_PASSWORD`, `GEMINI_API_KEY`, `.env`)
+- Exponovať Gemini kľúč do klienta
+- Oslabovať middleware auth
+- Premenovať `cp:*` Redis kľúče alebo `cp_cache_v1` / `cp_queue_v1` bez migrácie
+- Odstrániť položku z `COLLECTION_NAMES` bez migrácie
+- Meniť sémantiku merge podľa `updatedAt`
+- Veľký refaktor `lib/store.tsx` „cestou“ pri inej úlohe
+- Auto-generovať AI pri každom načítaní stránky
+
+## Pri pochybnosťach
+
+Zastav sa a spýtaj sa používateľa. Nevymýšľaj „dočasné“ riešenie v červenej zóne.
+
+## Primeranosť
+
+Bežné UI úpravy jednej stránky, SK copy a voliteľné polia na typoch sú OK po schválenom pláne.
+Nebyrokratizuj triviálne zmeny, ale nikdy neobchádzaj červenú zónu.

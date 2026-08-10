@@ -40,3 +40,8 @@ Bez nastaveného `APP_PASSWORD` beží appka lokálne bez prihlásenia.
 
 Pozri [NAVOD.md](NAVOD.md): krok za krokom GitHub + Vercel + heslo.
 Každý push do repozitára spustí automatický deployment na Verceli.
+
+## AI development
+
+Pre systematický AI vývoj (plánovanie oddelené od implementácie) pozri
+[docs/ai/README.md](docs/ai/README.md). Príkazy v Cursore: `/dojo-plan`, `/dojo-implement`.

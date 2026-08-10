@@ -58,8 +58,10 @@ Porušenie = strata dát, bezpečnostná diera, alebo rozbitie jadra produktu.
 - `daysInCurrentWeek` počíta unikátne dni z entries (`ts >= start`) a reflections (`updatedAt >= start`) od `weekStarts[currentWeek]` (fallback `startedAt`).
 - Zmena tejto logiky mení tempo celého programu.
 
-### D3: Entry: outcome povinný
-- Uloženie záznamu bez `outcome` nie je dovolené (UI blokuje).
+### D3: Entry: povinné polia nového formulára
+- Uloženie vyžaduje `outcome`, `priceTiming` a `hadNextStepPlan`.
+- `itemCount` default 0, `askedReview` default false, `objectionReaction` default `none`.
+- Staršie polia (`want`, `fear`, `why`, `trust`, `objection`, `plus`, `minus`) sa v novom formulári nezapisujú, ale v histórii ostávajú.
 
 ### D4: Entry draft
 - Rozpísaný záznam sa autosave-uje do `settings.entryDraft`, aby sa nestratil pri idle logout.

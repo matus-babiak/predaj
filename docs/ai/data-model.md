@@ -32,7 +32,15 @@
 
 ### Entry
 - `outcome`: `kupil` | `nekupil` | `vrati_sa` | `rada` (**povinné** pri uložení)
-- voliteľné: `want`, `fear`, `why`, `trust` (1-5), `objection`, `note`, `plus`, `minus`
+- Coaching polia (nový formulár):
+  - `itemCount`: 0-5 (5 = 5+)
+  - `askedReview`: boolean
+  - `priceTiming`: `start` | `end` | `avoided` (**povinné** v novom formulári)
+  - `objectionReaction`: `none` | `asked_benefit` | `gave_in` | `discount` | `froze`
+  - `hadNextStepPlan`: `yes` | `no` | `partial` (**povinné** v novom formulári)
+  - `note`: voliteľná jedna veta
+- Staršie voliteľné polia (história, nový formulár ich nezapisuje):
+  `want`, `fear`, `why`, `trust`, `objection`, `plus`, `minus`
 
 ### Reflection
 - `id` a `date`: `YYYY-MM-DD` (jedna reflexia na deň)

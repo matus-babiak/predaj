@@ -2,18 +2,42 @@
 
 export type Outcome = "kupil" | "nekupil" | "vrati_sa" | "rada";
 
+/** Počet predaných / dohodnutých položiek. 5 = 5 alebo viac. */
+export type ItemCount = 0 | 1 | 2 | 3 | 4 | 5;
+
+/** Kedy som zákazníkovi povedal cenu. */
+export type PriceTiming = "start" | "end" | "avoided";
+
+/** Ako som zareagoval na námietku ceny / „nepotrebujem“. */
+export type ObjectionReaction = "none" | "asked_benefit" | "gave_in" | "discount" | "froze";
+
+/** Či som mal pred otázkou plán ďalšieho kroku. */
+export type NextStepPlan = "yes" | "no" | "partial";
+
 export interface Entry {
   id: string;
   ts: number; // timestamp záznamu
   outcome: Outcome;
-  want?: string; // čo podľa mňa chcel (skutočná potreba)
-  fear?: string; // čoho sa bál
-  why?: string; // prečo kúpil / nekúpil
-  trust?: number; // 1-5: nakoľko vznikla dôvera
-  objection?: string; // námietka, ktorá padla
-  note?: string; // poznámka na večer
-  plus?: string; // sebahodnotenie: čo som urobil dobre
-  minus?: string; // sebahodnotenie: čo nabudúce inak
+
+  // Coaching polia (nový formulár Záznamy)
+  itemCount?: ItemCount; // 0-5, kde 5 znamená 5+
+  askedReview?: boolean;
+  priceTiming?: PriceTiming;
+  objectionReaction?: ObjectionReaction;
+  hadNextStepPlan?: NextStepPlan;
+
+  // Voľná jedna veta / poznámka (nové aj staré záznamy)
+  note?: string;
+
+  // Staršie polia: ostávajú kvôli histórii, nový formulár ich už nezapisuje
+  want?: string;
+  fear?: string;
+  why?: string;
+  trust?: number;
+  objection?: string;
+  plus?: string;
+  minus?: string;
+
   updatedAt: number;
 }
 
@@ -183,12 +207,18 @@ export interface ProductCard {
 // kliknutím na "Uložiť záznam", synchronizuje sa rovnako ako ostatné dáta.
 export interface EntryDraft {
   outcome?: Outcome;
+  itemCount?: ItemCount;
+  askedReview?: boolean;
+  priceTiming?: PriceTiming;
+  objectionReaction?: ObjectionReaction;
+  hadNextStepPlan?: NextStepPlan;
+  note?: string;
+  // staršie draft polia (ak ešte niekde ostanú v settings)
   want?: string;
   fear?: string;
   why?: string;
   trust?: number;
   objection?: string;
-  note?: string;
   plus?: string;
   minus?: string;
 }

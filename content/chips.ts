@@ -29,3 +29,23 @@ export const OUTCOME_LABELS: Record<string, string> = {
   vrati_sa: "Vráti sa",
   rada: "Len rada",
 };
+
+export const PRICE_TIMING_LABELS: Record<string, string> = {
+  start: "Cena hneď na začiatku",
+  end: "Cena neskôr / na konci",
+  avoided: "Cene som sa vyhol",
+};
+
+export const OBJECTION_REACTION_LABELS: Record<string, string> = {
+  none: "Námietka nepadla",
+  asked_benefit: "Opýtal som sa na úžitok",
+  gave_in: "Povedal som „Dobre“ / ustúpil som",
+  discount: "Dal som zľavu bez dôvodu",
+  froze: "Zamrzol som / ticho",
+};
+
+export const NEXT_STEP_PLAN_LABELS: Record<string, string> = {
+  yes: "Mal som plán kroku",
+  no: "Nemal som plán kroku",
+  partial: "Plán kroku len čiastočne",
+};

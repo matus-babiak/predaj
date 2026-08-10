@@ -39,7 +39,7 @@ Zdroj: `components/Shell.tsx` → pole `NAV`.
 | `/` | Dnes | Denný hub: úloha týždňa, rýchle akcie, streak, odznaky |
 | `/mindset` | Mindset | Banka myšlienok + vlastné myšlienky + obľúbené |
 | `/dennik` | Denník | Večerná reflexia podľa otázok aktuálneho týždňa |
-| `/zaznamy` | Záznamy | Rýchly záznam po zákazníkovi + história |
+| `/zaznamy` | Záznamy | Coaching zápis po zákazníkovi + história |
 | `/poziadavky` | Požiadavky | Čisté dopyty zákazníkov (bez výsledku predaja) |
 | `/program` | Program | 12 týždňov / 6 fáz, odomykanie vlastným tempom |
 | `/namietky` | Námietky | Tréning uznaj → zisti → odpovedz + banka |
@@ -107,7 +107,7 @@ Za MVP sa považuje to, čo je v kóde a v navigácii funkčné:
 2. **Offline-first** s last-write-wins podľa `updatedAt`.
 3. Program ide **vlastným tempom**, nie kalendárom.
 4. Námietky: princíp **uznaj → zisti → odpovedz**; slabšie sa vracajú častejšie.
-5. Záznam je rýchly (30s mentalita): outcome stačí na uloženie.
+5. Záznam je rýchly coaching zápis: výsledok, počet položiek, recenzia, kedy bola cena, reakcia na námietku, plán kroku, voliteľná jedna veta.
 6. Reflexia: **jedna na deň**, id = dátum `YYYY-MM-DD`.
 7. Požiadavky sú **oddelené** od predajných záznamov.
 8. AI sa **negeneruje automaticky** pri každom otvorení: on-demand + fingerprint cache.

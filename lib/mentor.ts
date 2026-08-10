@@ -19,6 +19,13 @@ Napíš krátky komentár v slovenčine, najviac 4 vety, bez odrážok a bez nad
 export interface BriefingEntryInput {
   date: string;
   outcome: string;
+  itemCount?: number;
+  askedReview?: boolean;
+  priceTiming?: string;
+  objectionReaction?: string;
+  hadNextStepPlan?: string;
+  note?: string;
+  // staršie polia (história)
   want?: string;
   fear?: string;
   why?: string;
@@ -26,7 +33,6 @@ export interface BriefingEntryInput {
   objection?: string;
   plus?: string;
   minus?: string;
-  note?: string;
 }
 
 export interface BriefingReflectionInput {
@@ -49,11 +55,16 @@ export function buildWeeklyBriefingPrompt(input: {
         .map((e) => {
           const bits = [
             `${e.date}: ${e.outcome}`,
+            e.itemCount != null ? `položky: ${e.itemCount >= 5 ? "5+" : e.itemCount}` : "",
+            e.askedReview ? "recenzia: áno" : "",
+            e.priceTiming ? `cena: ${e.priceTiming}` : "",
+            e.objectionReaction ? `námietka: ${e.objectionReaction}` : "",
+            e.hadNextStepPlan ? `plán kroku: ${e.hadNextStepPlan}` : "",
             e.want ? `chcel: ${e.want}` : "",
             e.fear ? `bál sa: ${e.fear}` : "",
             e.why ? `prečo: ${e.why}` : "",
             e.trust ? `dôvera ${e.trust}/5` : "",
-            e.objection ? `námietka: ${e.objection}` : "",
+            e.objection ? `námietka text: ${e.objection}` : "",
             e.plus ? `plus: ${e.plus}` : "",
             e.minus ? `mínus: ${e.minus}` : "",
             e.note ? `poznámka: ${e.note}` : "",

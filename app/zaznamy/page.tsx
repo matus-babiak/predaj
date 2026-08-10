@@ -4,11 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import { useData } from "@/lib/useData";
 import { uid } from "@/lib/store";
 import { dayKey } from "@/lib/gamify";
-import { DEFAULT_WANTS, DEFAULT_FEARS } from "@/content/chips";
-import { OBJECTIONS } from "@/content/objections";
-import type { Entry, EntryDraft, Outcome } from "@/lib/types";
+import type {
+  Entry,
+  EntryDraft,
+  ItemCount,
+  NextStepPlan,
+  ObjectionReaction,
+  Outcome,
+  PriceTiming,
+} from "@/lib/types";
 import { EntryRow } from "@/components/EntryRow";
-import { Btn, Card, Chip, Input, Label, SectionTitle } from "@/components/ui";
+import { Btn, Card, Input, Label, SectionTitle } from "@/components/ui";
 
 const OUTCOMES: { id: Outcome; label: string; emoji: string }[] = [
   { id: "kupil", label: "Kúpil", emoji: "✅" },
@@ -17,23 +23,42 @@ const OUTCOMES: { id: Outcome; label: string; emoji: string }[] = [
   { id: "rada", label: "Len rada", emoji: "💬" },
 ];
 
+const PRICE_OPTIONS: { id: PriceTiming; label: string }[] = [
+  { id: "start", label: "Hneď na začiatku" },
+  { id: "end", label: "Neskôr / na konci" },
+  { id: "avoided", label: "Vôbec / vyhol som sa" },
+];
+
+const OBJECTION_OPTIONS: { id: ObjectionReaction; label: string }[] = [
+  { id: "none", label: "Námietka nepadla" },
+  { id: "asked_benefit", label: "Opýtal som sa na úžitok" },
+  { id: "gave_in", label: "Povedal som „Dobre“ / ustúpil som" },
+  { id: "discount", label: "Dal som zľavu bez dôvodu" },
+  { id: "froze", label: "Zamrzol som / ticho" },
+];
+
+const PLAN_OPTIONS: { id: NextStepPlan; label: string }[] = [
+  { id: "yes", label: "Áno" },
+  { id: "partial", label: "Čiastočne" },
+  { id: "no", label: "Nie" },
+];
+
+function itemCountLabel(n: ItemCount): string {
+  return n >= 5 ? "5+" : String(n);
+}
+
 export default function ZaznamyPage() {
   const { entries, settings, put, remove, ready } = useData();
 
   const [outcome, setOutcome] = useState<Outcome | null>(null);
-  const [want, setWant] = useState("");
-  const [fear, setFear] = useState("");
-  const [why, setWhy] = useState("");
-  const [trust, setTrust] = useState(0);
-  const [objection, setObjection] = useState("");
+  const [itemCount, setItemCount] = useState<ItemCount>(0);
+  const [askedReview, setAskedReview] = useState(false);
+  const [priceTiming, setPriceTiming] = useState<PriceTiming | null>(null);
+  const [objectionReaction, setObjectionReaction] = useState<ObjectionReaction>("none");
+  const [hadNextStepPlan, setHadNextStepPlan] = useState<NextStepPlan | null>(null);
   const [note, setNote] = useState("");
-  const [plus, setPlus] = useState("");
-  const [minus, setMinus] = useState("");
   const [saved, setSaved] = useState(false);
-  const [showMore, setShowMore] = useState(false);
 
-  // Rozpísaný záznam sa priebežne ukladá do settings.entryDraft, aby sa
-  // nestratil pri odhlásení z nečinnosti alebo zatvorení appky.
   const draftAppliedRef = useRef(false);
   const autosaveArmedRef = useRef(false);
 
@@ -43,15 +68,12 @@ export default function ZaznamyPage() {
     if (!d) return;
     draftAppliedRef.current = true;
     setOutcome(d.outcome ?? null);
-    setWant(d.want ?? "");
-    setFear(d.fear ?? "");
-    setWhy(d.why ?? "");
-    setTrust(d.trust ?? 0);
-    setObjection(d.objection ?? "");
+    setItemCount((d.itemCount as ItemCount) ?? 0);
+    setAskedReview(!!d.askedReview);
+    setPriceTiming(d.priceTiming ?? null);
+    setObjectionReaction(d.objectionReaction ?? "none");
+    setHadNextStepPlan(d.hadNextStepPlan ?? null);
     setNote(d.note ?? "");
-    setPlus(d.plus ?? "");
-    setMinus(d.minus ?? "");
-    if (d.objection || d.note) setShowMore(true);
   }, [settings.entryDraft]);
 
   useEffect(() => {
@@ -62,47 +84,42 @@ export default function ZaznamyPage() {
     if (!autosaveArmedRef.current) return;
     const draft: EntryDraft = {
       outcome: outcome ?? undefined,
-      want: want.trim() || undefined,
-      fear: fear.trim() || undefined,
-      why: why.trim() || undefined,
-      trust: trust || undefined,
-      objection: objection.trim() || undefined,
+      itemCount,
+      askedReview,
+      priceTiming: priceTiming ?? undefined,
+      objectionReaction,
+      hadNextStepPlan: hadNextStepPlan ?? undefined,
       note: note.trim() || undefined,
-      plus: plus.trim() || undefined,
-      minus: minus.trim() || undefined,
     };
     put("settings", { ...settings, entryDraft: draft, updatedAt: Date.now() });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [outcome, want, fear, why, trust, objection, note, plus, minus]);
+  }, [outcome, itemCount, askedReview, priceTiming, objectionReaction, hadNextStepPlan, note]);
+
+  const canSave = !!outcome && !!priceTiming && !!hadNextStepPlan;
 
   const saveEntry = () => {
-    if (!outcome) return;
+    if (!outcome || !priceTiming || !hadNextStepPlan) return;
     const now = Date.now();
     const entry: Entry = {
       id: uid(),
       ts: now,
       outcome,
-      want: want.trim() || undefined,
-      fear: fear.trim() || undefined,
-      why: why.trim() || undefined,
-      trust: trust || undefined,
-      objection: objection.trim() || undefined,
+      itemCount,
+      askedReview,
+      priceTiming,
+      objectionReaction,
+      hadNextStepPlan,
       note: note.trim() || undefined,
-      plus: plus.trim() || undefined,
-      minus: minus.trim() || undefined,
       updatedAt: now,
     };
     put("entries", entry);
     setOutcome(null);
-    setWant("");
-    setFear("");
-    setWhy("");
-    setTrust(0);
-    setObjection("");
+    setItemCount(0);
+    setAskedReview(false);
+    setPriceTiming(null);
+    setObjectionReaction("none");
+    setHadNextStepPlan(null);
     setNote("");
-    setPlus("");
-    setMinus("");
-    setShowMore(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };
@@ -119,11 +136,16 @@ export default function ZaznamyPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-semibold">Záznamy</h1>
+      <div>
+        <h1 className="text-2xl font-semibold">Záznamy</h1>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+          Rýchly zápis podľa toho, čo ťa teraz posúva: cena, námietky, plán kroku a upsell.
+        </p>
+      </div>
 
       <Card>
         <SectionTitle>Rýchly záznam zákazníka</SectionTitle>
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div>
             <Label>Ako to dopadlo?</Label>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -145,113 +167,114 @@ export default function ZaznamyPage() {
           </div>
 
           <div>
-            <Label>Čo podľa mňa naozaj chcel?</Label>
-            <div className="mb-2 flex flex-wrap gap-1.5">
-              {DEFAULT_WANTS.map((c) => (
-                <Chip key={c} label={c} active={want === c} onClick={() => setWant(want === c ? "" : c)} />
-              ))}
-            </div>
-            <Input placeholder="…alebo napíš vlastné" value={want} onChange={(e) => setWant(e.target.value)} />
-          </div>
-
-          <div>
-            <Label>Čoho sa bál?</Label>
-            <div className="mb-2 flex flex-wrap gap-1.5">
-              {DEFAULT_FEARS.map((c) => (
-                <Chip key={c} label={c} active={fear === c} onClick={() => setFear(fear === c ? "" : c)} />
-              ))}
-            </div>
-            <Input placeholder="…alebo napíš vlastné" value={fear} onChange={(e) => setFear(e.target.value)} />
-          </div>
-
-          <div>
-            <Label>Prečo kúpil / nekúpil? (jedna veta)</Label>
-            <Input
-              value={why}
-              onChange={(e) => setWhy(e.target.value)}
-              placeholder="napr. uveril, že nová batéria mu vydrží celý deň"
+            <Label>Koľko položiek som predal / dohodol? ({itemCountLabel(itemCount)})</Label>
+            <input
+              type="range"
+              min={0}
+              max={5}
+              step={1}
+              value={itemCount}
+              onChange={(e) => setItemCount(Number(e.target.value) as ItemCount)}
+              className="mt-2 w-full accent-indigo-600"
+              aria-valuetext={itemCountLabel(itemCount)}
             />
+            <div className="mt-1 flex justify-between text-xs text-zinc-400">
+              <span>0</span>
+              <span>1</span>
+              <span>2</span>
+              <span>3</span>
+              <span>4</span>
+              <span>5+</span>
+            </div>
           </div>
 
+          <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-zinc-300 px-3 py-3 text-sm dark:border-zinc-700">
+            <input
+              type="checkbox"
+              checked={askedReview}
+              onChange={(e) => setAskedReview(e.target.checked)}
+              className="h-4 w-4 accent-indigo-600"
+            />
+            <span>Požiadal som o recenziu</span>
+          </label>
+
           <div>
-            <Label>Vznikla dôvera? (1 = vôbec, 5 = úplne)</Label>
-            <div className="flex gap-2">
-              {[1, 2, 3, 4, 5].map((n) => (
+            <Label>Cenu som povedal…</Label>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {PRICE_OPTIONS.map((o) => (
                 <button
-                  key={n}
+                  key={o.id}
                   type="button"
-                  onClick={() => setTrust(trust === n ? 0 : n)}
-                  className={`h-10 w-10 rounded-xl border text-sm font-semibold transition-colors ${
-                    trust >= n && trust > 0
+                  onClick={() => setPriceTiming(o.id)}
+                  className={`rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors ${
+                    priceTiming === o.id
                       ? "border-indigo-600 bg-indigo-600 text-white"
-                      : "border-zinc-300 bg-white text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
+                      : "border-zinc-300 bg-white text-zinc-700 hover:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
                   }`}
                 >
-                  {n}
+                  {o.label}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <Label>➕ Moje plus, čo som urobil dobre?</Label>
-              <Input
-                value={plus}
-                onChange={(e) => setPlus(e.target.value)}
-                placeholder="napr. pýtal som sa na potrebu skôr než na rozpočet"
-              />
-            </div>
-            <div>
-              <Label>➖ Moje mínus, čo nabudúce inak?</Label>
-              <Input
-                value={minus}
-                onChange={(e) => setMinus(e.target.value)}
-                placeholder="napr. skočil som mu do reči pri námietke"
-              />
+          <div>
+            <Label>Ak padla námietka (cena / nepotrebujem), čo som urobil?</Label>
+            <div className="grid gap-2">
+              {OBJECTION_OPTIONS.map((o) => (
+                <button
+                  key={o.id}
+                  type="button"
+                  onClick={() => setObjectionReaction(o.id)}
+                  className={`rounded-xl border px-3 py-2.5 text-left text-sm font-medium transition-colors ${
+                    objectionReaction === o.id
+                      ? "border-indigo-600 bg-indigo-600 text-white"
+                      : "border-zinc-300 bg-white text-zinc-700 hover:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
+                  }`}
+                >
+                  {o.label}
+                </button>
+              ))}
             </div>
           </div>
 
-          {!showMore ? (
-            <button
-              type="button"
-              onClick={() => setShowMore(true)}
-              className="text-sm text-indigo-600 hover:underline dark:text-indigo-400"
-            >
-              + námietka / poznámka
-            </button>
-          ) : (
-            <div className="space-y-4">
-              <div>
-                <Label>Padla námietka?</Label>
-                <Input
-                  list="objection-list"
-                  value={objection}
-                  onChange={(e) => setObjection(e.target.value)}
-                  placeholder="vyber alebo napíš vlastnú"
-                />
-                <datalist id="objection-list">
-                  {OBJECTIONS.map((o) => (
-                    <option key={o.id} value={o.text} />
-                  ))}
-                </datalist>
-              </div>
-              <div>
-                <Label>Poznámka na večer</Label>
-                <Input
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  placeholder="k čomu sa chcem večer vrátiť"
-                />
-              </div>
+          <div>
+            <Label>Mal som plán ďalšieho kroku?</Label>
+            <div className="grid grid-cols-3 gap-2">
+              {PLAN_OPTIONS.map((o) => (
+                <button
+                  key={o.id}
+                  type="button"
+                  onClick={() => setHadNextStepPlan(o.id)}
+                  className={`rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors ${
+                    hadNextStepPlan === o.id
+                      ? "border-indigo-600 bg-indigo-600 text-white"
+                      : "border-zinc-300 bg-white text-zinc-700 hover:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
+                  }`}
+                >
+                  {o.label}
+                </button>
+              ))}
             </div>
-          )}
+          </div>
+
+          <div>
+            <Label>Jedna veta navyše (voliteľné)</Label>
+            <Input
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="čo si odnášam / kde som zamrzol"
+            />
+          </div>
 
           <div className="flex items-center gap-3">
-            <Btn onClick={saveEntry} disabled={!outcome}>
+            <Btn onClick={saveEntry} disabled={!canSave}>
               Uložiť záznam
             </Btn>
             {saved && <span className="text-sm text-emerald-600">Uložené ✔</span>}
+            {!canSave && (
+              <span className="text-xs text-zinc-400">Vyplň výsledok, cenu a plán kroku</span>
+            )}
           </div>
         </div>
       </Card>

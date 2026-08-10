@@ -126,7 +126,7 @@ Overenie zmien: manuálne podľa scenárov z Planning Agenta + `npm run build` p
 | Dnes | greeting, quick access, badges | R: entries, reflections, objAttempts, products, userObjections, settings, progress | program, mindset, objections |
 | Program | unlock, completeWeek | R/W: progress; R days z entries/reflections | program.ts |
 | Denník | 1 reflexia/deň | R/W: reflections; R: progress | week.reflection |
-| Záznamy | draft, save entry | R/W: entries, settings | chips, objections |
+| Záznamy | draft, coaching zápis (cena, námietka, plán, upsell) | R/W: entries, settings | chips (labely) |
 | Námietky | pickNext scoring | R/W: objAttempts, userObjections | objections.ts |
 | Produkty | quiz by lastReviewed | R/W: products | productFields.ts |
 | Mindset | quote of day, favorites | R/W: myThoughts, settings | mindset.ts |

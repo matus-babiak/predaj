@@ -4,7 +4,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useData } from "@/lib/useData";
 import { dayKey } from "@/lib/gamify";
-import { OUTCOME_LABELS } from "@/content/chips";
+import { OUTCOME_LABELS, PRICE_TIMING_LABELS, OBJECTION_REACTION_LABELS, NEXT_STEP_PLAN_LABELS } from "@/content/chips";
 import type { Settings } from "@/lib/types";
 import { Btn, Card, RichText, SectionTitle } from "@/components/ui";
 
@@ -51,6 +51,15 @@ export default function AiMentorPage() {
       .map((e) => ({
         date: dayKey(e.ts),
         outcome: OUTCOME_LABELS[e.outcome] ?? e.outcome,
+        itemCount: e.itemCount,
+        askedReview: e.askedReview,
+        priceTiming: e.priceTiming ? PRICE_TIMING_LABELS[e.priceTiming] ?? e.priceTiming : undefined,
+        objectionReaction: e.objectionReaction
+          ? OBJECTION_REACTION_LABELS[e.objectionReaction] ?? e.objectionReaction
+          : undefined,
+        hadNextStepPlan: e.hadNextStepPlan
+          ? NEXT_STEP_PLAN_LABELS[e.hadNextStepPlan] ?? e.hadNextStepPlan
+          : undefined,
         want: e.want,
         fear: e.fear,
         why: e.why,
@@ -74,7 +83,25 @@ export default function AiMentorPage() {
       pluses.join("|"),
       minuses.join("|"),
       briefingEntries
-        .map((e) => [e.date, e.outcome, e.want, e.fear, e.why, e.trust, e.objection, e.plus, e.minus, e.note].join("~"))
+        .map((e) =>
+          [
+            e.date,
+            e.outcome,
+            e.itemCount ?? "",
+            e.askedReview ? "1" : "0",
+            e.priceTiming ?? "",
+            e.objectionReaction ?? "",
+            e.hadNextStepPlan ?? "",
+            e.want,
+            e.fear,
+            e.why,
+            e.trust,
+            e.objection,
+            e.plus,
+            e.minus,
+            e.note,
+          ].join("~")
+        )
         .join("|"),
       briefingReflections
         .map((r) => [r.date, r.answers.join("/"), r.focus ?? ""].join("~"))

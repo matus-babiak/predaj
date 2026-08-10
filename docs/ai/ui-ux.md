@@ -46,6 +46,7 @@ Nepriďávať novú UI knižnicu, kým to požiadavka nevyžaduje.
 | AI on-demand + „stale“ podľa fingerprint | Plusy, AI Mentor, Štatistiky |
 | Deep link `?q=` | Mindset, Námietky, Produkty |
 | Autosave draft | Záznamy → `settings.entryDraft` |
+| Coaching zápis Záznamov | výsledok, položky 0-5+, recenzia, cena, námietka, plán kroku, jedna veta |
 
 ## Sync feedback
 

@@ -31,14 +31,30 @@ export default function PlusyMinusyPage() {
   if (!ready) return null;
 
   const collect = (kind: "plus" | "minus"): SwItem[] => {
-    const fromEntries: SwItem[] = entries
-      .filter((e) => (kind === "plus" ? e.plus : e.minus))
-      .map((e) => ({
-        id: `${e.id}-${kind}`,
-        ts: e.ts,
-        text: (kind === "plus" ? e.plus : e.minus)!,
-        fromDiary: true,
-      }));
+    const fromEntries: SwItem[] = [];
+    for (const e of entries) {
+      const list = kind === "plus" ? e.pluses : e.minuses;
+      if (list?.length) {
+        list.forEach((text, i) => {
+          if (!text.trim()) return;
+          fromEntries.push({
+            id: `${e.id}-${kind}-${i}`,
+            ts: e.ts,
+            text,
+            fromDiary: true,
+          });
+        });
+      }
+      const legacy = kind === "plus" ? e.plus : e.minus;
+      if (legacy) {
+        fromEntries.push({
+          id: `${e.id}-${kind}`,
+          ts: e.ts,
+          text: legacy,
+          fromDiary: true,
+        });
+      }
+    }
     const standalone: SwItem[] = selfNotes
       .filter((n) => n.kind === kind)
       .map((n) => ({ id: n.id, ts: n.ts, text: n.text, fromDiary: false, noteId: n.id }));

@@ -32,15 +32,17 @@
 
 ### Entry
 - `outcome`: `kupil` | `nekupil` | `vrati_sa` | `rada` (**povinné** pri uložení)
-- Coaching polia (nový formulár):
+- Coaching polia (formulár Záznamy):
+  - `requestText`: primárna požiadavka (**povinné**); pri uložení sync do kolekcie `requests`
   - `itemCount`: 0-5 (5 = 5+)
   - `askedReview`: boolean
-  - `priceTiming`: `start` | `end` | `avoided` (**povinné** v novom formulári)
-  - `objectionReaction`: `none` | `asked_benefit` | `gave_in` | `discount` | `froze`
-  - `hadNextStepPlan`: `yes` | `no` | `partial` (**povinné** v novom formulári)
+  - `priceTiming`: `start` | `end` | `avoided` (**povinné**)
+  - `hadNextStepPlan`: `yes` | `no` | `partial` (**povinné**)
+  - `objection`: vybraná alebo vlastná námietka (voliteľné)
+  - `pluses` / `minuses`: `string[]` (viac položiek sebahodnotenia)
   - `note`: voliteľná jedna veta
 - Staršie voliteľné polia (história, nový formulár ich nezapisuje):
-  `want`, `fear`, `why`, `trust`, `objection`, `plus`, `minus`
+  `want`, `fear`, `why`, `trust`, `objectionReaction`, `plus`, `minus`
 
 ### Reflection
 - `id` a `date`: `YYYY-MM-DD` (jedna reflexia na deň)

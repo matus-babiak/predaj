@@ -19,22 +19,23 @@ export interface Entry {
   ts: number; // timestamp záznamu
   outcome: Outcome;
 
-  // Coaching polia (nový formulár Záznamy)
+  // Coaching polia (formulár Záznamy)
+  requestText?: string; // primárna požiadavka (sync do kolekcie requests)
   itemCount?: ItemCount; // 0-5, kde 5 znamená 5+
   askedReview?: boolean;
   priceTiming?: PriceTiming;
-  objectionReaction?: ObjectionReaction;
   hadNextStepPlan?: NextStepPlan;
+  objection?: string; // vybraná alebo vlastná námietka (prázdna = nepadla)
+  pluses?: string[]; // čo som urobil dobre (viac položiek)
+  minuses?: string[]; // čo zlepšiť (viac položiek)
+  note?: string; // jedna veta navyše
 
-  // Voľná jedna veta / poznámka (nové aj staré záznamy)
-  note?: string;
-
-  // Staršie polia: ostávajú kvôli histórii, nový formulár ich už nezapisuje
+  // Staršie polia: ostávajú kvôli histórii
   want?: string;
   fear?: string;
   why?: string;
   trust?: number;
-  objection?: string;
+  objectionReaction?: ObjectionReaction; // starý formulár
   plus?: string;
   minus?: string;
 
@@ -207,13 +208,18 @@ export interface ProductCard {
 // kliknutím na "Uložiť záznam", synchronizuje sa rovnako ako ostatné dáta.
 export interface EntryDraft {
   outcome?: Outcome;
+  requestText?: string;
   itemCount?: ItemCount;
   askedReview?: boolean;
   priceTiming?: PriceTiming;
-  objectionReaction?: ObjectionReaction;
   hadNextStepPlan?: NextStepPlan;
+  objectionPick?: string; // id z dropdownu alebo "" 
+  objectionCustom?: string;
+  pluses?: string[];
+  minuses?: string[];
   note?: string;
-  // staršie draft polia (ak ešte niekde ostanú v settings)
+  // staršie draft polia
+  objectionReaction?: ObjectionReaction;
   want?: string;
   fear?: string;
   why?: string;

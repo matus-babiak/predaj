@@ -41,11 +41,15 @@ export function EntryRow({ entry, onDelete }: { entry: Entry; onDelete: () => vo
         )}
       </div>
       <div className="mt-1 space-y-0.5 text-zinc-600 dark:text-zinc-300">
+        {entry.requestText && <div>📋 požiadavka: {entry.requestText}</div>}
         {entry.priceTiming && (
           <div>💶 {PRICE_TIMING_LABELS[entry.priceTiming] ?? entry.priceTiming}</div>
         )}
+        {entry.objection && <div>🥊 námietka: {entry.objection}</div>}
         {entry.objectionReaction && entry.objectionReaction !== "none" && (
-          <div>🥊 {OBJECTION_REACTION_LABELS[entry.objectionReaction] ?? entry.objectionReaction}</div>
+          <div className="text-zinc-500">
+            (staré) reakcia: {OBJECTION_REACTION_LABELS[entry.objectionReaction] ?? entry.objectionReaction}
+          </div>
         )}
         {entry.hadNextStepPlan && (
           <div>🧭 {NEXT_STEP_PLAN_LABELS[entry.hadNextStepPlan] ?? entry.hadNextStepPlan}</div>
@@ -53,8 +57,17 @@ export function EntryRow({ entry, onDelete }: { entry: Entry; onDelete: () => vo
         {entry.want && <div>🎯 chcel: {entry.want}</div>}
         {entry.fear && <div>😟 bál sa: {entry.fear}</div>}
         {entry.why && <div>💡 prečo: {entry.why}</div>}
-        {entry.objection && <div>🥊 námietka: {entry.objection}</div>}
+        {(entry.pluses ?? []).map((p, i) => (
+          <div key={`p-${i}`} className="text-emerald-700 dark:text-emerald-400">
+            ➕ {p}
+          </div>
+        ))}
         {entry.plus && <div className="text-emerald-700 dark:text-emerald-400">➕ {entry.plus}</div>}
+        {(entry.minuses ?? []).map((m, i) => (
+          <div key={`m-${i}`} className="text-red-700 dark:text-red-400">
+            ➖ {m}
+          </div>
+        ))}
         {entry.minus && <div className="text-red-700 dark:text-red-400">➖ {entry.minus}</div>}
         {entry.note && <div>📝 {entry.note}</div>}
       </div>

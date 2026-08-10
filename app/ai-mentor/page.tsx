@@ -36,12 +36,16 @@ export default function AiMentorPage() {
     const sinceDate = cutoffDateKey(WINDOW_DAYS);
 
     const pluses = [
-      ...entries.filter((e) => e.plus && e.ts >= sinceTs).map((e) => e.plus!),
+      ...entries
+        .filter((e) => e.ts >= sinceTs)
+        .flatMap((e) => [...(e.pluses ?? []), ...(e.plus ? [e.plus] : [])]),
       ...selfNotes.filter((n) => n.kind === "plus" && n.ts >= sinceTs).map((n) => n.text),
     ].slice(0, MAX_SW);
 
     const minuses = [
-      ...entries.filter((e) => e.minus && e.ts >= sinceTs).map((e) => e.minus!),
+      ...entries
+        .filter((e) => e.ts >= sinceTs)
+        .flatMap((e) => [...(e.minuses ?? []), ...(e.minus ? [e.minus] : [])]),
       ...selfNotes.filter((n) => n.kind === "minus" && n.ts >= sinceTs).map((n) => n.text),
     ].slice(0, MAX_SW);
 
@@ -51,20 +55,23 @@ export default function AiMentorPage() {
       .map((e) => ({
         date: dayKey(e.ts),
         outcome: OUTCOME_LABELS[e.outcome] ?? e.outcome,
+        requestText: e.requestText,
         itemCount: e.itemCount,
         askedReview: e.askedReview,
         priceTiming: e.priceTiming ? PRICE_TIMING_LABELS[e.priceTiming] ?? e.priceTiming : undefined,
-        objectionReaction: e.objectionReaction
-          ? OBJECTION_REACTION_LABELS[e.objectionReaction] ?? e.objectionReaction
-          : undefined,
         hadNextStepPlan: e.hadNextStepPlan
           ? NEXT_STEP_PLAN_LABELS[e.hadNextStepPlan] ?? e.hadNextStepPlan
           : undefined,
+        objection: e.objection,
+        pluses: e.pluses,
+        minuses: e.minuses,
         want: e.want,
         fear: e.fear,
         why: e.why,
         trust: e.trust,
-        objection: e.objection,
+        objectionReaction: e.objectionReaction
+          ? OBJECTION_REACTION_LABELS[e.objectionReaction] ?? e.objectionReaction
+          : undefined,
         plus: e.plus,
         minus: e.minus,
         note: e.note,
@@ -87,16 +94,19 @@ export default function AiMentorPage() {
           [
             e.date,
             e.outcome,
+            e.requestText ?? "",
             e.itemCount ?? "",
             e.askedReview ? "1" : "0",
             e.priceTiming ?? "",
-            e.objectionReaction ?? "",
             e.hadNextStepPlan ?? "",
+            e.objection ?? "",
+            (e.pluses ?? []).join("^"),
+            (e.minuses ?? []).join("^"),
             e.want,
             e.fear,
             e.why,
             e.trust,
-            e.objection,
+            e.objectionReaction ?? "",
             e.plus,
             e.minus,
             e.note,

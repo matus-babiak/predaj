@@ -49,3 +49,17 @@ export const NEXT_STEP_PLAN_LABELS: Record<string, string> = {
   no: "Nemal som plán kroku",
   partial: "Plán kroku len čiastočne",
 };
+
+/** Najčastejšie námietky vo formulári Záznamy (dropdown). */
+export const ENTRY_OBJECTION_CHOICES = [
+  "Je to drahé.",
+  "Na Alze / v e-shope je to lacnejšie.",
+  "Dáte mi zľavu?",
+  "Nemám teraz na to peniaze.",
+  "Ja si to ešte rozmyslím.",
+  "Musím sa poradiť s manželkou / manželom.",
+  "Chcem len to najlacnejšie, nič extra netreba.",
+  "Nechcem platiť za diagnostiku.",
+  "Bojím sa, že prídem o fotky a dáta.",
+  "Vy mi chcete len niečo predať.",
+] as const;

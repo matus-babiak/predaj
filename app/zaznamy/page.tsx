@@ -4,12 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { useData } from "@/lib/useData";
 import { uid } from "@/lib/store";
 import { dayKey } from "@/lib/gamify";
+import { ENTRY_OBJECTION_CHOICES } from "@/content/chips";
 import type {
+  CustomerRequest,
   Entry,
   EntryDraft,
   ItemCount,
   NextStepPlan,
-  ObjectionReaction,
   Outcome,
   PriceTiming,
 } from "@/lib/types";
@@ -29,33 +30,88 @@ const PRICE_OPTIONS: { id: PriceTiming; label: string }[] = [
   { id: "avoided", label: "Vôbec / vyhol som sa" },
 ];
 
-const OBJECTION_OPTIONS: { id: ObjectionReaction; label: string }[] = [
-  { id: "none", label: "Námietka nepadla" },
-  { id: "asked_benefit", label: "Opýtal som sa na úžitok" },
-  { id: "gave_in", label: "Povedal som „Dobre“ / ustúpil som" },
-  { id: "discount", label: "Dal som zľavu bez dôvodu" },
-  { id: "froze", label: "Zamrzol som / ticho" },
-];
-
 const PLAN_OPTIONS: { id: NextStepPlan; label: string }[] = [
   { id: "yes", label: "Áno" },
   { id: "partial", label: "Čiastočne" },
   { id: "no", label: "Nie" },
 ];
 
+const NONE_OBJECTION = "";
+
 function itemCountLabel(n: ItemCount): string {
   return n >= 5 ? "5+" : String(n);
 }
 
-export default function ZaznamyPage() {
-  const { entries, settings, put, remove, ready } = useData();
+function cleanLines(lines: string[]): string[] {
+  return lines.map((s) => s.trim()).filter(Boolean);
+}
 
+function MultiLines({
+  label,
+  values,
+  onChange,
+  placeholder,
+  addLabel,
+}: {
+  label: string;
+  values: string[];
+  onChange: (next: string[]) => void;
+  placeholder: string;
+  addLabel: string;
+}) {
+  const rows = values.length > 0 ? values : [""];
+  return (
+    <div>
+      <Label>{label}</Label>
+      <div className="space-y-2">
+        {rows.map((v, i) => (
+          <div key={i} className="flex gap-2">
+            <Input
+              value={v}
+              onChange={(e) => {
+                const next = [...rows];
+                next[i] = e.target.value;
+                onChange(next);
+              }}
+              placeholder={placeholder}
+            />
+            {rows.length > 1 && (
+              <button
+                type="button"
+                onClick={() => onChange(rows.filter((_, j) => j !== i))}
+                className="shrink-0 px-2 text-xs text-zinc-400 hover:text-red-600"
+                aria-label="Odstrániť riadok"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => onChange([...rows, ""])}
+        className="mt-2 text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+      >
+        {addLabel}
+      </button>
+    </div>
+  );
+}
+
+export default function ZaznamyPage() {
+  const { entries, requests, settings, put, remove, ready } = useData();
+
+  const [requestText, setRequestText] = useState("");
   const [outcome, setOutcome] = useState<Outcome | null>(null);
   const [itemCount, setItemCount] = useState<ItemCount>(0);
   const [askedReview, setAskedReview] = useState(false);
   const [priceTiming, setPriceTiming] = useState<PriceTiming | null>(null);
-  const [objectionReaction, setObjectionReaction] = useState<ObjectionReaction>("none");
+  const [objectionPick, setObjectionPick] = useState(NONE_OBJECTION);
+  const [objectionCustom, setObjectionCustom] = useState("");
   const [hadNextStepPlan, setHadNextStepPlan] = useState<NextStepPlan | null>(null);
+  const [pluses, setPluses] = useState<string[]>([""]);
+  const [minuses, setMinuses] = useState<string[]>([""]);
   const [note, setNote] = useState("");
   const [saved, setSaved] = useState(false);
 
@@ -67,12 +123,16 @@ export default function ZaznamyPage() {
     const d = settings.entryDraft;
     if (!d) return;
     draftAppliedRef.current = true;
+    setRequestText(d.requestText ?? "");
     setOutcome(d.outcome ?? null);
     setItemCount((d.itemCount as ItemCount) ?? 0);
     setAskedReview(!!d.askedReview);
     setPriceTiming(d.priceTiming ?? null);
-    setObjectionReaction(d.objectionReaction ?? "none");
+    setObjectionPick(d.objectionPick ?? NONE_OBJECTION);
+    setObjectionCustom(d.objectionCustom ?? "");
     setHadNextStepPlan(d.hadNextStepPlan ?? null);
+    setPluses(d.pluses?.length ? d.pluses : [""]);
+    setMinuses(d.minuses?.length ? d.minuses : [""]);
     setNote(d.note ?? "");
   }, [settings.entryDraft]);
 
@@ -83,42 +143,89 @@ export default function ZaznamyPage() {
   useEffect(() => {
     if (!autosaveArmedRef.current) return;
     const draft: EntryDraft = {
+      requestText: requestText.trim() || undefined,
       outcome: outcome ?? undefined,
       itemCount,
       askedReview,
       priceTiming: priceTiming ?? undefined,
-      objectionReaction,
+      objectionPick: objectionPick || undefined,
+      objectionCustom: objectionCustom.trim() || undefined,
       hadNextStepPlan: hadNextStepPlan ?? undefined,
+      pluses,
+      minuses,
       note: note.trim() || undefined,
     };
     put("settings", { ...settings, entryDraft: draft, updatedAt: Date.now() });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [outcome, itemCount, askedReview, priceTiming, objectionReaction, hadNextStepPlan, note]);
+  }, [
+    requestText,
+    outcome,
+    itemCount,
+    askedReview,
+    priceTiming,
+    objectionPick,
+    objectionCustom,
+    hadNextStepPlan,
+    pluses,
+    minuses,
+    note,
+  ]);
 
-  const canSave = !!outcome && !!priceTiming && !!hadNextStepPlan;
+  const canSave = !!requestText.trim() && !!outcome && !!priceTiming && !!hadNextStepPlan;
+
+  const syncRequest = (text: string, now: number) => {
+    const open = requests.filter((r) => !r.doneAt);
+    const existing = open.find((r) => r.text.toLowerCase() === text.toLowerCase());
+    if (existing) {
+      put("requests", { ...existing, count: existing.count + 1, updatedAt: now } satisfies CustomerRequest);
+    } else {
+      put("requests", {
+        id: uid(),
+        ts: now,
+        text,
+        count: 1,
+        updatedAt: now,
+      } satisfies CustomerRequest);
+    }
+  };
 
   const saveEntry = () => {
-    if (!outcome || !priceTiming || !hadNextStepPlan) return;
+    const req = requestText.trim();
+    if (!req || !outcome || !priceTiming || !hadNextStepPlan) return;
     const now = Date.now();
+    const custom = objectionCustom.trim();
+    const objection = custom || objectionPick || undefined;
+    const plusList = cleanLines(pluses);
+    const minusList = cleanLines(minuses);
+
     const entry: Entry = {
       id: uid(),
       ts: now,
       outcome,
+      requestText: req,
       itemCount,
       askedReview,
       priceTiming,
-      objectionReaction,
       hadNextStepPlan,
+      objection,
+      pluses: plusList.length ? plusList : undefined,
+      minuses: minusList.length ? minusList : undefined,
       note: note.trim() || undefined,
       updatedAt: now,
     };
     put("entries", entry);
+    syncRequest(req, now);
+
+    setRequestText("");
     setOutcome(null);
     setItemCount(0);
     setAskedReview(false);
     setPriceTiming(null);
-    setObjectionReaction("none");
+    setObjectionPick(NONE_OBJECTION);
+    setObjectionCustom("");
     setHadNextStepPlan(null);
+    setPluses([""]);
+    setMinuses([""]);
     setNote("");
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
@@ -139,13 +246,22 @@ export default function ZaznamyPage() {
       <div>
         <h1 className="text-2xl font-semibold">Záznamy</h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Rýchly zápis podľa toho, čo ťa teraz posúva: cena, námietky, plán kroku a upsell.
+          Primárna požiadavka + výsledok predaja. Požiadavka sa automaticky pripočíta aj v zozname Požiadavky.
         </p>
       </div>
 
       <Card>
         <SectionTitle>Rýchly záznam zákazníka</SectionTitle>
         <div className="space-y-5">
+          <div>
+            <Label>Požiadavka (s čím prišiel)</Label>
+            <Input
+              value={requestText}
+              onChange={(e) => setRequestText(e.target.value)}
+              placeholder="napr. výmena batérie, prenos dát, nové sklo…"
+            />
+          </div>
+
           <div>
             <Label>Ako to dopadlo?</Label>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -219,23 +335,26 @@ export default function ZaznamyPage() {
           </div>
 
           <div>
-            <Label>Ak padla námietka (cena / nepotrebujem), čo som urobil?</Label>
-            <div className="grid gap-2">
-              {OBJECTION_OPTIONS.map((o) => (
-                <button
-                  key={o.id}
-                  type="button"
-                  onClick={() => setObjectionReaction(o.id)}
-                  className={`rounded-xl border px-3 py-2.5 text-left text-sm font-medium transition-colors ${
-                    objectionReaction === o.id
-                      ? "border-indigo-600 bg-indigo-600 text-white"
-                      : "border-zinc-300 bg-white text-zinc-700 hover:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
-                  }`}
-                >
-                  {o.label}
-                </button>
+            <Label>Námietka</Label>
+            <select
+              value={objectionPick}
+              onChange={(e) => setObjectionPick(e.target.value)}
+              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+            >
+              <option value={NONE_OBJECTION}>Námietka nepadla</option>
+              {ENTRY_OBJECTION_CHOICES.map((text) => (
+                <option key={text} value={text}>
+                  {text}
+                </option>
               ))}
-            </div>
+            </select>
+            <Input
+              className="mt-2"
+              value={objectionCustom}
+              onChange={(e) => setObjectionCustom(e.target.value)}
+              placeholder="Alebo napíš vlastnú námietku"
+            />
+            <p className="mt-1 text-xs text-zinc-400">Ak vyplníš vlastnú, má prednosť pred výberom zo zoznamu.</p>
           </div>
 
           <div>
@@ -258,22 +377,38 @@ export default function ZaznamyPage() {
             </div>
           </div>
 
+          <MultiLines
+            label="Čo som urobil dobre"
+            values={pluses}
+            onChange={setPluses}
+            placeholder="napr. povedal som cenu hneď na začiatku"
+            addLabel="+ pridať ďalšie plus"
+          />
+
+          <MultiLines
+            label="Čo som mohol zlepšiť"
+            values={minuses}
+            onChange={setMinuses}
+            placeholder="napr. pri námietke som povedal len Dobre"
+            addLabel="+ pridať ďalšie mínus"
+          />
+
           <div>
             <Label>Jedna veta navyše (voliteľné)</Label>
             <Input
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="čo si odnášam / kde som zamrzol"
+              placeholder="čo si odnášam / kontext navyše"
             />
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Btn onClick={saveEntry} disabled={!canSave}>
               Uložiť záznam
             </Btn>
             {saved && <span className="text-sm text-emerald-600">Uložené ✔</span>}
             {!canSave && (
-              <span className="text-xs text-zinc-400">Vyplň výsledok, cenu a plán kroku</span>
+              <span className="text-xs text-zinc-400">Vyplň požiadavku, výsledok, cenu a plán kroku</span>
             )}
           </div>
         </div>

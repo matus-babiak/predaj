@@ -107,7 +107,7 @@ Za MVP sa považuje to, čo je v kóde a v navigácii funkčné:
 2. **Offline-first** s last-write-wins podľa `updatedAt`.
 3. Program ide **vlastným tempom**, nie kalendárom.
 4. Námietky: princíp **uznaj → zisti → odpovedz**; slabšie sa vracajú častejšie.
-5. Záznam je rýchly coaching zápis: výsledok, počet položiek, recenzia, kedy bola cena, reakcia na námietku, plán kroku, voliteľná jedna veta.
+5. Záznam je coaching zápis: primárna požiadavka (sync do Požiadaviek), výsledok, počet položiek, recenzia, kedy bola cena, námietka, plán kroku, plusy/mínusy (viac riadkov), voliteľná poznámka.
 6. Reflexia: **jedna na deň**, id = dátum `YYYY-MM-DD`.
 7. Požiadavky sú **oddelené** od predajných záznamov.
 8. AI sa **negeneruje automaticky** pri každom otvorení: on-demand + fingerprint cache.

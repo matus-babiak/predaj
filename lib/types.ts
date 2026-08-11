@@ -111,18 +111,29 @@ export interface Manual {
   updatedAt: number;
 }
 
-/** Ako som dnes celkovo pracoval s cenou (večerná reflexia). */
+/** Ako som dnes celkovo pracoval s cenou (staršia večerná reflexia). */
 export type DayPriceTiming = "start" | "mixed" | "end" | "avoided";
+
+/** S čím som dnes vnútorne bojoval pri predaji. */
+export type StruggleCategory = "cena" | "namietka" | "ticho" | "peniaze" | "ine";
 
 export interface Reflection {
   id: string; // dátum YYYY-MM-DD
   date: string;
   weekId: string; // týždeň programu, v ktorom vznikla
-  // Coaching polia (nový večerný formulár)
-  priceDay?: DayPriceTiming;
-  wins?: string[]; // najsilnejšie momenty dňa
-  losses?: string[]; // kde som stratil / zamrzol
+  // Coaching polia (aktuálny večerný formulár)
+  struggleCategory?: StruggleCategory;
+  struggleText?: string;
+  retreated?: string;
+  selfFocus?: string;
+  hardestMoment?: string;
+  strengthToday?: string;
+  better10?: string;
   focus?: string; // jedna vec na zajtra
+  // Staršie coaching polia (história)
+  priceDay?: DayPriceTiming;
+  wins?: string[];
+  losses?: string[];
   // Staršie: otázky týždňa (história)
   answers: Record<string, string>;
   updatedAt: number;

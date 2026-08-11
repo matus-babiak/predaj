@@ -42,6 +42,13 @@ export interface BriefingReflectionInput {
   date: string;
   answers: string[];
   focus?: string;
+  struggleCategory?: string;
+  struggleText?: string;
+  retreated?: string;
+  selfFocus?: string;
+  hardestMoment?: string;
+  strengthToday?: string;
+  better10?: string;
   priceDay?: string;
   wins?: string[];
   losses?: string[];
@@ -87,10 +94,17 @@ export function buildWeeklyBriefingPrompt(input: {
     ? input.reflections
         .map((r) => {
           const bits = [
+            r.struggleCategory ? `boj: ${r.struggleCategory}` : "",
+            r.struggleText ? `boj detail: ${r.struggleText}` : "",
+            r.focus ? `zajtra inak: ${r.focus}` : "",
+            r.retreated ? `ustúpil: ${r.retreated}` : "",
+            r.selfFocus ? `stres: ${r.selfFocus}` : "",
+            r.hardestMoment ? `najťažší moment: ${r.hardestMoment}` : "",
+            r.strengthToday ? `sila: ${r.strengthToday}` : "",
+            r.better10 ? `+10%: ${r.better10}` : "",
             r.priceDay ? `cena dnes: ${r.priceDay}` : "",
             r.wins?.length ? `silné: ${r.wins.join("; ")}` : "",
             r.losses?.length ? `straty: ${r.losses.join("; ")}` : "",
-            r.focus ? `zajtra: ${r.focus}` : "",
             r.answers.length ? `odpovede: ${r.answers.join(" / ")}` : "",
           ].filter(Boolean);
           return `- ${r.date}: ${bits.join(" | ") || "(prázdna)"}`;

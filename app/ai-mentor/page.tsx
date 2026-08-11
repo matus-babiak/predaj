@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useData } from "@/lib/useData";
 import { dayKey } from "@/lib/gamify";
 import { uid } from "@/lib/store";
-import { OUTCOME_LABELS, PRICE_TIMING_LABELS, OBJECTION_REACTION_LABELS, NEXT_STEP_PLAN_LABELS, DAY_PRICE_LABELS } from "@/content/chips";
+import { OUTCOME_LABELS, PRICE_TIMING_LABELS, OBJECTION_REACTION_LABELS, NEXT_STEP_PLAN_LABELS, DAY_PRICE_LABELS, STRUGGLE_CATEGORY_LABELS } from "@/content/chips";
 import type { MentorMessage, Settings } from "@/lib/types";
 import { Btn, Card, RichText, SectionTitle, TextArea } from "@/components/ui";
 
@@ -97,6 +97,15 @@ export default function AiMentorPage() {
         date: r.date,
         answers: Object.values(r.answers ?? {}).filter((v) => String(v).trim()),
         focus: r.focus,
+        struggleCategory: r.struggleCategory
+          ? STRUGGLE_CATEGORY_LABELS[r.struggleCategory] ?? r.struggleCategory
+          : undefined,
+        struggleText: r.struggleText,
+        retreated: r.retreated,
+        selfFocus: r.selfFocus,
+        hardestMoment: r.hardestMoment,
+        strengthToday: r.strengthToday,
+        better10: r.better10,
         priceDay: r.priceDay ? DAY_PRICE_LABELS[r.priceDay] ?? r.priceDay : undefined,
         wins: r.wins,
         losses: r.losses,
@@ -133,10 +142,17 @@ export default function AiMentorPage() {
         .map((r) =>
           [
             r.date,
+            r.struggleCategory ?? "",
+            r.struggleText ?? "",
+            r.focus ?? "",
+            r.retreated ?? "",
+            r.selfFocus ?? "",
+            r.hardestMoment ?? "",
+            r.strengthToday ?? "",
+            r.better10 ?? "",
             r.priceDay ?? "",
             (r.wins ?? []).join("^"),
             (r.losses ?? []).join("^"),
-            r.focus ?? "",
             r.answers.join("/"),
           ].join("~")
         )

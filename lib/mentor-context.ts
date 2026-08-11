@@ -10,6 +10,7 @@ import {
   NEXT_STEP_PLAN_LABELS,
   OUTCOME_LABELS,
   PRICE_TIMING_LABELS,
+  STRUGGLE_CATEGORY_LABELS,
 } from "@/content/chips";
 import type {
   Entry,
@@ -82,10 +83,19 @@ export function formatEntryForPrompt(e: Entry): string {
 
 export function formatReflectionForPrompt(r: Reflection): string {
   const bits = [
-    r.priceDay ? `cena dnes: ${DAY_PRICE_LABELS[r.priceDay] ?? r.priceDay}` : "",
-    r.wins?.length ? `silné: ${r.wins.join("; ")}` : "",
-    r.losses?.length ? `straty: ${r.losses.join("; ")}` : "",
-    r.focus ? `zajtra: ${r.focus}` : "",
+    r.struggleCategory
+      ? `boj: ${STRUGGLE_CATEGORY_LABELS[r.struggleCategory] ?? r.struggleCategory}`
+      : "",
+    r.struggleText ? `boj detail: ${r.struggleText}` : "",
+    r.focus ? `zajtra inak: ${r.focus}` : "",
+    r.retreated ? `ustúpil: ${r.retreated}` : "",
+    r.selfFocus ? `stres: ${r.selfFocus}` : "",
+    r.hardestMoment ? `najťažší moment: ${r.hardestMoment}` : "",
+    r.strengthToday ? `sila: ${r.strengthToday}` : "",
+    r.better10 ? `+10%: ${r.better10}` : "",
+    r.priceDay ? `cena dnes (staré): ${DAY_PRICE_LABELS[r.priceDay] ?? r.priceDay}` : "",
+    r.wins?.length ? `silné (staré): ${r.wins.join("; ")}` : "",
+    r.losses?.length ? `straty (staré): ${r.losses.join("; ")}` : "",
   ].filter(Boolean);
   const legacy = Object.entries(r.answers ?? {})
     .filter(([, v]) => String(v ?? "").trim())

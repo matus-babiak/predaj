@@ -38,7 +38,7 @@ Zdroj: `components/Shell.tsx` → pole `NAV`.
 |-------|-------|------|
 | `/` | Dnes | Denný hub: úloha týždňa, rýchle akcie, streak, odznaky |
 | `/mindset` | Mindset | Banka myšlienok + vlastné myšlienky + obľúbené |
-| `/dennik` | Denník | Večerná coaching reflexia (cena, silné/slabé, zajtra) |
+| `/dennik` | Denník | Večerná coaching reflexia (slabiny, sila, zajtra) |
 | `/zaznamy` | Záznamy | Coaching zápis po zákazníkovi + história |
 | `/poziadavky` | Požiadavky | Čisté dopyty zákazníkov (bez výsledku predaja) |
 | `/program` | Program | 12 týždňov / 6 fáz, odomykanie vlastným tempom |
@@ -58,7 +58,7 @@ Zdroj: `components/Shell.tsx` → pole `NAV`.
 ### Denný cyklus
 1. Otvorí **Dnes** → vidí úlohu aktuálneho týždňa.
 2. Po zákazníkovi ide do **Záznamy** (outcome povinný; want/fear/why/trust voliteľné).
-3. Večer **Denník** → coaching reflexia (1 na deň): práca s cenou, silné momenty, straty, jedna vec na zajtra.
+3. Večer **Denník** → coaching reflexia (1 na deň): boj dňa, slabiny, sila, jedna vec na zajtra.
 4. Voliteľne trénuje **Námietky**, skúša **Produkty**, dopĺňa **Požiadavky**.
 
 ### Program

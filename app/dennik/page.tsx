@@ -4,72 +4,24 @@ import { useRef, useState } from "react";
 import { useData } from "@/lib/useData";
 import { dayKey } from "@/lib/gamify";
 import { getWeek } from "@/content/program";
-import { DAY_PRICE_LABELS } from "@/content/chips";
-import type { DayPriceTiming, Reflection, Settings } from "@/lib/types";
-import { Btn, Card, Input, Label, RichText, SectionTitle, TextArea } from "@/components/ui";
+import { DAY_PRICE_LABELS, STRUGGLE_CATEGORY_LABELS } from "@/content/chips";
+import type { Reflection, Settings, StruggleCategory } from "@/lib/types";
+import { Btn, Card, Label, RichText, SectionTitle, TextArea } from "@/components/ui";
 
-const PRICE_DAY_OPTIONS: { id: DayPriceTiming; label: string }[] = [
-  { id: "start", label: "Väčšinou hneď" },
-  { id: "mixed", label: "Striedavo" },
-  { id: "end", label: "Neskoro / na konci" },
-  { id: "avoided", label: "Vôbec / vyhýbal som sa" },
+const STRUGGLE_OPTIONS: { id: StruggleCategory; label: string }[] = [
+  { id: "cena", label: "Cena" },
+  { id: "namietka", label: "Námietka" },
+  { id: "ticho", label: "Ticho / zamrznutie" },
+  { id: "peniaze", label: "Strach pýtať si peniaze" },
+  { id: "ine", label: "Iné" },
 ];
 
-function cleanLines(lines: string[]): string[] {
-  return lines.map((s) => s.trim()).filter(Boolean);
+function FieldTip({ children }: { children: React.ReactNode }) {
+  return <p className="mt-1 text-xs text-zinc-400">{children}</p>;
 }
 
-function MultiLines({
-  label,
-  values,
-  onChange,
-  placeholder,
-  addLabel,
-}: {
-  label: string;
-  values: string[];
-  onChange: (next: string[]) => void;
-  placeholder: string;
-  addLabel: string;
-}) {
-  const rows = values.length > 0 ? values : [""];
-  return (
-    <div>
-      <Label>{label}</Label>
-      <div className="space-y-2">
-        {rows.map((v, i) => (
-          <div key={i} className="flex gap-2">
-            <Input
-              value={v}
-              onChange={(e) => {
-                const next = [...rows];
-                next[i] = e.target.value;
-                onChange(next);
-              }}
-              placeholder={placeholder}
-            />
-            {rows.length > 1 && (
-              <button
-                type="button"
-                onClick={() => onChange(rows.filter((_, j) => j !== i))}
-                className="shrink-0 px-2 text-xs text-zinc-400 hover:text-red-600"
-                aria-label="Odstrániť riadok"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-      <button
-        type="button"
-        onClick={() => onChange([...rows, ""])}
-        className="mt-2 text-sm text-indigo-600 hover:underline dark:text-indigo-400"
-      >
-        {addLabel}
-      </button>
-    </div>
-  );
+function OptionalHint() {
+  return <span className="ml-2 text-xs font-normal normal-case tracking-normal text-zinc-400">(voliteľné)</span>;
 }
 
 export default function DennikPage() {
@@ -81,20 +33,30 @@ export default function DennikPage() {
   const week = getWeek(progress.currentWeek);
   const existing = reflections.find((r) => r.date === today);
 
-  const [priceDay, setPriceDay] = useState<DayPriceTiming | null>(existing?.priceDay ?? null);
-  const [wins, setWins] = useState<string[]>(existing?.wins?.length ? existing.wins : [""]);
-  const [losses, setLosses] = useState<string[]>(existing?.losses?.length ? existing.losses : [""]);
+  const [struggleCategory, setStruggleCategory] = useState<StruggleCategory | null>(
+    existing?.struggleCategory ?? null
+  );
+  const [struggleText, setStruggleText] = useState(existing?.struggleText ?? "");
   const [focus, setFocus] = useState(existing?.focus ?? "");
+  const [retreated, setRetreated] = useState(existing?.retreated ?? "");
+  const [selfFocus, setSelfFocus] = useState(existing?.selfFocus ?? "");
+  const [hardestMoment, setHardestMoment] = useState(existing?.hardestMoment ?? "");
+  const [strengthToday, setStrengthToday] = useState(existing?.strengthToday ?? "");
+  const [better10, setBetter10] = useState(existing?.better10 ?? "");
   const [editing, setEditing] = useState(false);
   const [reflSaved, setReflSaved] = useState(false);
   const [eveningLoading, setEveningLoading] = useState(false);
   const [eveningError, setEveningError] = useState(false);
 
   const loadFrom = (src?: Reflection) => {
-    setPriceDay(src?.priceDay ?? null);
-    setWins(src?.wins?.length ? src.wins : [""]);
-    setLosses(src?.losses?.length ? src.losses : [""]);
+    setStruggleCategory(src?.struggleCategory ?? null);
+    setStruggleText(src?.struggleText ?? "");
     setFocus(src?.focus ?? "");
+    setRetreated(src?.retreated ?? "");
+    setSelfFocus(src?.selfFocus ?? "");
+    setHardestMoment(src?.hardestMoment ?? "");
+    setStrengthToday(src?.strengthToday ?? "");
+    setBetter10(src?.better10 ?? "");
   };
 
   const startEdit = (r?: Reflection) => {
@@ -110,21 +72,24 @@ export default function DennikPage() {
     setEditing(false);
   };
 
-  const canSave = !!priceDay && !!focus.trim();
+  const hasStruggle = !!struggleCategory || !!struggleText.trim();
+  const canSave = hasStruggle && !!focus.trim();
 
   const saveReflection = () => {
-    if (!priceDay || !focus.trim()) return;
+    if (!hasStruggle || !focus.trim()) return;
     const now = Date.now();
-    const winList = cleanLines(wins);
-    const lossList = cleanLines(losses);
     const r: Reflection = {
       id: today,
       date: today,
       weekId: week?.id ?? "w1",
-      priceDay,
-      wins: winList.length ? winList : undefined,
-      losses: lossList.length ? lossList : undefined,
+      struggleCategory: struggleCategory ?? undefined,
+      struggleText: struggleText.trim() || undefined,
       focus: focus.trim(),
+      retreated: retreated.trim() || undefined,
+      selfFocus: selfFocus.trim() || undefined,
+      hardestMoment: hardestMoment.trim() || undefined,
+      strengthToday: strengthToday.trim() || undefined,
+      better10: better10.trim() || undefined,
       answers: existing?.answers ?? {},
       updatedAt: now,
     };
@@ -178,7 +143,7 @@ export default function DennikPage() {
       <div>
         <h1 className="text-2xl font-semibold">Denník</h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Krátka večerná reflexia: cena, silné momenty, kde si stratil, jedna vec na zajtra.
+          Večer čeli tomu, s čím bojuješ, a vyber jednu vec, ktorá ťa zajtra posunie.
         </p>
       </div>
 
@@ -190,52 +155,121 @@ export default function DennikPage() {
               Večerná reflexia, {new Date().toLocaleDateString("sk-SK", { day: "numeric", month: "long" })}
               {existing ? " · úprava" : ""}
             </SectionTitle>
-            <div className="space-y-5">
-              <div>
-                <Label>Ako som dnes pracoval s cenou?</Label>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {PRICE_DAY_OPTIONS.map((o) => (
-                    <button
-                      key={o.id}
-                      type="button"
-                      onClick={() => setPriceDay(o.id)}
-                      className={`rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors ${
-                        priceDay === o.id
-                          ? "border-indigo-600 bg-indigo-600 text-white"
-                          : "border-zinc-300 bg-white text-zinc-700 hover:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
-                      }`}
-                    >
-                      {o.label}
-                    </button>
-                  ))}
+            <div className="space-y-8">
+              <section className="space-y-4">
+                <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Kotva dňa</h3>
+
+                <div>
+                  <Label>S čím som dnes vnútorne bojoval pri predaji?</Label>
+                  <div className="mt-1 flex flex-wrap gap-2">
+                    {STRUGGLE_OPTIONS.map((o) => (
+                      <button
+                        key={o.id}
+                        type="button"
+                        onClick={() => setStruggleCategory(struggleCategory === o.id ? null : o.id)}
+                        className={`rounded-xl border px-3 py-2 text-sm font-medium transition-colors ${
+                          struggleCategory === o.id
+                            ? "border-indigo-600 bg-indigo-600 text-white"
+                            : "border-zinc-300 bg-white text-zinc-700 hover:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
+                        }`}
+                      >
+                        {o.label}
+                      </button>
+                    ))}
+                  </div>
+                  <TextArea
+                    className="mt-2"
+                    rows={2}
+                    value={struggleText}
+                    onChange={(e) => setStruggleText(e.target.value)}
+                    placeholder="krátko popíš, čo sa dialo"
+                  />
+                  <FieldTip>Vyber kategóriu. Text pomôže mentorovi vidieť vzorec, nie len pocit.</FieldTip>
                 </div>
-              </div>
 
-              <MultiLines
-                label="Najsilnejší moment dňa"
-                values={wins}
-                onChange={setWins}
-                placeholder="napr. povedal som cenu hneď a zákazník súhlasil"
-                addLabel="+ pridať ďalší silný moment"
-              />
+                <div>
+                  <Label>Jedna vec, ktorú zajtra urobím inak</Label>
+                  <TextArea
+                    rows={2}
+                    value={focus}
+                    onChange={(e) => setFocus(e.target.value)}
+                    placeholder="konkrétne správanie, napr. cenu poviem hneď pri prvej ponuke"
+                  />
+                  <FieldTip>Jedna vec. Čím konkrétnejšia, tým väčšia šanca, že ju zajtra urobíš.</FieldTip>
+                </div>
+              </section>
 
-              <MultiLines
-                label="Kde som dnes stratil / zamrzol"
-                values={losses}
-                onChange={setLosses}
-                placeholder="napr. pri námietke na cenu som povedal len Dobre"
-                addLabel="+ pridať ďalšie"
-              />
+              <section className="space-y-4">
+                <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+                  Čeliť slabine
+                  <OptionalHint />
+                </h3>
 
-              <div>
-                <Label>Jedna vec na zajtra</Label>
-                <TextArea
-                  rows={2}
-                  value={focus}
-                  onChange={(e) => setFocus(e.target.value)}
-                  placeholder="jedna konkrétna vec, nie zoznam"
-                />
-              </div>
+                <div>
+                  <Label>Pri ktorej situácii som dnes ustúpil, hoci som vedel, čo by bolo správne?</Label>
+                  <TextArea
+                    rows={2}
+                    value={retreated}
+                    onChange={(e) => setRetreated(e.target.value)}
+                    placeholder="napr. povedal som Dobre, dal som zľavu, vyhol som sa cene…"
+                  />
+                  <FieldTip>Tu nejde o výčitku. Ide o pomenovať moment, kde vieš, že nabudúce zvládneš viac.</FieldTip>
+                </div>
+
+                <div>
+                  <Label>Kde som dnes bol viac vo svojom strese než pri zákazníkovi? Čo to spustilo?</Label>
+                  <TextArea
+                    rows={2}
+                    value={selfFocus}
+                    onChange={(e) => setSelfFocus(e.target.value)}
+                    placeholder="čo spustilo stres, hanbu alebo ticho"
+                  />
+                </div>
+
+                <div>
+                  <Label>
+                    Aká jedna námietka / moment ma dnes najviac rozhodil? Čo som vtedy potreboval vedieť /
+                    urobiť?
+                  </Label>
+                  <TextArea
+                    rows={2}
+                    value={hardestMoment}
+                    onChange={(e) => setHardestMoment(e.target.value)}
+                    placeholder="čo padlo + čo by ti vtedy pomohlo"
+                  />
+                </div>
+              </section>
+
+              <section className="space-y-4">
+                <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+                  Rast a motivácia
+                  <OptionalHint />
+                </h3>
+
+                <div>
+                  <Label>Kde som dnes ukázal svoju silu?</Label>
+                  <TextArea
+                    rows={2}
+                    value={strengthToday}
+                    onChange={(e) => setStrengthToday(e.target.value)}
+                    placeholder="upsell, recenzia, technika, pokoj, dobrá otázka…"
+                  />
+                  <FieldTip>Zapíš aj malú výhru. To, čo funguje, chceš opakovať zámerne.</FieldTip>
+                </div>
+
+                <div>
+                  <Label>
+                    Keby som zajtra spravil len jednu vec o 10 % lepšie, čo by to bolo a prečo by ma to
+                    posunulo?
+                  </Label>
+                  <TextArea
+                    rows={2}
+                    value={better10}
+                    onChange={(e) => setBetter10(e.target.value)}
+                    placeholder="malý posun, veľký efekt"
+                  />
+                </div>
+              </section>
 
               <div className="flex flex-wrap items-center gap-3">
                 <Btn onClick={saveReflection} disabled={!canSave}>
@@ -248,7 +282,9 @@ export default function DennikPage() {
                 )}
                 {reflSaved && <span className="text-sm text-emerald-600">Uložené ✔</span>}
                 {!canSave && (
-                  <span className="text-xs text-zinc-400">Vyplň prácu s cenou a jednu vec na zajtra</span>
+                  <span className="text-xs text-zinc-400">
+                    Vyplň boj dňa (kategória alebo text) a jednu vec na zajtra
+                  </span>
                 )}
               </div>
             </div>
@@ -357,8 +393,17 @@ function ReflectionCard({
   const answers = Object.entries(reflection.answers ?? {}).filter(([, v]) => String(v ?? "").trim());
   const wins = reflection.wins ?? [];
   const losses = reflection.losses ?? [];
-  const hasCoaching =
-    !!reflection.priceDay || wins.length > 0 || losses.length > 0 || !!reflection.focus?.trim();
+  const hasNew =
+    !!reflection.struggleCategory ||
+    !!reflection.struggleText?.trim() ||
+    !!reflection.retreated?.trim() ||
+    !!reflection.selfFocus?.trim() ||
+    !!reflection.hardestMoment?.trim() ||
+    !!reflection.strengthToday?.trim() ||
+    !!reflection.better10?.trim() ||
+    !!reflection.focus?.trim();
+  const hasLegacy =
+    !!reflection.priceDay || wins.length > 0 || losses.length > 0 || answers.length > 0;
 
   return (
     <Card className={isToday ? "border-indigo-300 dark:border-indigo-800" : undefined}>
@@ -382,9 +427,57 @@ function ReflectionCard({
         )}
       </div>
       <div className="space-y-3 text-sm">
+        {(reflection.struggleCategory || reflection.struggleText?.trim()) && (
+          <div>
+            <div className="font-medium text-zinc-700 dark:text-zinc-300">S čím som bojoval</div>
+            <p className="mt-0.5 text-zinc-600 dark:text-zinc-400">
+              {reflection.struggleCategory
+                ? STRUGGLE_CATEGORY_LABELS[reflection.struggleCategory] ?? reflection.struggleCategory
+                : null}
+              {reflection.struggleCategory && reflection.struggleText?.trim() ? ": " : null}
+              {reflection.struggleText?.trim() || null}
+            </p>
+          </div>
+        )}
+        {reflection.focus?.trim() && (
+          <div>
+            <div className="font-medium text-zinc-700 dark:text-zinc-300">Zajtra inak</div>
+            <p className="mt-0.5 whitespace-pre-wrap text-zinc-600 dark:text-zinc-400">{reflection.focus}</p>
+          </div>
+        )}
+        {reflection.retreated?.trim() && (
+          <div>
+            <div className="font-medium text-zinc-700 dark:text-zinc-300">Kde som ustúpil</div>
+            <p className="mt-0.5 whitespace-pre-wrap text-zinc-600 dark:text-zinc-400">{reflection.retreated}</p>
+          </div>
+        )}
+        {reflection.selfFocus?.trim() && (
+          <div>
+            <div className="font-medium text-zinc-700 dark:text-zinc-300">Stres namiesto zákazníka</div>
+            <p className="mt-0.5 whitespace-pre-wrap text-zinc-600 dark:text-zinc-400">{reflection.selfFocus}</p>
+          </div>
+        )}
+        {reflection.hardestMoment?.trim() && (
+          <div>
+            <div className="font-medium text-zinc-700 dark:text-zinc-300">Najťažší moment</div>
+            <p className="mt-0.5 whitespace-pre-wrap text-zinc-600 dark:text-zinc-400">
+              {reflection.hardestMoment}
+            </p>
+          </div>
+        )}
+        {reflection.strengthToday?.trim() && (
+          <div className="text-emerald-700 dark:text-emerald-400">➕ {reflection.strengthToday}</div>
+        )}
+        {reflection.better10?.trim() && (
+          <div>
+            <div className="font-medium text-zinc-700 dark:text-zinc-300">+10 % zajtra</div>
+            <p className="mt-0.5 whitespace-pre-wrap text-zinc-600 dark:text-zinc-400">{reflection.better10}</p>
+          </div>
+        )}
+
         {reflection.priceDay && (
           <div>
-            <div className="font-medium text-zinc-700 dark:text-zinc-300">Práca s cenou</div>
+            <div className="font-medium text-zinc-500 dark:text-zinc-400">(staré) Práca s cenou</div>
             <p className="mt-0.5 text-zinc-600 dark:text-zinc-400">
               {DAY_PRICE_LABELS[reflection.priceDay] ?? reflection.priceDay}
             </p>
@@ -400,21 +493,13 @@ function ReflectionCard({
             ➖ {l}
           </div>
         ))}
-        {reflection.focus?.trim() && (
-          <div>
-            <div className="font-medium text-zinc-700 dark:text-zinc-300">Jedna vec na zajtra</div>
-            <p className="mt-0.5 whitespace-pre-wrap text-zinc-600 dark:text-zinc-400">{reflection.focus}</p>
-          </div>
-        )}
         {answers.map(([q, a]) => (
           <div key={q}>
             <div className="font-medium text-zinc-500 dark:text-zinc-400">(staré) {q}</div>
             <p className="mt-0.5 whitespace-pre-wrap text-zinc-600 dark:text-zinc-400">{a}</p>
           </div>
         ))}
-        {!hasCoaching && answers.length === 0 && (
-          <p className="text-zinc-400">Bez vyplneného textu.</p>
-        )}
+        {!hasNew && !hasLegacy && <p className="text-zinc-400">Bez vyplneného textu.</p>}
       </div>
     </Card>
   );

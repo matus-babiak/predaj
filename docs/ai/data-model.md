@@ -48,8 +48,8 @@
 ### Reflection
 - `id` a `date`: `YYYY-MM-DD` (jedna reflexia na deň)
 - `weekId` (týždeň programu pri vzniku)
-- Coaching: `priceDay` (`start` | `mixed` | `end` | `avoided`), `wins[]`, `losses[]`, `focus` (jedna vec na zajtra)
-- Staršie: `answers` (otázky týždňa, história)
+- Aktuálny formulár: `struggleCategory`, `struggleText`, `focus` (povinné jadro), voliteľné `retreated`, `selfFocus`, `hardestMoment`, `strengthToday`, `better10`
+- Staršie: `priceDay`, `wins[]`, `losses[]`, `answers` (história)
 
 ### Progress
 - `currentWeek` 1-12, `completedWeeks`, `readLessons`, `weekStarts`, `startedAt`

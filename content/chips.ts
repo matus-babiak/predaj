@@ -43,6 +43,14 @@ export const DAY_PRICE_LABELS: Record<string, string> = {
   avoided: "Vôbec / vyhýbal som sa",
 };
 
+export const STRUGGLE_CATEGORY_LABELS: Record<string, string> = {
+  cena: "Cena",
+  namietka: "Námietka",
+  ticho: "Ticho / zamrznutie",
+  peniaze: "Strach pýtať si peniaze",
+  ine: "Iné",
+};
+
 export const OBJECTION_REACTION_LABELS: Record<string, string> = {
   none: "Námietka nepadla",
   asked_benefit: "Opýtal som sa na úžitok",

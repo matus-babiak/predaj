@@ -29,6 +29,8 @@ Porušenie = strata dát, bezpečnostná diera, alebo rozbitie jadra produktu.
 
 ### K4: Reflexia: jedna na deň
 - `Reflection.id` = dátum dňa. Prepísanie iným id by rozbilo denný model a štatistiky streaku.
+- Nový formulár vyžaduje `priceDay` a `focus`. `wins` / `losses` sú voliteľné zoznamy.
+- Otázky týždňa z programu už nie sú večerný formulár (ostávajú v `content/program.ts` ako obsah lekcie).
 
 ### K5: Progress singleton
 - `Progress.id` musí ostať `"progress"`. Viacero progress dokumentov by rozbilo program.

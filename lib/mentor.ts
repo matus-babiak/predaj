@@ -42,6 +42,9 @@ export interface BriefingReflectionInput {
   date: string;
   answers: string[];
   focus?: string;
+  priceDay?: string;
+  wins?: string[];
+  losses?: string[];
 }
 
 export function buildWeeklyBriefingPrompt(input: {
@@ -83,8 +86,14 @@ export function buildWeeklyBriefingPrompt(input: {
   const reflList = input.reflections.length
     ? input.reflections
         .map((r) => {
-          const body = r.answers.length ? r.answers.join(" / ") : "(prázdna)";
-          return `- ${r.date}: ${body}${r.focus ? ` | zajtra: ${r.focus}` : ""}`;
+          const bits = [
+            r.priceDay ? `cena dnes: ${r.priceDay}` : "",
+            r.wins?.length ? `silné: ${r.wins.join("; ")}` : "",
+            r.losses?.length ? `straty: ${r.losses.join("; ")}` : "",
+            r.focus ? `zajtra: ${r.focus}` : "",
+            r.answers.length ? `odpovede: ${r.answers.join(" / ")}` : "",
+          ].filter(Boolean);
+          return `- ${r.date}: ${bits.join(" | ") || "(prázdna)"}`;
         })
         .join("\n")
     : "(zatiaľ žiadne)";

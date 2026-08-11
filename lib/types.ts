@@ -111,12 +111,20 @@ export interface Manual {
   updatedAt: number;
 }
 
+/** Ako som dnes celkovo pracoval s cenou (večerná reflexia). */
+export type DayPriceTiming = "start" | "mixed" | "end" | "avoided";
+
 export interface Reflection {
   id: string; // dátum YYYY-MM-DD
   date: string;
   weekId: string; // týždeň programu, v ktorom vznikla
-  answers: Record<string, string>; // otázka -> odpoveď
-  focus?: string; // čo chcem zajtra zlepšiť
+  // Coaching polia (nový večerný formulár)
+  priceDay?: DayPriceTiming;
+  wins?: string[]; // najsilnejšie momenty dňa
+  losses?: string[]; // kde som stratil / zamrzol
+  focus?: string; // jedna vec na zajtra
+  // Staršie: otázky týždňa (história)
+  answers: Record<string, string>;
   updatedAt: number;
 }
 

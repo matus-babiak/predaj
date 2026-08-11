@@ -36,6 +36,13 @@ export const PRICE_TIMING_LABELS: Record<string, string> = {
   avoided: "Cene som sa vyhol",
 };
 
+export const DAY_PRICE_LABELS: Record<string, string> = {
+  start: "Väčšinou hneď na začiatku",
+  mixed: "Striedavo",
+  end: "Neskoro / na konci",
+  avoided: "Vôbec / vyhýbal som sa",
+};
+
 export const OBJECTION_REACTION_LABELS: Record<string, string> = {
   none: "Námietka nepadla",
   asked_benefit: "Opýtal som sa na úžitok",

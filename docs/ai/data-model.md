@@ -47,7 +47,9 @@
 
 ### Reflection
 - `id` a `date`: `YYYY-MM-DD` (jedna reflexia na deň)
-- `weekId`, `answers`, voliteľné `focus`
+- `weekId` (týždeň programu pri vzniku)
+- Coaching: `priceDay` (`start` | `mixed` | `end` | `avoided`), `wins[]`, `losses[]`, `focus` (jedna vec na zajtra)
+- Staršie: `answers` (otázky týždňa, história)
 
 ### Progress
 - `currentWeek` 1-12, `completedWeeks`, `readLessons`, `weekStarts`, `startedAt`

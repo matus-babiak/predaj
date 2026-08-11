@@ -175,7 +175,7 @@ export default function TodayPage() {
             <div className="text-3xl">🌙</div>
             <div className="mt-2 font-semibold">Večerná reflexia</div>
             <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-              {hasReflection ? "Dnešná reflexia je hotová. ✔" : "3 otázky na koniec dňa."}
+              {hasReflection ? "Dnešná reflexia je hotová. ✔" : "Krátky večerný check: cena, silné, slabé, zajtra."}
             </p>
           </Card>
         </Link>

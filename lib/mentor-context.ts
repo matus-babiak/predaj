@@ -6,6 +6,7 @@ import { dayKey } from "./gamify";
 import { getWeek } from "@/content/program";
 import { OBJECTIONS } from "@/content/objections";
 import {
+  DAY_PRICE_LABELS,
   NEXT_STEP_PLAN_LABELS,
   OUTCOME_LABELS,
   PRICE_TIMING_LABELS,
@@ -80,11 +81,18 @@ export function formatEntryForPrompt(e: Entry): string {
 }
 
 export function formatReflectionForPrompt(r: Reflection): string {
-  const answers = Object.entries(r.answers ?? {})
+  const bits = [
+    r.priceDay ? `cena dnes: ${DAY_PRICE_LABELS[r.priceDay] ?? r.priceDay}` : "",
+    r.wins?.length ? `silné: ${r.wins.join("; ")}` : "",
+    r.losses?.length ? `straty: ${r.losses.join("; ")}` : "",
+    r.focus ? `zajtra: ${r.focus}` : "",
+  ].filter(Boolean);
+  const legacy = Object.entries(r.answers ?? {})
     .filter(([, v]) => String(v ?? "").trim())
     .map(([q, a]) => `${q}: ${a}`)
     .join(" / ");
-  return `- ${r.date}: ${answers || "(prázdna)"}${r.focus ? ` | zajtra: ${r.focus}` : ""}`;
+  if (legacy) bits.push(`(staré) ${legacy}`);
+  return `- ${r.date}: ${bits.join(" | ") || "(prázdna)"}`;
 }
 
 /** Zostaví textový snapshot z už načítaných kolekcií (pre web API s body aj server). */

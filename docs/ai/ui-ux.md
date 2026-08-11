@@ -46,6 +46,7 @@ Nepriďávať novú UI knižnicu, kým to požiadavka nevyžaduje.
 | AI on-demand + „stale“ podľa fingerprint | Plusy, AI Mentor briefing, Štatistiky |
 | Domov: priorita na dnes (max 1×/deň) | `settings.dailyFocus*` |
 | Debrief tlačidlo pri zázname | Záznamy / EntryRow |
+| Coaching večerná reflexia | cena dňa, silné/slabé riadky, jedna vec na zajtra; bez rotačných otázok týždňa |
 | Večerné zhrnutie tlačidlo | Denník po uložení reflexie |
 | Mentor chat | AI Mentor + Telegram webhook |
 | Deep link `?q=` | Mindset, Námietky, Produkty |

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useData } from "@/lib/useData";
 import { dayKey } from "@/lib/gamify";
 import { uid } from "@/lib/store";
-import { OUTCOME_LABELS, PRICE_TIMING_LABELS, OBJECTION_REACTION_LABELS, NEXT_STEP_PLAN_LABELS } from "@/content/chips";
+import { OUTCOME_LABELS, PRICE_TIMING_LABELS, OBJECTION_REACTION_LABELS, NEXT_STEP_PLAN_LABELS, DAY_PRICE_LABELS } from "@/content/chips";
 import type { MentorMessage, Settings } from "@/lib/types";
 import { Btn, Card, RichText, SectionTitle, TextArea } from "@/components/ui";
 
@@ -97,6 +97,9 @@ export default function AiMentorPage() {
         date: r.date,
         answers: Object.values(r.answers ?? {}).filter((v) => String(v).trim()),
         focus: r.focus,
+        priceDay: r.priceDay ? DAY_PRICE_LABELS[r.priceDay] ?? r.priceDay : undefined,
+        wins: r.wins,
+        losses: r.losses,
       }));
 
     const fingerprint = [
@@ -127,7 +130,16 @@ export default function AiMentorPage() {
         )
         .join("|"),
       briefingReflections
-        .map((r) => [r.date, r.answers.join("/"), r.focus ?? ""].join("~"))
+        .map((r) =>
+          [
+            r.date,
+            r.priceDay ?? "",
+            (r.wins ?? []).join("^"),
+            (r.losses ?? []).join("^"),
+            r.focus ?? "",
+            r.answers.join("/"),
+          ].join("~")
+        )
         .join("|"),
     ].join("::");
 

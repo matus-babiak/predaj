@@ -137,7 +137,7 @@ Overenie zmien: manuálne podľa scenárov z Planning Agenta + `npm run build` p
 |-----------|---------------|----------------|---------|
 | Dnes | greeting, daily focus, quick access, badges | R: entries, reflections, objAttempts, products, userObjections, settings, progress; W: settings (dailyFocus cache) | program, mindset, objections |
 | Program | unlock, completeWeek | R/W: progress; R days z entries/reflections | program.ts |
-| Denník | 1 reflexia/deň + večerné zhrnutie | R/W: reflections, settings; R: progress | week.reflection |
+| Denník | 1 reflexia/deň (coaching) + večerné zhrnutie | R/W: reflections, settings; R: progress | (program weekId len meta) |
 | Záznamy | draft, coaching zápis, debrief tlačidlo | R/W: entries, settings | chips (labely) |
 | Námietky | pickNext scoring | R/W: objAttempts, userObjections | objections.ts |
 | Produkty | quiz by lastReviewed | R/W: products | productFields.ts |

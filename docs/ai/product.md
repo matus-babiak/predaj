@@ -58,7 +58,7 @@ Zdroj: `components/Shell.tsx` → pole `NAV`.
 ### Denný cyklus
 1. Otvorí **Dnes** → vidí úlohu aktuálneho týždňa.
 2. Po zákazníkovi ide do **Záznamy** (outcome povinný; want/fear/why/trust voliteľné).
-3. Večer **Denník** → reflexia podľa otázok týždňa (1 reflexia / deň).
+3. Večer **Denník** → coaching reflexia (1 na deň): práca s cenou, silné momenty, straty, jedna vec na zajtra.
 4. Voliteľne trénuje **Námietky**, skúša **Produkty**, dopĺňa **Požiadavky**.
 
 ### Program

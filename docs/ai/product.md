@@ -38,7 +38,7 @@ Zdroj: `components/Shell.tsx` → pole `NAV`.
 |-------|-------|------|
 | `/` | Dnes | Denný hub: úloha týždňa, rýchle akcie, streak, odznaky |
 | `/mindset` | Mindset | Banka myšlienok + vlastné myšlienky + obľúbené |
-| `/dennik` | Denník | Večerná reflexia podľa otázok aktuálneho týždňa |
+| `/dennik` | Denník | Večerná coaching reflexia (cena, silné/slabé, zajtra) |
 | `/zaznamy` | Záznamy | Coaching zápis po zákazníkovi + história |
 | `/poziadavky` | Požiadavky | Čisté dopyty zákazníkov (bez výsledku predaja) |
 | `/program` | Program | 12 týždňov / 6 fáz, odomykanie vlastným tempom |

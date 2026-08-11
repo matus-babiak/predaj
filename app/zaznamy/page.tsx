@@ -15,7 +15,7 @@ import type {
   PriceTiming,
 } from "@/lib/types";
 import { EntryRow } from "@/components/EntryRow";
-import { Btn, Card, Input, Label, SectionTitle } from "@/components/ui";
+import { Btn, Card, Input, Label, RichText, SectionTitle } from "@/components/ui";
 
 const OUTCOMES: { id: Outcome; label: string; emoji: string }[] = [
   { id: "kupil", label: "Kúpil", emoji: "✅" },
@@ -114,6 +114,11 @@ export default function ZaznamyPage() {
   const [minuses, setMinuses] = useState<string[]>([""]);
   const [note, setNote] = useState("");
   const [saved, setSaved] = useState(false);
+  const [debriefEntryId, setDebriefEntryId] = useState<string | null>(null);
+  const [debriefEntry, setDebriefEntry] = useState<Entry | null>(null);
+  const [debriefText, setDebriefText] = useState<string | null>(null);
+  const [debriefLoading, setDebriefLoading] = useState(false);
+  const [debriefError, setDebriefError] = useState(false);
 
   const draftAppliedRef = useRef(false);
   const autosaveArmedRef = useRef(false);
@@ -215,6 +220,7 @@ export default function ZaznamyPage() {
     };
     put("entries", entry);
     syncRequest(req, now);
+    put("settings", { ...settings, entryDraft: undefined, updatedAt: now });
 
     setRequestText("");
     setOutcome(null);
@@ -228,7 +234,33 @@ export default function ZaznamyPage() {
     setMinuses([""]);
     setNote("");
     setSaved(true);
+    setDebriefEntryId(entry.id);
+    setDebriefEntry(entry);
+    setDebriefText(null);
+    setDebriefError(false);
     setTimeout(() => setSaved(false), 2500);
+  };
+
+  const askMentor = async (entry: Entry) => {
+    setDebriefEntryId(entry.id);
+    setDebriefEntry(entry);
+    setDebriefLoading(true);
+    setDebriefError(false);
+    setDebriefText(null);
+    try {
+      const res = await fetch("/api/mentor/debrief", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ entry }),
+      });
+      const data = (await res.json()) as { text: string | null };
+      if (data.text) setDebriefText(data.text);
+      else setDebriefError(true);
+    } catch {
+      setDebriefError(true);
+    } finally {
+      setDebriefLoading(false);
+    }
   };
 
   if (!ready) return null;
@@ -411,8 +443,55 @@ export default function ZaznamyPage() {
               <span className="text-xs text-zinc-400">Vyplň požiadavku, výsledok, cenu a plán kroku</span>
             )}
           </div>
+          {saved && debriefEntry && (
+            <div className="rounded-xl border border-indigo-200 bg-indigo-50/50 p-3 dark:border-indigo-900 dark:bg-indigo-950/20">
+              <Btn variant="ghost" onClick={() => void askMentor(debriefEntry)} disabled={debriefLoading}>
+                {debriefLoading ? "Mentor pripravuje…" : "Spýtaj sa mentora na tento predaj"}
+              </Btn>
+            </div>
+          )}
         </div>
       </Card>
+
+      {debriefEntryId && (debriefText || debriefLoading || debriefError) && (
+        <Card className="border-indigo-200 bg-indigo-50/60 dark:border-indigo-900 dark:bg-indigo-950/30">
+          <SectionTitle>Debrief mentora</SectionTitle>
+          {debriefLoading && (
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">Pripravujem spätnú väzbu…</p>
+          )}
+          {debriefError && (
+            <p className="text-sm text-red-500">Mentor momentálne nie je dostupný, skús neskôr.</p>
+          )}
+          {debriefText && (
+            <div className="space-y-2 whitespace-pre-wrap text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+              {debriefText.split("\n").map((line, i) => {
+                const h = line.trim().match(/^##\s+(.+)$/);
+                if (h) {
+                  return (
+                    <h3 key={i} className="pt-1 text-sm font-semibold text-indigo-800 dark:text-indigo-300">
+                      {h[1]}
+                    </h3>
+                  );
+                }
+                const b = line.trim().match(/^[-*]\s+(.+)$/);
+                if (b) {
+                  return (
+                    <p key={i} className="pl-3">
+                      • <RichText text={b[1]} />
+                    </p>
+                  );
+                }
+                if (!line.trim()) return null;
+                return (
+                  <p key={i}>
+                    <RichText text={line.trim()} />
+                  </p>
+                );
+              })}
+            </div>
+          )}
+        </Card>
+      )}
 
       {days.length > 0 && (
         <div>
@@ -441,7 +520,13 @@ export default function ZaznamyPage() {
                       .slice()
                       .sort((a, b) => b.ts - a.ts)
                       .map((e) => (
-                        <EntryRow key={e.id} entry={e} onDelete={() => remove("entries", e.id)} />
+                        <EntryRow
+                          key={e.id}
+                          entry={e}
+                          onDelete={() => remove("entries", e.id)}
+                          onAskMentor={() => void askMentor(e)}
+                          mentorBusy={debriefLoading && debriefEntryId === e.id}
+                        />
                       ))}
                   </div>
                 </details>

@@ -44,7 +44,7 @@ Zdroj: `components/Shell.tsx` → pole `NAV`.
 | `/program` | Program | 12 týždňov / 6 fáz, odomykanie vlastným tempom |
 | `/namietky` | Námietky | Tréning uznaj → zisti → odpovedz + banka |
 | `/plusy-minusy` | Plusy a mínusy | Sebahodnotenie + AI komentár |
-| `/ai-mentor` | AI Mentor | Týždenný AI briefing (okno 14 dní) |
+| `/ai-mentor` | AI Mentor | Voľný chat + týždenný AI briefing (okno 14 dní) |
 | `/otazky` | Otázky | Otvorené otázky → zodpovedané |
 | `/poznamky` | Poznámky | Rýchle TODO |
 | `/hardver` | Hardvér | Štúdium tém, AI štruktúra |
@@ -71,9 +71,11 @@ Zdroj: `components/Shell.tsx` → pole `NAV`.
 2. Fronta sa odošle na `/api/data`.
 3. Pri výpadku ostávajú v zariadení (`sync: offline`).
 
-### AI (voliteľné, on-demand)
-- Plusy/mínusy komentár, AI Mentor briefing, štatistiky clustering, Hardvér štruktúra.
-- Vyžaduje `GEMINI_API_KEY`. Odpovede sa cache-ujú vo `settings` cez fingerprint.
+### AI (voliteľné)
+- Plusy/mínusy komentár, AI Mentor briefing + chat, štatistiky clustering, Hardvér štruktúra.
+- Debrief po zázname (tlačidlo), ranná priorita na Domove (max 1×/deň), večerné zhrnutie po denníku (tlačidlo).
+- Telegram koučovací chat (len čítanie dát, bez zápisu do appky, bez ranného pushu).
+- Vyžaduje `GEMINI_API_KEY`. Briefing/fokus cache vo `settings`. Chat história: kolekcia `mentorMessages`.
 
 ## Hlavné funkcie (MVP podľa aktuálneho kódu)
 
@@ -96,7 +98,7 @@ Za MVP sa považuje to, čo je v kóde a v navigácii funkčné:
 - Multi-user / role / tímy
 - E-mail / OAuth prihlásenie
 - Platby, predplatné
-- Automatické notifikácie / push
+- Automatické notifikácie / push (okrem odpovede Telegram bota na prichádzajúcu správu)
 - Automatizované testy (žiadne `*test*` / `*spec*` v repozitári)
 - Admin panel, export/import UI (neznáme ako produktová požiadavka)
 - Verejný marketingový web

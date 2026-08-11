@@ -46,7 +46,8 @@ API routes (app/api/**)
 db.ts → Redis (prod) alebo .data.json (dev)
 
 Paralelne AI:
-UI → POST /api/mentor/* → lib/mentor|statsAi + gemini.ts → Gemini
+UI → POST /api/mentor/* → lib/mentor|statsAi|mentor-context + gemini.ts → Gemini
+Telegram → POST /api/telegram → mentor-context + mentor chat + gemini → sendTelegramMessage
 ```
 
 ### Kde je čo
@@ -63,6 +64,8 @@ UI → POST /api/mentor/* → lib/mentor|statsAi + gemini.ts → Gemini
 | Auth token | `lib/auth.ts` + `middleware.ts` |
 | Streak, odznaky | `lib/gamify.ts` |
 | AI prompty | `lib/mentor.ts`, `lib/statsAi.ts` |
+| Mentor snapshot / chat helpers | `lib/mentor-context.ts` |
+| Telegram klient | `lib/telegram.ts` |
 | Gemini volanie | `lib/gemini.ts` |
 | Statický obsah | `content/*.ts` |
 | Business rules programu | `app/program/page.tsx` + `content/program.ts` + `useData.daysInCurrentWeek` |
@@ -72,11 +75,12 @@ UI → POST /api/mentor/* → lib/mentor|statsAi + gemini.ts → Gemini
 | Entry | Úloha |
 |-------|--------|
 | `app/layout.tsx` | HTML shell, metadata PWA, `StoreProvider`, `Shell` |
-| `middleware.ts` | Auth pre všetko okrem login/static |
+| `middleware.ts` | Auth pre všetko okrem login/static/`api/telegram` |
 | `app/page.tsx` | Domov „Dnes“ |
 | `app/api/data/route.ts` | Sync dát GET/POST |
 | `app/api/login|logout` | Session cookie |
 | `app/api/mentor/*` | AI endpointy |
+| `app/api/telegram` | Telegram webhook (secret + chat allowlist) |
 
 ## API
 
@@ -89,9 +93,14 @@ UI → POST /api/mentor/* → lib/mentor|statsAi + gemini.ts → Gemini
 | `/api/mentor/briefing` | POST | Týždenný mentor briefing |
 | `/api/mentor/stats` | POST | Clustering potrieb/obáv |
 | `/api/mentor/study` | POST | Štruktúra hardvérovej témy |
+| `/api/mentor/debrief` | POST | Debrief jedného záznamu |
+| `/api/mentor/daily-focus` | POST | Ranná priorita na dnes |
+| `/api/mentor/evening` | POST | Večerné zhrnutie po reflexii |
+| `/api/mentor/chat` | POST | Voľný web chat (história + snapshot) |
+| `/api/telegram` | POST | Telegram webhook (chat mentor) |
 
 API handlery **nespôsobujú vlastnú auth kontrolu**: spoliehajú sa na middleware.
-Výnimka: `/api/login` je v middleware exclude.
+Výnimky: `/api/login` a `/api/telegram` sú v middleware exclude (Telegram má vlastný secret).
 
 ## Env premenné
 
@@ -101,6 +110,9 @@ Výnimka: `/api/login` je v middleware exclude.
 | `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Redis |
 | `KV_REST_API_URL` / `KV_REST_API_TOKEN` | Alias pre Redis (Vercel Marketplace) |
 | `GEMINI_API_KEY` | AI mentor funkcie |
+| `TELEGRAM_BOT_TOKEN` | Telegram bot |
+| `TELEGRAM_CHAT_ID` | Whitelist jedného chatu |
+| `TELEGRAM_WEBHOOK_SECRET` | Overenie webhooku |
 | `NODE_ENV` | `secure` flag cookie |
 
 ## Spustenie a build
@@ -123,15 +135,15 @@ Overenie zmien: manuálne podľa scenárov z Planning Agenta + `npm run build` p
 
 | Obrazovka | Hlavná logika | Kolekcie (R/W) | Content |
 |-----------|---------------|----------------|---------|
-| Dnes | greeting, quick access, badges | R: entries, reflections, objAttempts, products, userObjections, settings, progress | program, mindset, objections |
+| Dnes | greeting, daily focus, quick access, badges | R: entries, reflections, objAttempts, products, userObjections, settings, progress; W: settings (dailyFocus cache) | program, mindset, objections |
 | Program | unlock, completeWeek | R/W: progress; R days z entries/reflections | program.ts |
-| Denník | 1 reflexia/deň | R/W: reflections; R: progress | week.reflection |
-| Záznamy | draft, coaching zápis (cena, námietka, plán, upsell) | R/W: entries, settings | chips (labely) |
+| Denník | 1 reflexia/deň + večerné zhrnutie | R/W: reflections, settings; R: progress | week.reflection |
+| Záznamy | draft, coaching zápis, debrief tlačidlo | R/W: entries, settings | chips (labely) |
 | Námietky | pickNext scoring | R/W: objAttempts, userObjections | objections.ts |
 | Produkty | quiz by lastReviewed | R/W: products | productFields.ts |
 | Mindset | quote of day, favorites | R/W: myThoughts, settings | mindset.ts |
 | Štatistiky | agregácie + AI | R: entries…; W: settings (AI cache) | chips |
-| AI Mentor | fingerprint window | R: entries…; W: settings | (žiadny content) |
+| AI Mentor | chat + fingerprint briefing | R: entries…; R/W: settings, mentorMessages | (žiadny content) |
 | Plusy/mínusy | merge + AI | R/W: selfNotes, settings; R: entries | (žiadny content) |
 | Otázky / Poznámky / Požiadavky / Hardvér / Manuály | CRUD patterns | príslušné kolekcie | seed manuálu v page |
 

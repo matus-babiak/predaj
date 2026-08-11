@@ -236,6 +236,19 @@ export interface StatsAiCategory {
   examples?: string[];
 }
 
+// Správa v hybrid mentor chate (web alebo Telegram). Nie je to predajný zápis.
+export type MentorChatChannel = "web" | "telegram";
+export type MentorChatRole = "user" | "assistant";
+
+export interface MentorMessage {
+  id: string;
+  channel: MentorChatChannel;
+  role: MentorChatRole;
+  text: string;
+  ts: number;
+  updatedAt: number;
+}
+
 export interface Settings {
   id: "settings";
   customWants: string[];
@@ -253,6 +266,15 @@ export interface Settings {
   statsAiInsight?: string;
   statsAiAt?: number;
   statsAiFingerprint?: string;
+  // Ranná priorita na Domove (max 1× za kalendárny deň)
+  dailyFocus?: string;
+  dailyFocusDate?: string; // YYYY-MM-DD
+  dailyFocusAt?: number;
+  dailyFocusFingerprint?: string;
+  // Večerné zhrnutie po denníku (cache podľa dňa)
+  eveningSummary?: string;
+  eveningSummaryDate?: string;
+  eveningSummaryAt?: number;
   entryDraft?: EntryDraft;
   updatedAt: number;
 }
@@ -272,6 +294,7 @@ export type Collections = {
   requests: CustomerRequest[];
   studyTopics: StudyTopic[];
   manuals: Manual[];
+  mentorMessages: MentorMessage[];
 };
 
 export const COLLECTION_NAMES = [
@@ -289,6 +312,7 @@ export const COLLECTION_NAMES = [
   "requests",
   "studyTopics",
   "manuals",
+  "mentorMessages",
 ] as const;
 
 export type CollectionName = (typeof COLLECTION_NAMES)[number];

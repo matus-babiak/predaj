@@ -9,7 +9,17 @@ import {
   PRICE_TIMING_LABELS,
 } from "@/content/chips";
 
-export function EntryRow({ entry, onDelete }: { entry: Entry; onDelete: () => void }) {
+export function EntryRow({
+  entry,
+  onDelete,
+  onAskMentor,
+  mentorBusy,
+}: {
+  entry: Entry;
+  onDelete: () => void;
+  onAskMentor?: () => void;
+  mentorBusy?: boolean;
+}) {
   const [confirm, setConfirm] = useState(false);
   const time = new Date(entry.ts).toLocaleTimeString("sk-SK", { hour: "2-digit", minute: "2-digit" });
   const itemLabel =
@@ -71,6 +81,18 @@ export function EntryRow({ entry, onDelete }: { entry: Entry; onDelete: () => vo
         {entry.minus && <div className="text-red-700 dark:text-red-400">➖ {entry.minus}</div>}
         {entry.note && <div>📝 {entry.note}</div>}
       </div>
+      {onAskMentor && (
+        <div className="mt-2">
+          <button
+            type="button"
+            onClick={onAskMentor}
+            disabled={mentorBusy}
+            className="text-xs font-medium text-indigo-600 hover:underline disabled:opacity-50 dark:text-indigo-400"
+          >
+            {mentorBusy ? "Mentor pripravuje…" : "Spýtaj sa mentora na tento predaj"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

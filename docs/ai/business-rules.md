@@ -95,9 +95,10 @@ Porušenie = strata dát, bezpečnostná diera, alebo rozbitie jadra produktu.
 - Zmazať manuál len ak ostane aspoň jeden.
 
 ### D11: AI on-demand + fingerprint
-- AI sa nevolá pri každom renderi.
+- AI sa nevolá pri každom renderi (okrem Domov: `dailyFocus` max 1× za kalendárny deň cez `dailyFocusDate`).
 - Fingerprint vo settings určuje, či je cache `stale`.
 - Mentorské endpointy nemajú server-side rate limit: nepridávať automatické bulk volania.
+- Telegram bot nezapisuje do predajných kolekcií; len `mentorMessages` + odpoveď.
 
 ### D12: Offline-first UX
 - Zápis musí najprv aktualizovať lokálny stav, potom frontu.

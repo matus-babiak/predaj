@@ -18,6 +18,7 @@ import type {
   CustomerRequest,
   StudyTopic,
   Manual,
+  MentorMessage,
 } from "./types";
 import { dayKey } from "./gamify";
 
@@ -39,6 +40,9 @@ export function useData() {
     .sort((a, b) => b.count - a.count || b.ts - a.ts);
   const studyTopics = ((db.studyTopics ?? []) as StudyTopic[]).slice().sort((a, b) => b.ts - a.ts);
   const manuals = ((db.manuals ?? []) as Manual[]).slice().sort((a, b) => a.order - b.order || a.title.localeCompare(b.title, "sk"));
+  const mentorMessages = ((db.mentorMessages ?? []) as MentorMessage[])
+    .slice()
+    .sort((a, b) => a.ts - b.ts);
 
   const progress: Progress =
     (db.progress[0] as Progress) ?? {
@@ -83,6 +87,7 @@ export function useData() {
     requests,
     studyTopics,
     manuals,
+    mentorMessages,
     progress,
     settings,
     daysInCurrentWeek,

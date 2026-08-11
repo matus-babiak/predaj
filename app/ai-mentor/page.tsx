@@ -4,14 +4,16 @@ import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useData } from "@/lib/useData";
 import { dayKey } from "@/lib/gamify";
+import { uid } from "@/lib/store";
 import { OUTCOME_LABELS, PRICE_TIMING_LABELS, OBJECTION_REACTION_LABELS, NEXT_STEP_PLAN_LABELS } from "@/content/chips";
-import type { Settings } from "@/lib/types";
-import { Btn, Card, RichText, SectionTitle } from "@/components/ui";
+import type { MentorMessage, Settings } from "@/lib/types";
+import { Btn, Card, RichText, SectionTitle, TextArea } from "@/components/ui";
 
 const WINDOW_DAYS = 14;
 const MAX_ENTRIES = 40;
 const MAX_REFLECTIONS = 14;
 const MAX_SW = 25;
+const CHAT_WINDOW = 20;
 
 function formatDay(ts: number): string {
   return new Date(ts).toLocaleDateString("sk-SK", { day: "numeric", month: "short", year: "numeric" });
@@ -26,9 +28,20 @@ function cutoffDateKey(days: number): string {
 }
 
 export default function AiMentorPage() {
-  const { entries, reflections, selfNotes, settings, put, ready } = useData();
+  const { entries, reflections, selfNotes, settings, mentorMessages, put, ready } = useData();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatError, setChatError] = useState(false);
+
+  const webChat = useMemo(() => {
+    return mentorMessages
+      .filter((m) => m.channel === "web")
+      .slice()
+      .sort((a, b) => a.ts - b.ts)
+      .slice(-CHAT_WINDOW);
+  }, [mentorMessages]);
 
   const payload = useMemo(() => {
     if (!ready) return null;
@@ -166,6 +179,53 @@ export default function AiMentorPage() {
     }
   };
 
+  const sendChat = async () => {
+    const message = chatInput.trim();
+    if (!message || chatLoading) return;
+    setChatLoading(true);
+    setChatError(false);
+    setChatInput("");
+
+    const now = Date.now();
+    const userMsg: MentorMessage = {
+      id: uid(),
+      channel: "web",
+      role: "user",
+      text: message,
+      ts: now,
+      updatedAt: now,
+    };
+    put("mentorMessages", userMsg);
+
+    const history = [...webChat, userMsg].map((m) => ({ role: m.role, text: m.text }));
+
+    try {
+      const res = await fetch("/api/mentor/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, history, persist: false }),
+      });
+      const data = (await res.json()) as { text: string | null };
+      if (data.text) {
+        const asst: MentorMessage = {
+          id: uid(),
+          channel: "web",
+          role: "assistant",
+          text: data.text,
+          ts: Date.now(),
+          updatedAt: Date.now(),
+        };
+        put("mentorMessages", asst);
+      } else {
+        setChatError(true);
+      }
+    } catch {
+      setChatError(true);
+    } finally {
+      setChatLoading(false);
+    }
+  };
+
   const note = settings.mentorBriefing;
   const noteAt = settings.mentorBriefingAt;
 
@@ -174,7 +234,7 @@ export default function AiMentorPage() {
       <div>
         <h1 className="text-2xl font-semibold">AI Mentor</h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Týždenný briefing z{" "}
+          Chatuj o predaji podľa svojich dát, alebo si daj týždenný briefing z{" "}
           <Link href="/plusy-minusy" className="text-indigo-600 hover:underline dark:text-indigo-400">
             plusov a mínusov
           </Link>
@@ -185,10 +245,58 @@ export default function AiMentorPage() {
           a{" "}
           <Link href="/zaznamy" className="text-indigo-600 hover:underline dark:text-indigo-400">
             záznamov
-          </Link>{" "}
-          (posledných {WINDOW_DAYS} dní). Generuje sa na požiadanie, nie pri každom otvorení.
+          </Link>
+          .
         </p>
       </div>
+
+      <Card>
+        <SectionTitle>Rozhovor s mentorom</SectionTitle>
+        <p className="mb-3 text-sm text-zinc-500 dark:text-zinc-400">
+          Pýtaj sa voľne. Mentor drží kontext posledných správ a číta tvoje zápisy z dojo.
+        </p>
+        <div className="mb-3 max-h-80 space-y-2 overflow-y-auto rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-950/40">
+          {webChat.length === 0 && (
+            <p className="text-sm text-zinc-400">Zatiaľ žiadne správy. Skús napr. „Kde strácam pri cene?“</p>
+          )}
+          {webChat.map((m) => (
+            <div
+              key={m.id}
+              className={`rounded-lg px-3 py-2 text-sm ${
+                m.role === "user"
+                  ? "ml-6 bg-indigo-600 text-white"
+                  : "mr-6 bg-white text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
+              }`}
+            >
+              <div className="mb-0.5 text-[10px] uppercase tracking-wide opacity-70">
+                {m.role === "user" ? "Ty" : "Mentor"}
+              </div>
+              <div className="whitespace-pre-wrap leading-relaxed">
+                <RichText text={m.text} />
+              </div>
+            </div>
+          ))}
+          {chatLoading && <p className="text-xs text-zinc-400">Mentor píše…</p>}
+        </div>
+        {chatError && (
+          <p className="mb-2 text-xs text-red-500">Odpoveď sa nepodarila, skús znova.</p>
+        )}
+        <TextArea
+          rows={3}
+          value={chatInput}
+          onChange={(e) => setChatInput(e.target.value)}
+          placeholder="Napíš otázku mentorovi…"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              void sendChat();
+            }
+          }}
+        />
+        <Btn className="mt-3" onClick={() => void sendChat()} disabled={chatLoading || !chatInput.trim()}>
+          {chatLoading ? "Posielam…" : "Odoslať"}
+        </Btn>
+      </Card>
 
       <Card className="border-indigo-200 bg-indigo-50/60 dark:border-indigo-900 dark:bg-indigo-950/30">
         <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-indigo-700 dark:text-indigo-400">

@@ -15,7 +15,8 @@ Harness je primeraný tomuto projektu: osobná Next.js PWA bez klasickej SQL dat
 | Odstrániť položku z `COLLECTION_NAMES` bez migrácie | osirelé dáta | plán + docs update |
 | Veľký refaktor store/sync „cestou“ | riziko offline fronty | najmenšia zmena na konkrétnej obrazovke |
 | Zmeniť sémantiku `updatedAt` merge | tiché prepísanie dát | zakázané bez plánu |
-| Automaticky generovať AI pri každom page load | náklady, rate, UX | zostať pri on-demand + fingerprint |
+| Automaticky generovať AI pri každom page load | náklady, rate, UX | zostať pri on-demand + fingerprint; výnimka: Domov `dailyFocus` max 1×/deň |
+| Telegram webhook bez secret / allowlist | cudzí prístup k mentorovi / dátam v prompte | `TELEGRAM_WEBHOOK_SECRET` + `TELEGRAM_CHAT_ID` |
 
 ## Žltá zóna (povolené, ale Planning Agent musí upozorniť)
 
@@ -25,8 +26,10 @@ Harness je primeraný tomuto projektu: osobná Next.js PWA bez klasickej SQL dat
 - Zmena login cookie TTL alebo HMAC payload
 - Pridanie novej kolekcie
 - Zmena Gemini modelu alebo promptov (správanie mentora)
-- Úpravy `middleware.ts` matcheru
+- Úpravy `middleware.ts` matcheru (vrátane výnimky `/api/telegram`)
 - Zmeny v `content/program.ts` alebo `objections.ts` (produktový obsah)
+- Hybrid mentor prompty / Telegram bot správanie
+- Nová kolekcia `mentorMessages` (už v modeli; ďalšie kolekcie stále žltá zóna)
 
 ## Zelená zóna (bežný vývoj po schválení)
 

@@ -27,6 +27,7 @@
 | `requests` | `CustomerRequest` | Čisté požiadavky zákazníkov |
 | `studyTopics` | `StudyTopic` | Hardvérové témy |
 | `manuals` | `Manual` | Manuály |
+| `mentorMessages` | `MentorMessage` | História hybrid mentor chatu (web / telegram) |
 
 ## Kľúčové typy (skrátene)
 
@@ -60,7 +61,13 @@
 
 ### Settings (AI cache a draft)
 - `entryDraft`, `favoriteThoughts`, `customWants`, `customFears`
-- AI: `swAiNote*`, `mentorBriefing*`, `statsAi*`
+- AI: `swAiNote*`, `mentorBriefing*`, `statsAi*`, `dailyFocus*`, `eveningSummary*`
+
+### MentorMessage
+- `channel`: `web` | `telegram`
+- `role`: `user` | `assistant`
+- `text`, `ts`
+- Rolling window ~20 správ pri AI volaní; Telegram história sa zapisuje len server-side do tejto kolekcie (nie do predajných zápisov)
 
 ## Statický obsah (nie Redis)
 

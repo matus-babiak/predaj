@@ -49,6 +49,24 @@ git push
    **Android (Chrome):** menu ⋮ → **Pridať na plochu**.
 3. Odteraz sa appka správa ako natívna, ikonka na ploche, celá obrazovka.
 
+## Krok 6 (voliteľné): AI mentor + Telegram
+
+1. Vo Verceli pridaj `GEMINI_API_KEY` (Google AI Studio).
+2. Pre Telegram chat pridaj:
+   - `TELEGRAM_BOT_TOKEN` (od @BotFather)
+   - `TELEGRAM_CHAT_ID` (tvoje chat ID)
+   - `TELEGRAM_WEBHOOK_SECRET` (náhodný tajný reťazec)
+3. Redeploy projektu.
+4. Nastav webhook:
+
+```bash
+curl -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook" \
+  -H "Content-Type: application/json" \
+  -d "{\"url\":\"https://<tvoja-domena>/api/telegram\",\"secret_token\":\"$TELEGRAM_WEBHOOK_SECRET\"}"
+```
+
+Bot odpovedá na správy podľa dát v appke. Do appky z Telegramu nič neukladá.
+
 ## Keď budeš chcieť niečo zmeniť
 
 Každý `git push` na GitHub automaticky nasadí novú verziu na Vercel.

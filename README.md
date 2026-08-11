@@ -41,6 +41,27 @@ Bez nastaveného `APP_PASSWORD` beží appka lokálne bez prihlásenia.
 Pozri [NAVOD.md](NAVOD.md): krok za krokom GitHub + Vercel + heslo.
 Každý push do repozitára spustí automatický deployment na Verceli.
 
+## Hybrid AI mentor (Gemini + Telegram)
+
+Env premenné (Vercel → Settings → Environment Variables):
+
+| Premenná | Účel |
+|----------|------|
+| `GEMINI_API_KEY` | AI mentor (web + Telegram) |
+| `TELEGRAM_BOT_TOKEN` | Telegram bot |
+| `TELEGRAM_CHAT_ID` | Jediný povolený chat (whitelist) |
+| `TELEGRAM_WEBHOOK_SECRET` | Overenie webhooku |
+
+Webhook (po nasadení, nahraď doménu a secret):
+
+```bash
+curl -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook" \
+  -H "Content-Type: application/json" \
+  -d "{\"url\":\"https://<domena>/api/telegram\",\"secret_token\":\"$TELEGRAM_WEBHOOK_SECRET\"}"
+```
+
+Telegram bot len radí, do záznamov / denníka nič neukladá. Žiadny ranný push.
+
 ## AI development
 
 Pre systematický AI vývoj (plánovanie oddelené od implementácie) pozri

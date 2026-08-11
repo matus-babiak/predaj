@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useData } from "@/lib/useData";
 import { getWeek } from "@/content/program";
@@ -7,13 +8,54 @@ import { Card, SectionTitle, RichText } from "@/components/ui";
 import { activeDays, streak, dayKey, computeBadges } from "@/lib/gamify";
 import { THOUGHTS } from "@/content/mindset";
 import { OBJECTIONS } from "@/content/objections";
+import type { Settings } from "@/lib/types";
 
 export default function TodayPage() {
-  const { entries, reflections, objAttempts, products, userObjections, settings, progress, ready } = useData();
+  const { entries, reflections, objAttempts, products, userObjections, settings, progress, put, ready } =
+    useData();
+  const focusFetchRef = useRef(false);
+  const [focusLoading, setFocusLoading] = useState(false);
+  const [focusError, setFocusError] = useState(false);
+
+  const today = dayKey(Date.now());
+
+  useEffect(() => {
+    if (!ready) return;
+    if (settings.dailyFocusDate === today && settings.dailyFocus) return;
+    if (focusFetchRef.current) return;
+    focusFetchRef.current = true;
+    setFocusLoading(true);
+    setFocusError(false);
+    (async () => {
+      try {
+        const res = await fetch("/api/mentor/daily-focus", { method: "POST" });
+        const data = (await res.json()) as { text: string | null; fingerprint?: string };
+        if (data.text) {
+          const next: Settings = {
+            ...settings,
+            dailyFocus: data.text,
+            dailyFocusDate: today,
+            dailyFocusAt: Date.now(),
+            dailyFocusFingerprint: data.fingerprint,
+            updatedAt: Date.now(),
+          };
+          put("settings", next);
+        } else {
+          setFocusError(true);
+        }
+      } catch {
+        setFocusError(true);
+      } finally {
+        setFocusLoading(false);
+      }
+    })();
+    // Len pri otvorení dňa / ready; settings v deps by spúšťalo slučku.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, today, settings.dailyFocusDate]);
+
   if (!ready) return null;
 
   const week = getWeek(progress.currentWeek);
-  const today = dayKey(Date.now());
   const todayEntries = entries.filter((e) => dayKey(e.ts) === today);
   const hasReflection = reflections.some((r) => r.date === today);
   const s = streak(activeDays(entries, reflections));
@@ -51,6 +93,7 @@ export default function TodayPage() {
     .filter((o): o is { id: string; text: string } => !!o);
 
   const hasQuickAccess = favoriteThoughts.length > 0 || topProducts.length > 0 || recentObjections.length > 0;
+  const dailyFocus = settings.dailyFocusDate === today ? settings.dailyFocus : undefined;
 
   return (
     <div className="space-y-8">
@@ -61,6 +104,42 @@ export default function TodayPage() {
           {s > 0 && <> · 🔥 {s}-dňová séria</>}
         </p>
       </div>
+
+      <Card className="border-indigo-200 bg-indigo-50/60 dark:border-indigo-900 dark:bg-indigo-950/30">
+        <SectionTitle>Priorita na dnes</SectionTitle>
+        {focusLoading && !dailyFocus && (
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">Mentor pripravuje prioritu…</p>
+        )}
+        {focusError && !dailyFocus && (
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            Prioritu sa nepodarilo pripraviť. Skús neskôr alebo otvor{" "}
+            <Link href="/ai-mentor" className="text-indigo-600 hover:underline dark:text-indigo-400">
+              AI Mentor
+            </Link>
+            .
+          </p>
+        )}
+        {dailyFocus && (
+          <div className="space-y-2 text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+            {dailyFocus.split("\n").map((line, i) => {
+              const h = line.trim().match(/^##\s+(.+)$/);
+              if (h) {
+                return (
+                  <h3 key={i} className="pt-1 text-sm font-semibold text-indigo-800 dark:text-indigo-300">
+                    {h[1]}
+                  </h3>
+                );
+              }
+              if (!line.trim()) return null;
+              return (
+                <p key={i}>
+                  <RichText text={line.trim()} />
+                </p>
+              );
+            })}
+          </div>
+        )}
+      </Card>
 
       {week && (
         <Card className="border-indigo-200 bg-indigo-50/60 dark:border-indigo-900 dark:bg-indigo-950/30">

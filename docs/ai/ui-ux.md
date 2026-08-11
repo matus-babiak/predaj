@@ -43,7 +43,11 @@ Nepriďávať novú UI knižnicu, kým to požiadavka nevyžaduje.
 | Open / Done (alebo Plus / Minus) taby | Otázky, Poznámky, Požiadavky, Hardvér, Plusy |
 | Dvojkrokové mazanie | EntryRow, karty |
 | Train: napíš → odhal → ohodnoť | Námietky, podobne Produkt quiz |
-| AI on-demand + „stale“ podľa fingerprint | Plusy, AI Mentor, Štatistiky |
+| AI on-demand + „stale“ podľa fingerprint | Plusy, AI Mentor briefing, Štatistiky |
+| Domov: priorita na dnes (max 1×/deň) | `settings.dailyFocus*` |
+| Debrief tlačidlo pri zázname | Záznamy / EntryRow |
+| Večerné zhrnutie tlačidlo | Denník po uložení reflexie |
+| Mentor chat | AI Mentor + Telegram webhook |
 | Deep link `?q=` | Mindset, Námietky, Produkty |
 | Autosave draft | Záznamy → `settings.entryDraft` |
 | Coaching zápis Záznamov | požiadavka (+ sync do Požiadaviek), výsledok, položky 0-5+, recenzia, cena, námietka (dropdown/vlastná), plán kroku, plusy/mínusy (viac riadkov), jedna veta |

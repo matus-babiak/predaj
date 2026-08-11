@@ -1,14 +1,14 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useData } from "@/lib/useData";
 import { dayKey } from "@/lib/gamify";
 import { getWeek } from "@/content/program";
-import type { Reflection } from "@/lib/types";
-import { Btn, Card, Label, SectionTitle, TextArea } from "@/components/ui";
+import type { Reflection, Settings } from "@/lib/types";
+import { Btn, Card, Label, RichText, SectionTitle, TextArea } from "@/components/ui";
 
 export default function DennikPage() {
-  const { reflections, progress, put, ready } = useData();
+  const { reflections, progress, settings, put, ready } = useData();
   const listRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -20,6 +20,8 @@ export default function DennikPage() {
   const [focus, setFocus] = useState(existing?.focus ?? "");
   const [editing, setEditing] = useState(false);
   const [reflSaved, setReflSaved] = useState(false);
+  const [eveningLoading, setEveningLoading] = useState(false);
+  const [eveningError, setEveningError] = useState(false);
 
   const startEdit = (r?: Reflection) => {
     const src = r ?? existing;
@@ -56,10 +58,41 @@ export default function DennikPage() {
     });
   };
 
+  const fetchEvening = async (reflection: Reflection) => {
+    setEveningLoading(true);
+    setEveningError(false);
+    try {
+      const res = await fetch("/api/mentor/evening", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reflection, date: reflection.date }),
+      });
+      const data = (await res.json()) as { text: string | null };
+      if (data.text) {
+        const next: Settings = {
+          ...settings,
+          eveningSummary: data.text,
+          eveningSummaryDate: reflection.date,
+          eveningSummaryAt: Date.now(),
+          updatedAt: Date.now(),
+        };
+        put("settings", next);
+      } else {
+        setEveningError(true);
+      }
+    } catch {
+      setEveningError(true);
+    } finally {
+      setEveningLoading(false);
+    }
+  };
+
   if (!ready) return null;
 
   const savedList = reflections.slice().sort((a, b) => (a.date < b.date ? 1 : -1));
   const showForm = editing || !existing;
+  const eveningForToday =
+    settings.eveningSummaryDate === today ? settings.eveningSummary : undefined;
 
   return (
     <div className="space-y-8">
@@ -117,6 +150,52 @@ export default function DennikPage() {
               .
             </p>
             {reflSaved && <p className="mt-2 text-sm text-emerald-600">Uložené ✔</p>}
+            {existing && (
+              <div className="mt-4 space-y-3 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+                <Btn
+                  variant={eveningForToday ? "ghost" : "primary"}
+                  onClick={() => void fetchEvening(existing)}
+                  disabled={eveningLoading}
+                >
+                  {eveningLoading
+                    ? "Pripravujem zhrnutie…"
+                    : eveningForToday
+                      ? "Obnoviť večerné zhrnutie"
+                      : "Večerné zhrnutie mentora"}
+                </Btn>
+                {eveningError && (
+                  <p className="text-sm text-red-500">Mentor momentálne nie je dostupný, skús neskôr.</p>
+                )}
+                {eveningForToday && (
+                  <div className="space-y-2 text-[15px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+                    {eveningForToday.split("\n").map((line, i) => {
+                      const h = line.trim().match(/^##\s+(.+)$/);
+                      if (h) {
+                        return (
+                          <h3 key={i} className="pt-1 text-sm font-semibold text-indigo-800 dark:text-indigo-300">
+                            {h[1]}
+                          </h3>
+                        );
+                      }
+                      if (!line.trim()) return null;
+                      const b = line.trim().match(/^[-*]\s+(.+)$/);
+                      if (b) {
+                        return (
+                          <p key={i} className="pl-3">
+                            • <RichText text={b[1]} />
+                          </p>
+                        );
+                      }
+                      return (
+                        <p key={i}>
+                          <RichText text={line.trim()} />
+                        </p>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
           </Card>
         )}
       </div>

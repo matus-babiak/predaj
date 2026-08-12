@@ -46,8 +46,11 @@ Nepriďávať novú UI knižnicu, kým to požiadavka nevyžaduje.
 | AI on-demand + „stale“ podľa fingerprint | Plusy, AI Mentor briefing, Štatistiky |
 | Domov: priorita na dnes (max 1×/deň) | `settings.dailyFocus*` |
 | Debrief tlačidlo pri zázname | Záznamy / EntryRow |
-| Coaching večerná reflexia | boj dňa + zajtra (povinné); slabiny a motivácia voliteľné; bez rotačných otázok týždňa |
+| Coaching večerná reflexia | boj dňa + zajtra (povinné); Predaje EUR a slabiny/motivácia voliteľné; bez rotačných otázok týždňa |
+| Pridať pracovný deň | Denník: dátum + voliteľná suma Predaje (stub Reflection bez struggle/focus) |
+| Úprava minulých dní | Denník: Upraviť na akomkoľvek uloženom dni |
 | Večerné zhrnutie tlačidlo | Denník po uložení reflexie |
+| Predaje v Štatistikách | splnené/nesplnené vs 185 EUR; % len zo dní so sumou; bez kalendárnych dier |
 | Mentor chat | AI Mentor + Telegram webhook |
 | Deep link `?q=` | Mindset, Námietky, Produkty |
 | Autosave draft | Záznamy → `settings.entryDraft` |

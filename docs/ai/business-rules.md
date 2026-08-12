@@ -29,8 +29,16 @@ Porušenie = strata dát, bezpečnostná diera, alebo rozbitie jadra produktu.
 
 ### K4: Reflexia: jedna na deň
 - `Reflection.id` = dátum dňa. Prepísanie iným id by rozbilo denný model a štatistiky streaku.
-- Aktuálny formulár vyžaduje boj dňa (`struggleCategory` alebo `struggleText`) a `focus`. Ostatné polia sú voliteľné.
+- Pracovný deň = Reflection záznam. Dni sa pridávajú manuálne (aj spätne), nie automaticky každý kalendárny deň.
+- `salesEur` je voliteľné; denný cieľ Predaje je hardcoded `DAILY_SALES_GOAL_EUR` = 185 EUR.
+- Večerná analýza vyžaduje boj dňa (`struggleCategory` alebo `struggleText`) a `focus`. Ostatné coaching polia a `salesEur` sú voliteľné.
+- Stub dňa (len dátum + voliteľná suma) nevyžaduje struggle/focus; večerná reflexia neskôr update-ne rovnaký záznam.
+- Editácia minulých dní je povolená; `weekId` a `id`/`date` sa nemenia.
 - Otázky týždňa z programu už nie sú večerný formulár (ostávajú v `content/program.ts` ako obsah lekcie).
+
+### K4b: Štatistiky Predaje
+- Splnené / nesplnené len zo dní so zadaným `salesEur` (bez sumy ≠ fail).
+- Kalendárne dni bez Reflection záznamu sa v predajných štatistikách nezobrazujú.
 
 ### K5: Progress singleton
 - `Progress.id` musí ostať `"progress"`. Viacero progress dokumentov by rozbilo program.

@@ -38,7 +38,7 @@ Zdroj: `components/Shell.tsx` → pole `NAV`.
 |-------|-------|------|
 | `/` | Dnes | Denný hub: úloha týždňa, rýchle akcie, streak, odznaky |
 | `/mindset` | Mindset | Banka myšlienok + vlastné myšlienky + obľúbené |
-| `/dennik` | Denník | Večerná coaching reflexia (slabiny, sila, zajtra) |
+| `/dennik` | Denník | Pracovné dni + Predaje (EUR) + večerná coaching reflexia |
 | `/zaznamy` | Záznamy | Coaching zápis po zákazníkovi + história |
 | `/poziadavky` | Požiadavky | Čisté dopyty zákazníkov (bez výsledku predaja) |
 | `/program` | Program | 12 týždňov / 6 fáz, odomykanie vlastným tempom |
@@ -51,14 +51,14 @@ Zdroj: `components/Shell.tsx` → pole `NAV`.
 | `/manualy` | Manuály | Dlhé manuály (záložky) |
 | `/produkty` | Produkty | Predajno-psychologické kartičky + skúšanie |
 | `/login` | Prihlásenie | Heslo (mimo Shell chrome) |
-| `/statistiky` | Štatistiky | Prehľady, odznaky, AI clustering potrieb/obáv |
+| `/statistiky` | Štatistiky | Predaje vs cieľ 185 EUR, prehľady, odznaky, AI clustering |
 
 ## Hlavné používateľské flows
 
 ### Denný cyklus
 1. Otvorí **Dnes** → vidí úlohu aktuálneho týždňa.
 2. Po zákazníkovi ide do **Záznamy** (outcome povinný; want/fear/why/trust voliteľné).
-3. Večer **Denník** → coaching reflexia (1 na deň): boj dňa, slabiny, sila, jedna vec na zajtra.
+3. V **Denníku** pridá pracovný deň (aj spätne) s voliteľnou sumou Predaje; večer coaching reflexia (1 na deň): boj dňa, slabiny, sila, jedna vec na zajtra.
 4. Voliteľne trénuje **Námietky**, skúša **Produkty**, dopĺňa **Požiadavky**.
 
 ### Program
@@ -110,7 +110,7 @@ Za MVP sa považuje to, čo je v kóde a v navigácii funkčné:
 3. Program ide **vlastným tempom**, nie kalendárom.
 4. Námietky: princíp **uznaj → zisti → odpovedz**; slabšie sa vracajú častejšie.
 5. Záznam je coaching zápis: primárna požiadavka (sync do Požiadaviek), výsledok, počet položiek, recenzia, kedy bola cena, námietka, plán kroku, plusy/mínusy (viac riadkov), voliteľná poznámka.
-6. Reflexia: **jedna na deň**, id = dátum `YYYY-MM-DD`.
+6. Reflexia / pracovný deň: **jeden záznam na dátum**, id = `YYYY-MM-DD`; Predaje (`salesEur`) voliteľné; cieľ 185 EUR/deň; dni sa pridávajú manuálne.
 7. Požiadavky sú **oddelené** od predajných záznamov.
 8. AI sa **negeneruje automaticky** pri každom otvorení: on-demand + fingerprint cache.
 9. Texty UI sú **slovenské**.

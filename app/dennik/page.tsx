@@ -4,9 +4,9 @@ import { useRef, useState } from "react";
 import { useData } from "@/lib/useData";
 import { dayKey } from "@/lib/gamify";
 import { getWeek } from "@/content/program";
-import { DAY_PRICE_LABELS, STRUGGLE_CATEGORY_LABELS } from "@/content/chips";
+import { DAILY_SALES_GOAL_EUR, DAY_PRICE_LABELS, STRUGGLE_CATEGORY_LABELS } from "@/content/chips";
 import type { Reflection, Settings, StruggleCategory } from "@/lib/types";
-import { Btn, Card, Label, RichText, SectionTitle, TextArea } from "@/components/ui";
+import { Btn, Card, Input, Label, RichText, SectionTitle, TextArea } from "@/components/ui";
 
 const STRUGGLE_OPTIONS: { id: StruggleCategory; label: string }[] = [
   { id: "cena", label: "Cena" },
@@ -24,6 +24,31 @@ function OptionalHint() {
   return <span className="ml-2 text-xs font-normal normal-case tracking-normal text-zinc-400">(voliteľné)</span>;
 }
 
+function hasCoaching(r?: Reflection | null): boolean {
+  if (!r) return false;
+  const struggle = !!r.struggleCategory || !!r.struggleText?.trim();
+  return struggle && !!r.focus?.trim();
+}
+
+function parseSalesEur(raw: string): number | undefined {
+  const t = raw.trim().replace(",", ".");
+  if (!t) return undefined;
+  const n = Number(t);
+  if (!Number.isFinite(n) || n < 0) return undefined;
+  return n;
+}
+
+function salesInputValue(n: number | undefined): string {
+  return n != null && Number.isFinite(n) ? String(n) : "";
+}
+
+function formatDateLabel(dateStr: string): string {
+  return new Date(dateStr + "T12:00:00").toLocaleDateString("sk-SK", {
+    day: "numeric",
+    month: "long",
+  });
+}
+
 export default function DennikPage() {
   const { reflections, progress, settings, put, ready } = useData();
   const listRef = useRef<HTMLDivElement>(null);
@@ -31,24 +56,32 @@ export default function DennikPage() {
 
   const today = dayKey(Date.now());
   const week = getWeek(progress.currentWeek);
-  const existing = reflections.find((r) => r.date === today);
+  const todayReflection = reflections.find((r) => r.date === today);
 
+  const [formDate, setFormDate] = useState(today);
   const [struggleCategory, setStruggleCategory] = useState<StruggleCategory | null>(
-    existing?.struggleCategory ?? null
+    todayReflection?.struggleCategory ?? null
   );
-  const [struggleText, setStruggleText] = useState(existing?.struggleText ?? "");
-  const [focus, setFocus] = useState(existing?.focus ?? "");
-  const [retreated, setRetreated] = useState(existing?.retreated ?? "");
-  const [selfFocus, setSelfFocus] = useState(existing?.selfFocus ?? "");
-  const [hardestMoment, setHardestMoment] = useState(existing?.hardestMoment ?? "");
-  const [strengthToday, setStrengthToday] = useState(existing?.strengthToday ?? "");
-  const [better10, setBetter10] = useState(existing?.better10 ?? "");
+  const [struggleText, setStruggleText] = useState(todayReflection?.struggleText ?? "");
+  const [focus, setFocus] = useState(todayReflection?.focus ?? "");
+  const [retreated, setRetreated] = useState(todayReflection?.retreated ?? "");
+  const [selfFocus, setSelfFocus] = useState(todayReflection?.selfFocus ?? "");
+  const [hardestMoment, setHardestMoment] = useState(todayReflection?.hardestMoment ?? "");
+  const [strengthToday, setStrengthToday] = useState(todayReflection?.strengthToday ?? "");
+  const [better10, setBetter10] = useState(todayReflection?.better10 ?? "");
+  const [salesEurRaw, setSalesEurRaw] = useState(salesInputValue(todayReflection?.salesEur));
   const [editing, setEditing] = useState(false);
   const [reflSaved, setReflSaved] = useState(false);
   const [eveningLoading, setEveningLoading] = useState(false);
   const [eveningError, setEveningError] = useState(false);
 
-  const loadFrom = (src?: Reflection) => {
+  const [workDate, setWorkDate] = useState(today);
+  const [workSalesRaw, setWorkSalesRaw] = useState("");
+  const [workSaved, setWorkSaved] = useState(false);
+  const [workError, setWorkError] = useState("");
+
+  const loadFrom = (src?: Reflection | null, dateOverride?: string) => {
+    setFormDate(dateOverride ?? src?.date ?? today);
     setStruggleCategory(src?.struggleCategory ?? null);
     setStruggleText(src?.struggleText ?? "");
     setFocus(src?.focus ?? "");
@@ -57,10 +90,11 @@ export default function DennikPage() {
     setHardestMoment(src?.hardestMoment ?? "");
     setStrengthToday(src?.strengthToday ?? "");
     setBetter10(src?.better10 ?? "");
+    setSalesEurRaw(salesInputValue(src?.salesEur));
   };
 
-  const startEdit = (r?: Reflection) => {
-    loadFrom(r ?? existing);
+  const startEdit = (r: Reflection) => {
+    loadFrom(r);
     setEditing(true);
     requestAnimationFrame(() => {
       formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -68,20 +102,23 @@ export default function DennikPage() {
   };
 
   const cancelEdit = () => {
-    loadFrom(existing);
+    loadFrom(todayReflection, today);
     setEditing(false);
   };
 
   const hasStruggle = !!struggleCategory || !!struggleText.trim();
-  const canSave = hasStruggle && !!focus.trim();
+  const canSaveEvening = hasStruggle && !!focus.trim();
 
   const saveReflection = () => {
-    if (!hasStruggle || !focus.trim()) return;
+    if (!canSaveEvening) return;
+    const date = formDate;
+    const existingForDate = reflections.find((r) => r.date === date);
+    const salesParsed = parseSalesEur(salesEurRaw);
     const now = Date.now();
     const r: Reflection = {
-      id: today,
-      date: today,
-      weekId: week?.id ?? "w1",
+      id: date,
+      date,
+      weekId: existingForDate?.weekId ?? week?.id ?? "w1",
       struggleCategory: struggleCategory ?? undefined,
       struggleText: struggleText.trim() || undefined,
       focus: focus.trim(),
@@ -90,13 +127,65 @@ export default function DennikPage() {
       hardestMoment: hardestMoment.trim() || undefined,
       strengthToday: strengthToday.trim() || undefined,
       better10: better10.trim() || undefined,
-      answers: existing?.answers ?? {},
+      salesEur: salesParsed,
+      priceDay: existingForDate?.priceDay,
+      wins: existingForDate?.wins,
+      losses: existingForDate?.losses,
+      answers: existingForDate?.answers ?? {},
       updatedAt: now,
     };
     put("reflections", r);
     setEditing(false);
     setReflSaved(true);
     setTimeout(() => setReflSaved(false), 2500);
+    if (date === today) {
+      loadFrom(r, today);
+    } else {
+      loadFrom(todayReflection, today);
+    }
+    requestAnimationFrame(() => {
+      listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  };
+
+  const saveWorkDay = () => {
+    setWorkError("");
+    const date = workDate.trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      setWorkError("Zadaj platný dátum.");
+      return;
+    }
+    const salesParsed = parseSalesEur(workSalesRaw);
+    if (workSalesRaw.trim() && salesParsed === undefined) {
+      setWorkError("Predaje musia byť číslo 0 alebo viac.");
+      return;
+    }
+    const existingForDate = reflections.find((r) => r.date === date);
+    const now = Date.now();
+    if (existingForDate) {
+      const next: Reflection = {
+        ...existingForDate,
+        salesEur: salesParsed !== undefined ? salesParsed : existingForDate.salesEur,
+        updatedAt: now,
+      };
+      put("reflections", next);
+      if (date === formDate || (!editing && date === today)) {
+        setSalesEurRaw(salesInputValue(next.salesEur));
+      }
+    } else {
+      const stub: Reflection = {
+        id: date,
+        date,
+        weekId: week?.id ?? "w1",
+        answers: {},
+        salesEur: salesParsed,
+        updatedAt: now,
+      };
+      put("reflections", stub);
+    }
+    setWorkSaved(true);
+    setTimeout(() => setWorkSaved(false), 2500);
+    setWorkSalesRaw("");
     requestAnimationFrame(() => {
       listRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
@@ -134,30 +223,92 @@ export default function DennikPage() {
   if (!ready) return null;
 
   const savedList = reflections.slice().sort((a, b) => (a.date < b.date ? 1 : -1));
-  const showForm = editing || !existing;
+  const todayHasCoaching = hasCoaching(todayReflection);
+  const showForm = editing || !todayHasCoaching;
   const eveningForToday =
     settings.eveningSummaryDate === today ? settings.eveningSummary : undefined;
+  const formTitleDate = formatDateLabel(formDate);
+  const isPastEdit = editing && formDate !== today;
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-semibold">Denník</h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-          Večer čeli tomu, s čím bojuješ, a vyber jednu vec, ktorá ťa zajtra posunie.
+          Eviduj pracovné dni a predaje. Večer čeli tomu, s čím bojuješ, a vyber jednu vec na zajtra.
         </p>
       </div>
+
+      <Card>
+        <SectionTitle>Pridať pracovný deň</SectionTitle>
+        <p className="mb-3 text-sm text-zinc-500 dark:text-zinc-400">
+          Deň si pridávaš sám (aj spätne). Suma Predaje je voliteľná, cieľ je {DAILY_SALES_GOAL_EUR} EUR.
+        </p>
+        <div className="flex flex-wrap items-end gap-3">
+          <div>
+            <Label>Dátum</Label>
+            <Input
+              type="date"
+              className="mt-1"
+              value={workDate}
+              onChange={(e) => setWorkDate(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label>
+              Predaje (EUR)
+              <OptionalHint />
+            </Label>
+            <Input
+              type="number"
+              min={0}
+              step="0.01"
+              className="mt-1"
+              value={workSalesRaw}
+              onChange={(e) => setWorkSalesRaw(e.target.value)}
+              placeholder="napr. 200"
+            />
+          </div>
+          <Btn onClick={saveWorkDay}>Uložiť deň</Btn>
+          {workSaved && <span className="text-sm text-emerald-600">Uložené ✔</span>}
+        </div>
+        {workError && <p className="mt-2 text-sm text-red-500">{workError}</p>}
+        <FieldTip>
+          Ak deň už existuje, aktualizuje sa len suma Predaje. Coaching texty ostanú.
+        </FieldTip>
+      </Card>
 
       <div ref={formRef} className="scroll-mt-24">
         {showForm ? (
           <Card>
             <div id="reflexia" className="scroll-mt-24" />
             <SectionTitle>
-              Večerná reflexia, {new Date().toLocaleDateString("sk-SK", { day: "numeric", month: "long" })}
-              {existing ? " · úprava" : ""}
+              Večerná reflexia, {formTitleDate}
+              {editing || todayReflection ? " · úprava" : ""}
+              {isPastEdit ? " · minulý deň" : ""}
             </SectionTitle>
             <div className="space-y-8">
               <section className="space-y-4">
                 <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Kotva dňa</h3>
+
+                <div>
+                  <Label>
+                    Predaje (EUR)
+                    <OptionalHint />
+                  </Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    className="mt-1"
+                    value={salesEurRaw}
+                    onChange={(e) => setSalesEurRaw(e.target.value)}
+                    placeholder={`cieľ ${DAILY_SALES_GOAL_EUR}`}
+                  />
+                  <FieldTip>
+                    Denný cieľ: {DAILY_SALES_GOAL_EUR} EUR. Deň so sumou vieš pridať aj vyššie bez večernej analýzy.
+                  </FieldTip>
+                </div>
 
                 <div>
                   <Label>S čím som dnes vnútorne bojoval pri predaji?</Label>
@@ -272,16 +423,16 @@ export default function DennikPage() {
               </section>
 
               <div className="flex flex-wrap items-center gap-3">
-                <Btn onClick={saveReflection} disabled={!canSave}>
-                  {existing ? "Uložiť zmeny" : "Uložiť reflexiu"}
+                <Btn onClick={saveReflection} disabled={!canSaveEvening}>
+                  {todayReflection || editing ? "Uložiť zmeny" : "Uložiť reflexiu"}
                 </Btn>
-                {existing && (
+                {editing && (
                   <Btn variant="ghost" onClick={cancelEdit}>
                     Zrušiť
                   </Btn>
                 )}
                 {reflSaved && <span className="text-sm text-emerald-600">Uložené ✔</span>}
-                {!canSave && (
+                {!canSaveEvening && (
                   <span className="text-xs text-zinc-400">
                     Vyplň boj dňa (kategória alebo text) a jednu vec na zajtra
                   </span>
@@ -299,7 +450,7 @@ export default function DennikPage() {
               Dnešná reflexia je uložená. Na zmenu použi{" "}
               <button
                 type="button"
-                onClick={() => startEdit()}
+                onClick={() => todayReflection && startEdit(todayReflection)}
                 className="font-medium text-indigo-600 hover:underline dark:text-indigo-400"
               >
                 Upraviť
@@ -307,11 +458,11 @@ export default function DennikPage() {
               .
             </p>
             {reflSaved && <p className="mt-2 text-sm text-emerald-600">Uložené ✔</p>}
-            {existing && (
+            {todayReflection && (
               <div className="mt-4 space-y-3 border-t border-zinc-200 pt-4 dark:border-zinc-800">
                 <Btn
                   variant={eveningForToday ? "ghost" : "primary"}
-                  onClick={() => void fetchEvening(existing)}
+                  onClick={() => void fetchEvening(todayReflection)}
                   disabled={eveningLoading}
                 >
                   {eveningLoading
@@ -359,20 +510,42 @@ export default function DennikPage() {
 
       {savedList.length > 0 && (
         <div ref={listRef} className="scroll-mt-24">
-          <SectionTitle>Uložené reflexie</SectionTitle>
+          <SectionTitle>Uložené dni</SectionTitle>
           <div className="space-y-3">
             {savedList.map((r) => (
               <ReflectionCard
                 key={r.id}
                 reflection={r}
                 isToday={r.date === today}
-                onEdit={r.date === today ? () => startEdit(r) : undefined}
+                onEdit={() => startEdit(r)}
               />
             ))}
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+function SalesBadge({ salesEur }: { salesEur?: number }) {
+  if (salesEur == null || !Number.isFinite(salesEur)) {
+    return (
+      <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium normal-case text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+        bez sumy
+      </span>
+    );
+  }
+  const met = salesEur >= DAILY_SALES_GOAL_EUR;
+  return (
+    <span
+      className={`rounded-full px-2 py-0.5 text-xs font-semibold normal-case ${
+        met
+          ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+          : "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300"
+      }`}
+    >
+      {salesEur} EUR · {met ? "splnené" : "nesplnené"}
+    </span>
   );
 }
 
@@ -385,7 +558,7 @@ function ReflectionCard({
   isToday?: boolean;
   onEdit?: () => void;
 }) {
-  const dateLabel = new Date(reflection.date).toLocaleDateString("sk-SK", {
+  const dateLabel = new Date(reflection.date + "T12:00:00").toLocaleDateString("sk-SK", {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -404,6 +577,7 @@ function ReflectionCard({
     !!reflection.focus?.trim();
   const hasLegacy =
     !!reflection.priceDay || wins.length > 0 || losses.length > 0 || answers.length > 0;
+  const hasSales = reflection.salesEur != null && Number.isFinite(reflection.salesEur);
 
   return (
     <Card className={isToday ? "border-indigo-300 dark:border-indigo-800" : undefined}>
@@ -415,6 +589,7 @@ function ReflectionCard({
               dnes
             </span>
           )}
+          <SalesBadge salesEur={reflection.salesEur} />
         </div>
         {onEdit && (
           <button
@@ -427,6 +602,14 @@ function ReflectionCard({
         )}
       </div>
       <div className="space-y-3 text-sm">
+        {hasSales && (
+          <div>
+            <div className="font-medium text-zinc-700 dark:text-zinc-300">Predaje</div>
+            <p className="mt-0.5 text-zinc-600 dark:text-zinc-400">
+              {reflection.salesEur} EUR (cieľ {DAILY_SALES_GOAL_EUR} EUR)
+            </p>
+          </div>
+        )}
         {(reflection.struggleCategory || reflection.struggleText?.trim()) && (
           <div>
             <div className="font-medium text-zinc-700 dark:text-zinc-300">S čím som bojoval</div>
@@ -499,7 +682,7 @@ function ReflectionCard({
             <p className="mt-0.5 whitespace-pre-wrap text-zinc-600 dark:text-zinc-400">{a}</p>
           </div>
         ))}
-        {!hasNew && !hasLegacy && <p className="text-zinc-400">Bez vyplneného textu.</p>}
+        {!hasNew && !hasLegacy && !hasSales && <p className="text-zinc-400">Bez vyplneného textu.</p>}
       </div>
     </Card>
   );

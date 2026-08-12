@@ -130,6 +130,8 @@ export interface Reflection {
   strengthToday?: string;
   better10?: string;
   focus?: string; // jedna vec na zajtra
+  /** Predaje za deň v EUR (voliteľné). Pracovný deň = záznam Reflection. */
+  salesEur?: number;
   // Staršie coaching polia (história)
   priceDay?: DayPriceTiming;
   wins?: string[];

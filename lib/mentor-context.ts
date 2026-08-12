@@ -93,6 +93,7 @@ export function formatReflectionForPrompt(r: Reflection): string {
     r.hardestMoment ? `najťažší moment: ${r.hardestMoment}` : "",
     r.strengthToday ? `sila: ${r.strengthToday}` : "",
     r.better10 ? `+10%: ${r.better10}` : "",
+    r.salesEur != null && Number.isFinite(r.salesEur) ? `predaje: ${r.salesEur} EUR` : "",
     r.priceDay ? `cena dnes (staré): ${DAY_PRICE_LABELS[r.priceDay] ?? r.priceDay}` : "",
     r.wins?.length ? `silné (staré): ${r.wins.join("; ")}` : "",
     r.losses?.length ? `straty (staré): ${r.losses.join("; ")}` : "",

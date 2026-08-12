@@ -46,9 +46,11 @@
   `want`, `fear`, `why`, `trust`, `objectionReaction`, `plus`, `minus`
 
 ### Reflection
-- `id` a `date`: `YYYY-MM-DD` (jedna reflexia na deň)
-- `weekId` (týždeň programu pri vzniku)
-- Aktuálny formulár: `struggleCategory`, `struggleText`, `focus` (povinné jadro), voliteľné `retreated`, `selfFocus`, `hardestMoment`, `strengthToday`, `better10`
+- `id` a `date`: `YYYY-MM-DD` (jeden záznam = jeden pracovný deň)
+- `weekId` (týždeň programu pri vzniku; pri editácii sa nemení)
+- `salesEur?`: voliteľná suma Predaje (EUR) za deň; cieľ `DAILY_SALES_GOAL_EUR` = 185 (`content/chips.ts`)
+- Aktuálny večerný formulár: `struggleCategory`, `struggleText`, `focus` (povinné jadro večernej analýzy), voliteľné `retreated`, `selfFocus`, `hardestMoment`, `strengthToday`, `better10`
+- Stub pracovného dňa: môže mať len `date` + voliteľné `salesEur` a `answers: {}` bez struggle/focus
 - Staršie: `priceDay`, `wins[]`, `losses[]`, `answers` (história)
 
 ### Progress

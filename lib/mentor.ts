@@ -49,6 +49,7 @@ export interface BriefingReflectionInput {
   hardestMoment?: string;
   strengthToday?: string;
   better10?: string;
+  salesEur?: number;
   priceDay?: string;
   wins?: string[];
   losses?: string[];
@@ -102,6 +103,7 @@ export function buildWeeklyBriefingPrompt(input: {
             r.hardestMoment ? `najťažší moment: ${r.hardestMoment}` : "",
             r.strengthToday ? `sila: ${r.strengthToday}` : "",
             r.better10 ? `+10%: ${r.better10}` : "",
+            r.salesEur != null && Number.isFinite(r.salesEur) ? `predaje: ${r.salesEur} EUR` : "",
             r.priceDay ? `cena dnes: ${r.priceDay}` : "",
             r.wins?.length ? `silné: ${r.wins.join("; ")}` : "",
             r.losses?.length ? `straty: ${r.losses.join("; ")}` : "",

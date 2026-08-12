@@ -51,6 +51,9 @@ export const STRUGGLE_CATEGORY_LABELS: Record<string, string> = {
   ine: "Iné",
 };
 
+/** Denný cieľ predajov (EUR) na pracovný deň. */
+export const DAILY_SALES_GOAL_EUR = 185;
+
 export const OBJECTION_REACTION_LABELS: Record<string, string> = {
   none: "Námietka nepadla",
   asked_benefit: "Opýtal som sa na úžitok",

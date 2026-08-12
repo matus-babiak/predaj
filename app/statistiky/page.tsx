@@ -3,10 +3,10 @@
 import { useMemo, useState } from "react";
 import { useData } from "@/lib/useData";
 import { activeDays, streak, dayKey, computeBadges } from "@/lib/gamify";
-import { DEFAULT_FEARS, DEFAULT_WANTS, OUTCOME_LABELS } from "@/content/chips";
+import { DAILY_SALES_GOAL_EUR, DEFAULT_FEARS, DEFAULT_WANTS, OUTCOME_LABELS } from "@/content/chips";
 import { OBJECTIONS } from "@/content/objections";
 import { Btn, Card, SectionTitle } from "@/components/ui";
-import type { Entry, Settings, StatsAiCategory } from "@/lib/types";
+import type { Entry, Reflection, Settings, StatsAiCategory } from "@/lib/types";
 import {
   STATS_AI_MAX_ENTRIES,
   STATS_AI_WINDOW_DAYS,
@@ -50,6 +50,80 @@ function formatDay(ts: number): string {
 
 function daysAgoTs(days: number): number {
   return Date.now() - days * 24 * 60 * 60 * 1000;
+}
+
+type SalesDayStatus = "splnene" | "nesplnene" | "bez_sumy";
+
+function reflectionDayTs(date: string): number {
+  return new Date(date + "T12:00:00").getTime();
+}
+
+function summarizeSales(reflections: Reflection[], [weekStart, weekEnd]: [number, number]) {
+  const workDays = reflections.length;
+  const withSales = reflections.filter((r) => r.salesEur != null && Number.isFinite(r.salesEur));
+  const met = withSales.filter((r) => (r.salesEur as number) >= DAILY_SALES_GOAL_EUR);
+  const weekReflections = reflections.filter((r) => {
+    const ts = reflectionDayTs(r.date);
+    return ts >= weekStart && ts < weekEnd;
+  });
+  const weekWithSales = weekReflections.filter((r) => r.salesEur != null && Number.isFinite(r.salesEur));
+  const weekMet = weekWithSales.filter((r) => (r.salesEur as number) >= DAILY_SALES_GOAL_EUR);
+  const weekSum = weekWithSales.reduce((acc, r) => acc + (r.salesEur as number), 0);
+  const recent = reflections
+    .slice()
+    .sort((a, b) => (a.date < b.date ? 1 : -1))
+    .slice(0, 30)
+    .map((r) => {
+      const has = r.salesEur != null && Number.isFinite(r.salesEur);
+      const status: SalesDayStatus = !has
+        ? "bez_sumy"
+        : (r.salesEur as number) >= DAILY_SALES_GOAL_EUR
+          ? "splnene"
+          : "nesplnene";
+      return {
+        date: r.date,
+        label: new Date(r.date + "T12:00:00").toLocaleDateString("sk-SK", {
+          weekday: "short",
+          day: "numeric",
+          month: "short",
+        }),
+        salesEur: has ? (r.salesEur as number) : null,
+        status,
+      };
+    });
+  return {
+    workDays,
+    withSalesCount: withSales.length,
+    metCount: met.length,
+    metPct: withSales.length ? Math.round((met.length / withSales.length) * 100) : null,
+    weekWorkDays: weekReflections.length,
+    weekWithSales: weekWithSales.length,
+    weekMet: weekMet.length,
+    weekSum: weekWithSales.length ? Math.round(weekSum * 100) / 100 : null,
+    recent,
+  };
+}
+
+function SalesStatus({ status }: { status: SalesDayStatus }) {
+  if (status === "splnene") {
+    return (
+      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+        splnené
+      </span>
+    );
+  }
+  if (status === "nesplnene") {
+    return (
+      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-900 dark:bg-amber-950 dark:text-amber-300">
+        nesplnené
+      </span>
+    );
+  }
+  return (
+    <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+      bez sumy
+    </span>
+  );
 }
 
 export default function StatistikyPage() {
@@ -218,6 +292,8 @@ export default function StatistikyPage() {
   const thisWeek = summarize(entries, weekRange(0));
   const lastWeek = summarize(entries, weekRange(1));
 
+  const salesStats = summarizeSales(reflections, weekRange(0));
+
   return (
     <div className="space-y-8">
       <h1 className="text-2xl font-semibold">Štatistiky</h1>
@@ -229,6 +305,72 @@ export default function StatistikyPage() {
         <Stat label="Séria" value={s > 0 ? `🔥 ${s}` : "-"} />
         <Stat label="Námietok natrénovaných" value={String(objAttempts.length)} />
       </div>
+
+      {/* Predaje */}
+      <Card>
+        <SectionTitle>Predaje (cieľ {DAILY_SALES_GOAL_EUR} EUR / deň)</SectionTitle>
+        <p className="mb-3 text-sm text-zinc-500 dark:text-zinc-400">
+          Počítajú sa len pracovné dni, ktoré si pridal v Denníku. Kalendárne diery nie sú nesplnené.
+          Percentá splnenia len zo dní so zadanou sumou.
+        </p>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Stat label="Pracovné dni" value={String(salesStats.workDays)} />
+          <Stat
+            label="Splnené / so sumou"
+            value={
+              salesStats.withSalesCount
+                ? `${salesStats.metCount} / ${salesStats.withSalesCount}`
+                : "-"
+            }
+          />
+          <Stat
+            label="Splnenie"
+            value={
+              salesStats.withSalesCount != null && salesStats.withSalesCount > 0
+                ? `${salesStats.metPct} %`
+                : "-"
+            }
+          />
+          <Stat
+            label="Tento týždeň (suma)"
+            value={salesStats.weekSum != null ? `${salesStats.weekSum} EUR` : "-"}
+          />
+        </div>
+        <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+          Tento týždeň:{" "}
+          {salesStats.weekWithSales > 0
+            ? `${salesStats.weekMet} splnených z ${salesStats.weekWithSales} so sumou`
+            : "zatiaľ žiadny deň so sumou"}
+          {salesStats.weekWorkDays > 0
+            ? ` · ${salesStats.weekWorkDays} pracovných dní`
+            : ""}
+          .
+        </p>
+        {salesStats.recent.length > 0 && (
+          <div className="mt-4 space-y-2 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+            <div className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+              Posledné dni
+            </div>
+            {salesStats.recent.map((row) => (
+              <div
+                key={row.date}
+                className="flex flex-wrap items-center justify-between gap-2 text-sm"
+              >
+                <span className="text-zinc-700 dark:text-zinc-300">{row.label}</span>
+                <span className="flex items-center gap-2">
+                  <span className="text-zinc-500">
+                    {row.salesEur != null ? `${row.salesEur} EUR` : "bez sumy"}
+                  </span>
+                  <SalesStatus status={row.status} />
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+        {salesStats.workDays === 0 && (
+          <p className="mt-2 text-sm text-zinc-400">Zatiaľ žiadne pracovné dni. Pridaj ich v Denníku.</p>
+        )}
+      </Card>
 
       {/* Týždenné zhrnutie */}
       <Card>
